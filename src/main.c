@@ -456,18 +456,14 @@ void cursormove(unsigned char left, unsigned char right, unsigned char up, unsig
         {
             if (canvas.sourcexoffset > 0)
             {
-                vdcwin_cursor_show(&canvas.view,0);
                 vdcwin_cursor_move(&canvas.view, screen_col, screen_row);
-                vdcwin_cursor_show(&canvas.view,1);
                 vdcwin_viewportscroll(&canvas, SCROLL_LEFT);
                 initstatusbar();
             }
         }
         else
         {
-            vdcwin_cursor_show(&canvas.view,0);
             vdcwin_cursor_move(&canvas.view, --screen_col, screen_row);
-            vdcwin_cursor_show(&canvas.view,1);
         }
     }
     if (right == 1)
@@ -476,18 +472,14 @@ void cursormove(unsigned char left, unsigned char right, unsigned char up, unsig
         {
             if (canvas.sourcexoffset + screen_col < canvas.sourcewidth - 1)
             {
-                vdcwin_cursor_show(&canvas.view,0);
                 vdcwin_cursor_move(&canvas.view, screen_col, screen_row);
-                vdcwin_cursor_show(&canvas.view,1);
                 vdcwin_viewportscroll(&canvas, SCROLL_RIGHT);
                 initstatusbar();
             }
         }
         else
         {
-            vdcwin_cursor_show(&canvas.view,0);
             vdcwin_cursor_move(&canvas.view, ++screen_col, screen_row);
-            vdcwin_cursor_show(&canvas.view,1);
         }
     }
     if (up == 1)
@@ -496,18 +488,14 @@ void cursormove(unsigned char left, unsigned char right, unsigned char up, unsig
         {
             if (canvas.sourceyoffset > 0)
             {
-                vdcwin_cursor_show(&canvas.view,0);
                 vdcwin_cursor_move(&canvas.view, screen_col, screen_row);
-                vdcwin_cursor_show(&canvas.view,1);
                 vdcwin_viewportscroll(&canvas, SCROLL_UP);
                 initstatusbar();
             }
         }
         else
         {
-            vdcwin_cursor_show(&canvas.view,0);
             vdcwin_cursor_move(&canvas.view, screen_col, --screen_row);
-            vdcwin_cursor_show(&canvas.view,1);
             if (showbar && screen_row == vdc_state.height - 2)
             {
                 initstatusbar();
@@ -524,18 +512,14 @@ void cursormove(unsigned char left, unsigned char right, unsigned char up, unsig
         {
             if (canvas.sourceyoffset + screen_row < canvas.sourceheight - 1)
             {
-                vdcwin_cursor_show(&canvas.view,0);
                 vdcwin_cursor_move(&canvas.view, screen_col, screen_row);
-                vdcwin_cursor_show(&canvas.view,1);
                 vdcwin_viewportscroll(&canvas, SCROLL_DOWN);
                 initstatusbar();
             }
         }
         else
         {
-            vdcwin_cursor_show(&canvas.view,0);
             vdcwin_cursor_move(&canvas.view, screen_col, ++screen_row);
-            vdcwin_cursor_show(&canvas.view,1);
         }
     }
 }
@@ -766,4 +750,39 @@ void helpscreen_load(unsigned char screennumber)
     {
         bnk_redef_charset(vdc_state.char_alt, BNK_1_FULL, CHARSETALTERNATE, 256);
     }
+}
+
+// Application routines
+void plotmove(unsigned char direction)
+{
+    // Drive cursor move
+    // Input: ASCII code of cursor key pressed
+
+    vdcwin_cursor_show(&canvas.view,0);
+    vdc_printc(screen_row,screen_col,PEEKB(screenmap_screenaddr(yoffset+screen_row,xoffset+screen_col,screenwidth),1),PEEKB(screenmap_attraddr(yoffset+screen_row,xoffset+screen_col,screenwidth,screenheight),1));
+
+    switch (direction)
+    {
+    case CH_CURS_LEFT:
+        cursormove(1,0,0,0);
+        break;
+    
+    case CH_CURS_RIGHT:
+        cursormove(0,1,0,0);
+        break;
+
+    case CH_CURS_UP:
+        cursormove(0,0,1,0);
+        break;
+
+    case CH_CURS_DOWN:
+        cursormove(0,0,0,1);
+        break;
+    
+    default:
+        break;
+    }
+
+    VDC_Plot(screen_row,screen_col,plotscreencode,VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
+    vdcwin_cursor_show(&canvas.view,1);
 }
