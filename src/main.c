@@ -75,7 +75,6 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #pragma region( vdcse, 0x1c80, 0xc000 - OVERLAYSIZE, , , {code, data, bss, heap, stack} )
 
 // Undo data
-unsigned char vdcmemory;
 unsigned char undoenabled = 0;
 unsigned int undoaddress;
 unsigned char undonumber;
@@ -102,10 +101,7 @@ unsigned char showbar;
 
 unsigned char screen_col;
 unsigned char screen_row;
-// unsigned int xoffset;
-// unsigned int yoffset;
-// unsigned int screenwidth;
-// unsigned int screenheight;
+struct VDCViewport canvas;
 unsigned int screentotal;
 unsigned char screenbackground;
 unsigned char plotscreencode;
@@ -198,7 +194,7 @@ signed int textInput(unsigned char xpos, unsigned char ypos, char *str, unsigned
 }
 
 /* General screen functions */
-void printcentered(char *text, unsigned char xpos, unsigned char ypos, unsigned char width)
+void printcentered(const char *text, unsigned char xpos, unsigned char ypos, unsigned char width)
 {
     /* Function to print a text centered
        Input:
@@ -213,6 +209,14 @@ void printcentered(char *text, unsigned char xpos, unsigned char ypos, unsigned 
         xpos += (width - strlen(text)) / 2 - 1;
     }
     vdc_prints(xpos, ypos, text);
+}
+
+unsigned char VDC_Attribute(unsigned char textcolor, unsigned char blink, unsigned char underline, unsigned char reverse, unsigned char alternate)
+{
+    // Function to calculate attribute code from color and other attribute bits
+    // Input: Color code 0-15 and flags for blink, underline, reverse and alternate charset
+
+    return textcolor + (blink * 16) + (underline * 32) + (reverse * 64) + (alternate * 128);
 }
 
 /* Overlay functions */
@@ -413,8 +417,8 @@ void screenmapplot(unsigned char row, unsigned char col, unsigned char screencod
     // Function to plot a screencodes at bank 1 memory screen map
     // Input: row and column, screencode to plot, attribute code
 
-    bnk_writeb(BNK_1_FULL, screenmap_screenaddr(row, col, canvas.sourcewidth), screencode);
-    bnk_writeb(BNK_1_FULL, screenmap_attraddr(row, col, canvas.sourcewidth, canvas.sourceheight), attribute);
+    bnk_writeb(BNK_1_FULL, (char *)screenmap_screenaddr(row, col, canvas.sourcewidth), screencode);
+    bnk_writeb(BNK_1_FULL, (char *)screenmap_attraddr(row, col, canvas.sourcewidth, canvas.sourceheight), attribute);
 }
 
 void placesignature()
@@ -429,7 +433,7 @@ void placesignature()
 
     for (x = 0; x < strlen(versiontext); x++)
     {
-        bnk_writeb(BNK_1_FULL, address + x, versiontext[x]);
+        bnk_writeb(BNK_1_FULL, (char *)(address + x), versiontext[x]);
     }
 }
 
@@ -439,10 +443,10 @@ void screenmapfill(unsigned char screencode, unsigned char attribute)
 
     unsigned int address = SCREENMAPBASE;
 
-    bnk_memset(BNK_1_FULL, address, screencode, screentotal + 48);
+    bnk_memset(BNK_1_FULL, (char *)address, screencode, screentotal + 48);
     placesignature();
     address += screentotal + 48;
-    bnk_memset(BNK_1_FULL, address, attribute, screentotal);
+    bnk_memset(BNK_1_FULL, (char *)address, attribute, screentotal);
 }
 
 void cursormove(unsigned char left, unsigned char right, unsigned char up, unsigned char down)
@@ -558,8 +562,8 @@ void undo_new(unsigned char row, unsigned char col, unsigned char width, unsigne
     }
     for (y = 0; y < height; y++)
     {
-        bnk_cpytovdc(undoaddress + (y * width), BNK_1_FULL, screenmap_screenaddr(row + y, col, canvas.sourcewidth), width);
-        bnk_cpytovdc(undoaddress + (width * height) + (y * width), BNK_1_FULL, screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), width);
+        bnk_cpytovdc(undoaddress + (y * width), BNK_1_FULL, (char *)screenmap_screenaddr(row + y, col, canvas.sourcewidth), width);
+        bnk_cpytovdc(undoaddress + (width * height) + (y * width), BNK_1_FULL, (char *)screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), width);
     }
     Undo[undonumber - 1].address = undoaddress;
     if (undonumber < 40)
@@ -594,11 +598,11 @@ void undo_performundo()
         {
             if (Undo[undonumber - 1].redopresent > 0)
             {
-                bnk_cpytovdc(Undo[undonumber - 1].address + (width * height * 2) + (y * width), BNK_1_FULL, screenmap_screenaddr(row + y, col, canvas.sourcewidth), width);
-                bnk_cpytovdc(Undo[undonumber - 1].address + (width * height * 3) + (y * width), BNK_1_FULL, screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), width);
+                bnk_cpytovdc(Undo[undonumber - 1].address + (width * height * 2) + (y * width), BNK_1_FULL, (char *)screenmap_screenaddr(row + y, col, canvas.sourcewidth), width);
+                bnk_cpytovdc(Undo[undonumber - 1].address + (width * height * 3) + (y * width), BNK_1_FULL, (char *)screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), width);
             }
-            bnk_cpyfromvdc(BNK_1_FULL, screenmap_screenaddr(row + y, col, canvas.sourcewidth), Undo[undonumber - 1].address + (y * width), width);
-            bnk_cpyfromvdc(BNK_1_FULL, screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), Undo[undonumber - 1].address + (width * height) + (y * width), width);
+            bnk_cpyfromvdc(BNK_1_FULL, (char *)screenmap_screenaddr(row + y, col, canvas.sourcewidth), Undo[undonumber - 1].address + (y * width), width);
+            bnk_cpyfromvdc(BNK_1_FULL, (char *)screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), Undo[undonumber - 1].address + (width * height) + (y * width), width);
         }
         vdcwin_cpy_viewport(&canvas);
         if (showbar)
@@ -668,8 +672,8 @@ void undo_performredo()
         height = Undo[undonumber - 1].height;
         for (y = 0; y < height; y++)
         {
-            bnk_cpyfromvdc(BNK_1_FULL, screenmap_screenaddr(row + y, col, canvas.sourcewidth), Undo[undonumber - 1].address + (width * height * 2) + (y * width), width);
-            bnk_cpyfromvdc(BNK_1_FULL, screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), Undo[undonumber - 1].address + (width * height * 3) + (y * width), width);
+            bnk_cpyfromvdc(BNK_1_FULL, (char *)screenmap_screenaddr(row + y, col, canvas.sourcewidth), Undo[undonumber - 1].address + (width * height * 2) + (y * width), width);
+            bnk_cpyfromvdc(BNK_1_FULL, (char *)screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), Undo[undonumber - 1].address + (width * height * 3) + (y * width), width);
         }
         vdcwin_cpy_viewport(&canvas);
         if (showbar)
@@ -701,7 +705,7 @@ void helpscreen_load(unsigned char screennumber)
     // Load system charset if needed
     if (charsetchanged[1] == 1)
     {
-        bnk_redef_charset(vdc_state.char_alt, BNK_1_FULL, CHARSETSYSTEM, 256);
+        bnk_redef_charset(vdc_state.char_alt, BNK_1_FULL, (char *)CHARSETSYSTEM, 256);
     }
 
     // Set background color to black and switch cursor off
@@ -714,15 +718,15 @@ void helpscreen_load(unsigned char screennumber)
     }
 
     // Load selected help screen
-    sprintf(buffer, "vdcse.hsc%u", screennumber);
+    sprintf(buffer, "vdcsehsc%u", screennumber);
 
-    if (bnk_load(bootdevice, BNK_1_FULL, WINDOWBASEADDRESS, buffer))
+    if (bnk_load(bootdevice, BNK_1_FULL, (char *)WINDOWBASEADDRESS, buffer))
     {
-        bnk_cpytovdc(vdc_state.base_text, WINDOWBASEADDRESS, 1, 4048);
+        bnk_cpytovdc(vdc_state.base_text, BNK_1_FULL, (char *)WINDOWBASEADDRESS, 4048);
     }
     else
     {
-        messagepopup("Insert application disk to view help.", 0);
+        menu_messagepopup("Insert application disk to view help.");
     }
 
     getch();
@@ -743,46 +747,667 @@ void helpscreen_load(unsigned char screennumber)
         vdcwin_cursor_move(&canvas.view, screen_col, screen_row);
         vdc_printc(screen_row, screen_col, plotscreencode, vdc_state.text_attr);
     }
-    vdcwin_cursor_show(&canvas.view,1);
+    vdcwin_cursor_show(&canvas.view, 1);
 
     // Restore custom charset if needed
     if (charsetchanged[1] == 1)
     {
-        bnk_redef_charset(vdc_state.char_alt, BNK_1_FULL, CHARSETALTERNATE, 256);
+        bnk_redef_charset(vdc_state.char_alt, BNK_1_FULL, (char *)CHARSETALTERNATE, 256);
     }
 }
 
 // Application routines
-void plotmove(unsigned char direction)
-{
-    // Drive cursor move
-    // Input: ASCII code of cursor key pressed
 
-    vdcwin_cursor_show(&canvas.view,0);
-    vdc_printc(screen_row,screen_col,PEEKB(screenmap_screenaddr(yoffset+screen_row,xoffset+screen_col,screenwidth),1),PEEKB(screenmap_attraddr(yoffset+screen_row,xoffset+screen_col,screenwidth,screenheight),1));
+void loadsyscharset()
+// Load system charset if needed
+{
+    if (charsetchanged[1] == 1)
+    {
+        bnk_redef_charset(vdc_state.char_alt, BNK_1_FULL, (char *)CHARSETSYSTEM, 256);
+    }
+}
+
+void restorealtcharset()
+// Restore custom charset if needed
+{
+    if (charsetchanged[1] == 1)
+    {
+        bnk_redef_charset(vdc_state.char_alt, BNK_1_FULL, (char *)CHARSETALTERNATE, 256);
+    }
+}
+
+void plotcursor()
+// Plot cursor at present position
+{
+    vdc_printc(screen_row, screen_col, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
+    vdcwin_cursor_show(&canvas.view, 1);
+}
+
+void plotmove(unsigned char direction)
+// Drive cursor move
+// Input: ASCII code of cursor key pressed
+{
+    vdc_printc(screen_row, screen_col, bnk_readb(BNK_1_FULL, (char *)screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, (char *)screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
 
     switch (direction)
     {
     case CH_CURS_LEFT:
-        cursormove(1,0,0,0);
+        cursormove(1, 0, 0, 0);
         break;
-    
+
     case CH_CURS_RIGHT:
-        cursormove(0,1,0,0);
+        cursormove(0, 1, 0, 0);
         break;
 
     case CH_CURS_UP:
-        cursormove(0,0,1,0);
+        cursormove(0, 0, 1, 0);
         break;
 
     case CH_CURS_DOWN:
-        cursormove(0,0,0,1);
+        cursormove(0, 0, 0, 1);
         break;
-    
+
     default:
         break;
     }
 
-    VDC_Plot(screen_row,screen_col,plotscreencode,VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
-    vdcwin_cursor_show(&canvas.view,1);
+    plotcursor();
+}
+
+void change_plotcolor(unsigned char newval)
+// Change the current color to plot in
+{
+    plotcolor = newval;
+    vdc_textcolor(newval);
+    plotcursor();
+}
+
+void showchareditfield(unsigned char stdoralt)
+// Function to draw char editor background field
+// Input: Flag for which charset is edited, standard (0) or alternate (1)
+{
+    vdc_state.text_attr = mc_menupopup - (VDC_A_ALTCHAR * stdoralt);
+    vdcwin_win_new(0, 67, 0, 13, 12);
+}
+
+unsigned int charaddress(unsigned char screencode, unsigned char stdoralt, unsigned char vdcormem)
+// Function to calculate address of character to edit
+// Input:   screencode to edit, flag for standard (0) or alternate (1) charset,
+//          flag for VDC (0) or bank 1 (1) memory address
+{
+    unsigned int address;
+
+    if (vdcormem == 0)
+    {
+        address = (stdoralt == 0) ? vdc_state.char_std : vdc_state.char_alt;
+        address += screencode * 16;
+    }
+    else
+    {
+        address = (stdoralt == 0) ? CHARSETNORMAL : CHARSETALTERNATE;
+        address += screencode * 8;
+    }
+    return address;
+}
+
+void showchareditgrid(unsigned int screencode, unsigned char stdoralt)
+// Function to draw grid with present char to edit
+{
+    unsigned char x, y, char_byte, colorbase, colorbit;
+    unsigned int address;
+
+    address = charaddress(screencode, stdoralt, 0);
+
+    colorbase = mc_menupopup - (VDC_A_ALTCHAR * stdoralt);
+    vdc_state.text_attr = colorbase;
+
+    sprintf(buffer, "Char %2X %s", screencode, (stdoralt == 0) ? "Std" : "Alt");
+
+    vdc_prints(68, 1, buffer);
+
+    for (y = 0; y < 8; y++)
+    {
+        char_byte = vdc_mem_read_at(address + y);
+        sprintf(buffer, "%2X", char_byte);
+        vdc_prints(68, y + 3, buffer);
+        for (x = 0; x < 8; x++)
+        {
+            if (char_byte & (1 << (7 - x)))
+            {
+                colorbit = colorbase;
+            }
+            else
+            {
+                colorbit = colorbase - VDC_A_REVERSE;
+            }
+            vdc_printc(x + 71, y + 3, CH_SPACE, colorbit);
+        }
+    }
+}
+
+void mainmenuloop()
+{
+    // Function for main menu selection loop
+
+    unsigned char menuchoice;
+
+    vdcwin_win_new(0, 0, 0, vdc_state.width, 1);
+    loadsyscharset();
+
+    do
+    {
+        menuchoice = menu_main();
+
+        switch (menuchoice)
+        {
+        case 11:
+            // loadoverlay(1);
+            // resizewidth();
+            break;
+
+        case 12:
+            // loadoverlay(2);
+            // resizeheight();
+            break;
+
+        case 13:
+            // loadoverlay(3);
+            // changebackgroundcolor();
+            break;
+
+        case 14:
+            break;
+
+        case 15:
+            if (undoenabled == 1)
+            {
+                undo_new(0, 0, canvas.sourcewidth, canvas.sourceheight);
+            }
+            screenmapfill(CH_SPACE, VDC_WHITE);
+            vdcwin_win_free();
+            vdcwin_cpy_viewport(&canvas);
+            vdcwin_win_new(0, 0, 0, vdc_state.width, 1);
+            menu_placebar(0);
+            if (showbar)
+            {
+                initstatusbar();
+            }
+            break;
+
+        case 16:
+            if (undoenabled == 1)
+            {
+                undo_new(0, 0, canvas.sourcewidth, canvas.sourceheight);
+            }
+            screenmapfill(plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
+            vdcwin_win_free();
+            vdcwin_cpy_viewport(&canvas);
+            vdcwin_win_new(0, 0, 0, vdc_state.width, 1);
+            menu_placebar(0);
+            if (showbar)
+            {
+                initstatusbar();
+            }
+            break;
+
+        case 21:
+            // loadoverlay(3);
+            // savescreenmap();
+            break;
+
+        case 22:
+            // loadoverlay(3);
+            // loadscreenmap();
+            break;
+
+        case 23:
+            // loadoverlay(3);
+            // saveproject();
+            break;
+
+        case 24:
+            // loadoverlay(3);
+            // loadproject();
+            break;
+
+        case 25:
+            break;
+
+        case 31:
+            // loadoverlay(3);
+            // loadcharset(0);
+            break;
+
+        case 32:
+            // loadoverlay(3);
+            // loadcharset(1);
+            break;
+
+        case 33:
+            // loadoverlay(3);
+            // savecharset(0);
+            break;
+
+        case 34:
+            // loadoverlay(3);
+            // savecharset(1);
+            break;
+
+        case 41:
+            // loadoverlay(3);
+            // versioninfo();
+            break;
+
+        case 42:
+            appexit = 1;
+            menuchoice = 99;
+            break;
+
+        case 43:
+            undoenabled = (undoenabled == 0) ? 1 : 0;
+            sprintf(pulldown_titles[3][2], "Undo: %s", (undoenabled == 1) ? "Enabled  " : "Disabled ");
+            undoaddress = vdc_state.extended; // Reset undo address
+            undonumber = 0;                   // Reset undo number
+            undo_undopossible = 0;            // Reset undo possible flag
+            undo_redopossible = 0;
+            break;
+
+        default:
+            break;
+        }
+    } while (menuchoice < 99);
+
+    vdcwin_win_free();
+    restorealtcharset();
+}
+
+// Main loop
+
+int main(void)
+{
+    // Main application initialization, loop and exit
+
+    unsigned char key, newval;
+
+    // Initialize memory settings for backing up windows backgrounds
+    vdcwin_winstorage_init(BNK_1_FULL, (char *)WINDOWBASEADDRESS, WIN_MEMORY);
+
+    // Init low memory
+    bnk_init();
+
+    // Reset startvalues global variables
+    vdcwin_viewport_init(&canvas, BNK_1_FULL, SCREENMAPBASE, 80, 25, 80, 25, 0, 0);
+    charsetchanged[0] = 0;
+    charsetchanged[1] = 0;
+    appexit = 0;
+    screen_col = 0;
+    screen_row = 0;
+    screentotal = canvas.sourcewidth * canvas.sourceheight;
+    screenbackground = 0;
+    plotscreencode = 0;
+    plotcolor = VDC_WHITE;
+    plotreverse = 0;
+    plotunderline = 0;
+    plotblink = 0;
+    plotaltchar = 0;
+
+    sprintf(pulldown_titles[0][0], "Width:   %5i ", canvas.sourcewidth);
+    sprintf(pulldown_titles[0][1], "Height:  %5i ", canvas.sourceheight);
+    sprintf(pulldown_titles[0][2], "Background: %2i ", screenbackground);
+
+    // Obtain device number the application was started from
+    bootdevice = getcurrentdevice();
+    targetdevice = bootdevice;
+
+    // Init screen and banking functions, start with default 80x25 text mode
+    vdc_init(VDC_TEXT_80x25_PAL, 1);
+
+    // Detect VDC memory size and set VDC memory config size to 64K if present
+    if (vdc_state.memsize == 64)
+    {
+        strcpy(pulldown_titles[3][2], "Undo: Enabled  "); // Enable undo menuoption
+        pulldown_options[3] = 3;                          // Enable undo menupotion
+        undoenabled = 1;                                  // Set undo enabled flag
+        undoaddress = vdc_state.extended;                 // Reset undo address
+        undonumber = 0;                                   // Reset undo number
+        undo_undopossible = 0;                            // Reset undo possible flag
+        undo_redopossible = 0;                            // Reset redo possible flag
+    }
+
+    // Load and show title screen
+    printcentered("Load title screen", 29, 24, 22);
+    if (bnk_load(bootdevice, BNK_1_FULL, (char *)SCREENMAPBASE, "vdcsetscr"))
+    {
+        bnk_cpytovdc(vdc_state.base_text, BNK_1_FULL, (char *)SCREENMAPBASE, 4048);
+    }
+
+    // Init overlays
+    // initoverlay();
+
+    // Load visual PETSCII map mapping data
+    printcentered("Load visual PETSCII", 29, 24, 22);
+    if (!bnk_load(bootdevice, BNK_DEFAULT, (char *)PETSCIIMAP, "vdcsepetv"))
+    {
+        menu_fileerrormessage();
+        exit(1);
+    }
+
+    // Load default charsets to bank 1
+    printcentered("Load charsets", 29, 24, 22);
+    if (!bnk_load(bootdevice, BNK_1_FULL, (char *)CHARSETSYSTEM, "vdcsefalt"))
+    {
+        menu_fileerrormessage();
+        exit(1);
+    }
+    if (!bnk_load(bootdevice, BNK_1_FULL, (char *)CHARSETNORMAL, "vdcsefstd"))
+    {
+        menu_fileerrormessage();
+        exit(1);
+    }
+    bnk_memcpy(BNK_1_FULL, CHARSETALTERNATE, BNK_1_FULL, CHARSETSYSTEM, 2048);
+
+    // Clear screen map in bank 1 with spaces in text color white
+    screenmapfill(CH_SPACE, VDC_WHITE);
+
+    // Wait for key press to start application
+    printcentered("Press key to start.", 29, 24, 22);
+    getch();
+
+    // Clear viewport of titlescreen
+    vdc_cls();
+
+    // Main program loop
+    plotcursor();
+    strcpy(programmode, "Main");
+    showbar = 1;
+    initstatusbar();
+
+    do
+    {
+        if (showbar)
+        {
+            printstatusbar();
+        }
+        key = vdcwin_getch();
+
+        switch (key)
+        {
+        // Cursor move
+        case CH_CURS_LEFT:
+        case CH_CURS_RIGHT:
+        case CH_CURS_UP:
+        case CH_CURS_DOWN:
+            plotmove(key);
+            break;
+
+        // Increase screencode
+        case '+':
+            plotscreencode++;
+            plotcursor();
+            break;
+
+        // Decrease screencode
+        case '-':
+            plotscreencode--;
+            plotcursor();
+            break;
+
+        // Decrease color
+        case ',':
+            if (plotcolor == 0)
+            {
+                newval = 15;
+            }
+            else
+            {
+                newval = plotcolor - 1;
+            }
+            if (newval == screenbackground)
+            {
+                if (newval == 0)
+                {
+                    newval = 15;
+                }
+                else
+                {
+                    newval--;
+                }
+            }
+            change_plotcolor(newval);
+            break;
+
+        // Increase color
+        case '.':
+            if (plotcolor == 15)
+            {
+                newval = 0;
+            }
+            else
+            {
+                newval = plotcolor + 1;
+            }
+            if (newval == screenbackground)
+            {
+                if (newval == 15)
+                {
+                    newval = 0;
+                }
+                else
+                {
+                    newval++;
+                }
+            }
+            change_plotcolor(newval);
+            break;
+
+        // Toggle underline
+        case 'u':
+            plotunderline = (plotunderline == 0) ? 1 : 0;
+            plotcursor();
+            break;
+
+        // Toggle blink
+        case 'b':
+            plotblink = (plotblink == 0) ? 1 : 0;
+            plotcursor();
+            break;
+
+        // Toggle reverse
+        case 'r':
+            plotreverse = (plotreverse == 0) ? 1 : 0;
+            plotcursor();
+            break;
+
+        // Toggle alternate character set
+        case 'a':
+            plotaltchar = (plotaltchar == 0) ? 1 : 0;
+            plotcursor();
+            break;
+
+        // Character eddit mode
+        case 'e':
+            // loadoverlay(4);
+            // chareditor();
+            break;
+
+        // Palette for character selection
+        case 'p':
+            // loadoverlay(1);
+            // palette();
+            break;
+
+        // Grab underlying character and attributes
+        case 'g':
+            plotscreencode = bnk_readb(BNK_1_FULL, (char *)screenmap_screenaddr(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, canvas.sourcewidth));
+            newval = bnk_readb(BNK_1_FULL, (char *)screenmap_attraddr(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, canvas.sourcewidth, canvas.sourceheight));
+            if (newval > 128)
+            {
+                plotaltchar = 1;
+                newval -= 128;
+            }
+            else
+            {
+                plotaltchar = 0;
+            }
+            if (newval > 64)
+            {
+                plotreverse = 1;
+                newval -= 64;
+            }
+            else
+            {
+                plotreverse = 0;
+            }
+            if (newval > 32)
+            {
+                plotunderline = 1;
+                newval -= 32;
+            }
+            else
+            {
+                plotunderline = 0;
+            }
+            if (newval > 16)
+            {
+                plotblink = 1;
+                newval -= 16;
+            }
+            else
+            {
+                plotblink = 0;
+            }
+            plotcolor = newval;
+            vdc_state.text_attr = plotcolor;
+            plotcursor();
+            break;
+
+        // Write mode: type in screencodes
+        case 'w':
+            // loadoverlay(1);
+            // writemode();
+            break;
+
+        // Color mode: type colors
+        case 'c':
+            // loadoverlay(1);
+            // colorwrite();
+            break;
+
+        // Line and box mode
+        case 'l':
+            // loadoverlay(2);
+            // lineandbox(1);
+            break;
+
+        // Move mode
+        case 'm':
+            // loadoverlay(2);
+            // movemode();
+            break;
+
+        // Select mode
+        case 's':
+            // loadoverlay(2);
+            // selectmode();
+            break;
+
+        // Undo
+        case 'z':
+            if (undoenabled == 1 && undo_undopossible > 0)
+            {
+                undo_performundo();
+            }
+            break;
+
+        // Redo
+        case 'y':
+            if (undoenabled == 1 && undo_redopossible > 0)
+            {
+                undo_performredo();
+            }
+            break;
+
+        // Try
+        case 't':
+            // loadoverlay(3);
+            // plot_try();
+            break;
+
+        // Increase/decrease plot screencode by 128 (toggle 'RVS ON' and 'RVS OFF')
+        case 'i':
+            plotscreencode += 128; // Will increase 128 if <128 and decrease by 128 if >128 by overflow
+            plotcursor();
+            break;
+
+        // Plot present screencode and attribute
+        case CH_SPACE:
+            if (undoenabled == 1)
+            {
+                undo_new(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, 1, 1);
+            }
+            screenmapplot(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
+            break;
+
+        // Delete present screencode and attributes
+        case CH_DEL:
+            if (undoenabled == 1)
+            {
+                undo_new(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, 1, 1);
+            }
+            screenmapplot(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, CH_SPACE, VDC_WHITE);
+            break;
+
+        // Go to upper left corner
+        case CH_HOME:
+            screen_row = 0;
+            screen_col = 0;
+            canvas.sourceyoffset = 0;
+            canvas.sourcexoffset = 0;
+            vdcwin_cpy_viewport(&canvas);
+            if (showbar)
+            {
+                initstatusbar();
+            }
+            gotoxy(screen_col, screen_row);
+            break;
+
+        // Go to menu
+        case CH_F1:
+            vdcwin_cursor_show(&canvas.view, 0);
+            mainmenuloop();
+            plotcursor();
+            vdc_state.text_attr = plotcolor;
+            break;
+
+        // Toggle statusbar
+        case CH_F6:
+            togglestatusbar();
+            break;
+
+        // Help screen
+        case CH_F8:
+            helpscreen_load(1);
+            break;
+
+        default:
+            // 0-9: Favourites select
+            if (key > 47 && key < 58)
+            {
+                plotscreencode = favourites[key - 48][0];
+                plotaltchar = favourites[key - 48][1];
+                plotcursor();
+            }
+            // Shift 1-9 or *: Store present character in favourites slot
+            if (key > 32 && key < 43)
+            {
+                favourites[key - 33][0] = plotscreencode;
+                favourites[key - 33][1] = plotaltchar;
+            }
+            break;
+        }
+    } while (appexit == 0);
+
+    vdc_exit();
+
+    return 0;
 }

@@ -77,7 +77,7 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 
 struct VDCMenuBar menubar = {
     {"Screen", "File", "Charset", "Information"},
-    {0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0},
     0};
 
 char pulldown_options[VDC_PULLDOWN_NUMBER] = {6, 5, 4, 2, 2};

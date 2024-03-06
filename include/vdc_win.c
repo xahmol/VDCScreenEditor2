@@ -145,10 +145,10 @@ void vdcwin_cursor_show(struct VDCWin *win, bool show)
 // Show or hide the cursor by setting or clearing the reverse attribute
 {
 	unsigned cp = vdc_state.base_attr + vdc_coords(win->sx + win->cx, win->sy + win->cy);
-	if (show)
-		vdc_mem_write_at(cp, vdc_mem_read_at(cp) | VDC_A_REVERSE);
-	else
-		vdc_mem_write_at(cp, vdc_mem_read_at(cp) & (~VDC_A_REVERSE));
+	char attr = vdc_mem_read_at(cp);
+	attr ^= VDC_A_REVERSE;
+	attr ^= VDC_A_BLINK;
+	vdc_mem_write_at(cp,attr);
 }
 
 void vdcwin_cursor_move(struct VDCWin *win, char cx, char cy)

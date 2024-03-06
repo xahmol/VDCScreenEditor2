@@ -79,7 +79,7 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #include "vdc_core.h"
 
 // Section and region for low memory area overlay
-#pragma overlay(vdctestlmc, 1)
+#pragma overlay(vdcselmc, 1)
 #pragma section(bcode1, 0)
 #pragma section(bdata1, 0)
 #pragma section(bbss1, 0)

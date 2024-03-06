@@ -58,7 +58,7 @@ Code and resources from others used:
 -   Bart van Leeuwen: For inspiration and advice while coding. Also for providing the excellent Device Manager ROM to make testing on real hardware very easy
 
 -   Original windowing system code on Commodore 128 by unknown author.
-   
+
 -   Tested using real hardware (C128D and C128DCR) plus VICE.
 
 The code can be used freely as long as you retain a notice describing original source and author.
@@ -77,8 +77,8 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 // Define
 // Set these for menubar and pulldown menu dimensions
 #define VDC_MENUBAR_MAXOPTIONS 4  // Number of options in main menu bar
-#define VDC_MENUBAR_MAXLENGTH 12   // Maxiumum length of main menu bar option names
-#define VDC_PULLDOWN_NUMBER 5     // Number of pull down menus defined
+#define VDC_MENUBAR_MAXLENGTH 12  // Maxiumum length of main menu bar option names
+#define VDC_PULLDOWN_NUMBER 6     // Number of pull down menus defined
 #define VDC_PULLDOWN_MAXOPTIONS 6 // Maximum number of options for pull down meus
 #define VDC_PULLDOWN_MAXLENGTH 16 // Maximum length of pull down menu option names
 

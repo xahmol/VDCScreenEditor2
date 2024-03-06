@@ -2,30 +2,30 @@
 #define __DEFINES_H_
 
 /* Machine code area addresses mapping */
-#define MACOSTART           0x1300      // Start of machine code area
-#define MACOSIZE            0x0800      // Length of machine code area
+#define MACOSTART 0x1300 // Start of machine code area
+#define MACOSIZE 0x0800  // Length of machine code area
 
 /* Address mapping for visual PETSCII map */
-#define PETSCIIMAP          0x0C00      // PETSCII map in RS232 buffer
+#define PETSCIIMAP 0x0C00 // PETSCII map in RS232 buffer
 
 /* Bank 0 save data adress mapping */
-#define OVERLAYBANK0        0xC000      // Start address overlay storage bank 0
+#define OVERLAYBANK0 0xC000 // Start address overlay storage bank 0
 
 /* Bank 1 memory addresses mapping */
-#define WINDOWBASEADDRESS   0x2000      // Base address for windows system data, 8k reserved
-#define CHARSETSYSTEM       0x4000      // Base address for system charset
-#define CHARSETNORMAL       0x4800      // Base address for normal charset
-#define CHARSETALTERNATE    0x5000      // Base address for alternate charset
-#define SCREENMAPBASE       0x5800      // Base address for screen map
-#define MEMORYLIMIT         0xCFFF      // Upper memory limit address for address map
-#define OVERLAYBANK1        0xD000      // Start address overlay storage bank 1
+#define WINDOWBASEADDRESS 0x2000 // Base address for windows system data, 8k reserved
+#define CHARSETSYSTEM 0x4000     // Base address for system charset
+#define CHARSETNORMAL 0x4800     // Base address for normal charset
+#define CHARSETALTERNATE 0x5000  // Base address for alternate charset
+#define SCREENMAPBASE 0x5800     // Base address for screen map
+#define MEMORYLIMIT 0xCFFF       // Upper memory limit address for address map
+#define OVERLAYBANK1 0xD000      // Start address overlay storage bank 1
 
 /* Global variables */
 
 // Overlay data struct
-#define OVERLAYNUMBER       4           // Number of overlays
-#define OVERLAYSIZE         0x1400      // Overlay size (align with config)
-#define OVERLAYLOAD         0xAC00      // Overlay load address (align with config=0xC000-OVERLAYSIZE)
+#define OVERLAYNUMBER 4    // Number of overlays
+#define OVERLAYSIZE 0x1400 // Overlay size (align with config)
+#define OVERLAYLOAD 0xAC00 // Overlay load address (align with config=0xC000-OVERLAYSIZE)
 
 struct OverlayStruct
 {
@@ -36,7 +36,6 @@ extern struct OverlayStruct overlaydata[4];
 extern unsigned char overlay_active;
 
 // Undo data
-extern unsigned char vdcmemory;
 extern unsigned char undoenabled;
 extern unsigned int undoaddress;
 extern unsigned char undonumber;
@@ -72,10 +71,10 @@ extern unsigned char showbar;
 
 extern unsigned char screen_col;
 extern unsigned char screen_row;
-//extern unsigned int xoffset;
-//extern unsigned int yoffset;
-//extern unsigned int screenwidth;
-//extern unsigned int screenheight;
+// extern unsigned int xoffset;
+// extern unsigned int yoffset;
+// extern unsigned int screenwidth;
+// extern unsigned int screenheight;
 extern unsigned int screentotal;
 extern unsigned char screenbackground;
 extern unsigned char plotscreencode;
@@ -135,7 +134,14 @@ extern char version[22];
 #define CH_LGREEN 153     // Petscii control code for light green     C=-6
 #define CH_LBLUE 154      // Petscii control code for light blue      C=-7
 #define CH_LGREY 155      // Petscii control code for light grey      C=-8
-
+#define CH_F1 133         // Petscii control code for F1
+#define CH_F2 137         // Petscii control code for F2
+#define CH_F3 134         // Petscii control code for F3
+#define CH_F4 138         // Petscii control code for F4
+#define CH_F5 135         // Petscii control code for F5
+#define CH_F6 139         // Petscii control code for F6
+#define CH_F7 136         // Petscii control code for F7
+#define CH_F8 140         // Petscii control code for F8
 
 /* Declaration global variables as externals */
 extern unsigned char bootdevice;
