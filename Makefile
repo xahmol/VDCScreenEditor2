@@ -64,7 +64,7 @@ d64:	bootsect.bin
 	c1541 -cd build/ -attach $(MAIN).d64 -bpoke 18 0 4 $14 %11111110
 	c1541 -cd build/ -attach $(MAIN).d64 -bam 1 1
 	c1541 -cd build/ -attach $(MAIN).d64 -write vdcse.prg vdcse
-	c1541 -cd build/ -attach $(MAIN).d64 -write vdcselmc.prg vdcsemlc
+	c1541 -cd build/ -attach $(MAIN).d64 -write vdcselmc.prg vdcselmc
 #	c1541 -cd build/ -attach $(MAIN).d64 -write vdcseovl1.prg vdcseovl1
 #	c1541 -cd build/ -attach $(MAIN).d64 -write vdcseovl2.prg vdcseovl2
 #	c1541 -cd build/ -attach $(MAIN).d64 -write vdcseovl3.prg vdcseovl3
@@ -87,7 +87,7 @@ d71:	bootsect.bin
 	c1541 -cd build/ -attach $(MAIN).d71 -bpoke 18 0 4 $14 %11111110
 	c1541 -cd build/ -attach $(MAIN).d71 -bam 1 1
 	c1541 -cd build/ -attach $(MAIN).d71 -write vdcse.prg vdcse
-	c1541 -cd build/ -attach $(MAIN).d71 -write vdcselmc.prg vdcsemlc
+	c1541 -cd build/ -attach $(MAIN).d71 -write vdcselmc.prg vdcselmc
 #	c1541 -cd build/ -attach $(MAIN).d71 -write vdcseovl1.prg vdcseovl1
 #	c1541 -cd build/ -attach $(MAIN).d71 -write vdcseovl2.prg vdcseovl2
 #	c1541 -cd build/ -attach $(MAIN).d71 -write vdcseovl3.prg vdcseovl3
@@ -110,7 +110,7 @@ d81:	bootsect.bin
 	c1541 -cd build/ -attach $(MAIN).d81 -bpoke 40 1 16 $27 %11111110
 	c1541 -cd build/ -attach $(MAIN).d81 -bam 1 1
 	c1541 -cd build/ -attach $(MAIN).d81 -write vdcse.prg vdcse
-	c1541 -cd build/ -attach $(MAIN).d81 -write vdcselmc.prg vdcsemlc
+	c1541 -cd build/ -attach $(MAIN).d81 -write vdcselmc.prg vdcselmc
 #	c1541 -cd build/ -attach $(MAIN).d81 -write vdcseovl1.prg vdcseovl1
 #	c1541 -cd build/ -attach $(MAIN).d81 -write vdcseovl2.prg vdcseovl2
 #	c1541 -cd build/ -attach $(MAIN).d81 -write vdcseovl3.prg vdcseovl3
@@ -142,5 +142,5 @@ deploy: $(MAIN).d64 $(MAIN).d71 $(MAIN).d81
 #	wput -u build/$(MAIN).d64 $(ULTHOST2)
 
 # To run software using VICE x128
-vice: $(MAIN).d64 $(MAIN).d71 $(MAIN).d81
+vice:
 	x128 build/$(MAIN).d81

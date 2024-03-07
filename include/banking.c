@@ -134,7 +134,7 @@ void bnk_init()
 
 	// Load overlay in low memory
 	printf("loading low memory code.\n");
-	load_overlay("vdctestlmc");
+	load_overlay("vdcselmc");
 }
 
 void bnk_exit()

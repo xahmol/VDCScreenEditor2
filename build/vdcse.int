@@ -74,7 +74,7 @@ L8: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 		==> 10
 L10: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0000 (1078)		CALLN		<-	V(31 'printcentered')+0 	{}
-0001 (1079)		STOREZ1		<-	V(3 '')+0 , CC:127	{}
+0001 (1079)		STOREZ1		<-	V(3 '')+0 , CC:1	{}
 0002 (1079)		LOADG1	R2(C)[-128..255]	<-	V(7 'bootdevice')+0 	{}
 0003 (1079)		STOREZ1		<-	V(2 '')+0 , R2(C)[-128..255]	{}
 0004 (1079)		CONST	R0(P)	<-	CA0(-1:22528 '')	{S}
@@ -84,7 +84,7 @@ L10: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0008 (1079)		CALLN	R3(B)	<-	V(35 'bnk_load')+0 	{}
 0009 (1079)		BRANCH		<-	R3(BF)	{}
 		==> 11
-		==> 13
+		==> 12
 L11: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0000 (1081)		STOREZ1		<-	V(4 '')+0 , CC:127	{}
 0001 (1081)		STOREZ2		<-	V(5 '')+0 , R0(PF)	{}
@@ -95,81 +95,81 @@ L11: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0006 (1079)		JUMP		<-		{}
 		==> 13
 L13: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1088)		CONST	R0(P)	<-	CG0(232:0 '')	{S}
-0001 (1088)		STOREZ2		<-	V(9 '')+0 , R0(PF)	{}
-0002 (1088)		CALLN		<-	V(31 'printcentered')+0 	{}
-0003 (1089)		STOREZ1		<-	V(2 '')+0 , R2(C)[-128..255]	{}
-0004 (1089)		STOREZ1		<-	V(3 '')+0 , CC:14	{}
-0005 (1089)		CONST	R0(P)	<-	CA0(-1:3072 '')	{S}
-0006 (1089)		STOREZ2		<-	V(4 '')+0 , R0(PF)	{}
-0007 (1089)		CONST	R0(P)	<-	CG0(233:0 '')	{S}
-0008 (1089)		STOREZ2		<-	V(6 '')+0 , R0(PF)	{}
-0009 (1089)		CALLN	R3(B)	<-	V(35 'bnk_load')+0 	{}
-000a (1089)		BRANCH		<-	R3(BF)	{}
+0000 (1093)		CONST	R0(P)	<-	CG0(286:0 '')	{S}
+0001 (1093)		STOREZ2		<-	V(9 '')+0 , R0(PF)	{}
+0002 (1093)		CALLN		<-	V(31 'printcentered')+0 	{}
+0003 (1094)		STOREZ1		<-	V(2 '')+0 , R2(C)[-128..255]	{}
+0004 (1094)		STOREZ1		<-	V(3 '')+0 , CC:14	{}
+0005 (1094)		CONST	R0(P)	<-	CA0(-1:3072 '')	{S}
+0006 (1094)		STOREZ2		<-	V(4 '')+0 , R0(PF)	{}
+0007 (1094)		CONST	R0(P)	<-	CG0(287:0 '')	{S}
+0008 (1094)		STOREZ2		<-	V(6 '')+0 , R0(PF)	{}
+0009 (1094)		CALLN	R3(B)	<-	V(35 'bnk_load')+0 	{}
+000a (1094)		BRANCH		<-	R3(BF)	{}
 		==> 16
 		==> 14
 L16: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1096)		CONST	R0(P)	<-	CG0(288:0 '')	{S}
-0001 (1096)		STOREZ2		<-	V(9 '')+0 , R0(PF)	{}
-0002 (1096)		CALLN		<-	V(31 'printcentered')+0 	{}
-0003 (1097)		STOREZ1		<-	V(2 '')+0 , R2(C)[-128..255]	{}
-0004 (1097)		STOREZ1		<-	V(3 '')+0 , CC:127	{}
-0005 (1097)		CONST	R0(P)	<-	CA0(-1:16384 '')	{S}
-0006 (1097)		STOREZ2		<-	V(4 '')+0 , R0(PF)	{}
-0007 (1097)		CONST	R0(P)	<-	CG0(289:0 '')	{S}
-0008 (1097)		STOREZ2		<-	V(6 '')+0 , R0(PF)	{}
-0009 (1097)		CALLN	R3(B)	<-	V(35 'bnk_load')+0 	{}
-000a (1097)		BRANCH		<-	R3(BF)	{}
+0000 (1101)		CONST	R0(P)	<-	CG0(288:0 '')	{S}
+0001 (1101)		STOREZ2		<-	V(9 '')+0 , R0(PF)	{}
+0002 (1101)		CALLN		<-	V(31 'printcentered')+0 	{}
+0003 (1102)		STOREZ1		<-	V(2 '')+0 , R2(C)[-128..255]	{}
+0004 (1102)		STOREZ1		<-	V(3 '')+0 , CC:1	{}
+0005 (1102)		CONST	R0(P)	<-	CA0(-1:16384 '')	{S}
+0006 (1102)		STOREZ2		<-	V(4 '')+0 , R0(PF)	{}
+0007 (1102)		CONST	R0(P)	<-	CG0(289:0 '')	{S}
+0008 (1102)		STOREZ2		<-	V(6 '')+0 , R0(PF)	{}
+0009 (1102)		CALLN	R3(B)	<-	V(35 'bnk_load')+0 	{}
+000a (1102)		BRANCH		<-	R3(BF)	{}
 		==> 19
 		==> 17
 L19: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1102)		STOREZ1		<-	V(2 '')+0 , R2(CF)[-128..255]	{}
-0001 (1102)		STOREZ1		<-	V(3 '')+0 , CC:127	{}
-0002 (1102)		CONST	R0(P)	<-	CA0(-1:18432 '')	{S}
-0003 (1102)		STOREZ2		<-	V(4 '')+0 , R0(PF)	{}
-0004 (1102)		CONST	R0(P)	<-	CG0(290:0 '')	{S}
-0005 (1102)		STOREZ2		<-	V(6 '')+0 , R0(PF)	{}
-0006 (1102)		CALLN	R2(B)	<-	V(35 'bnk_load')+0 	{}
-0007 (1102)		BRANCH		<-	R2(BF)	{}
+0000 (1107)		STOREZ1		<-	V(2 '')+0 , R2(CF)[-128..255]	{}
+0001 (1107)		STOREZ1		<-	V(3 '')+0 , CC:1	{}
+0002 (1107)		CONST	R0(P)	<-	CA0(-1:18432 '')	{S}
+0003 (1107)		STOREZ2		<-	V(4 '')+0 , R0(PF)	{}
+0004 (1107)		CONST	R0(P)	<-	CG0(290:0 '')	{S}
+0005 (1107)		STOREZ2		<-	V(6 '')+0 , R0(PF)	{}
+0006 (1107)		CALLN	R2(B)	<-	V(35 'bnk_load')+0 	{}
+0007 (1107)		BRANCH		<-	R2(BF)	{}
 		==> 22
 		==> 20
 L22: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1107)		CALLN		<-	V(44 'bnk_memcpy')+0 	{}
-0001 (1110)		STOREG1		<-	V(-1 'sstack')+5 , CC:32	{}
-0002 (1110)		STOREG1		<-	V(-1 'sstack')+6 , CC:15	{}
-0003 (1110)		CALLN		<-	V(45 'screenmapfill')+0 	{}
-0004 (1113)		CONST	R0(P)	<-	CG0(302:0 '')	{S}
-0005 (1113)		STOREZ2		<-	V(9 '')+0 , R0(PF)	{}
-0006 (1113)		CALLN		<-	V(31 'printcentered')+0 	{}
-0007 (1114)		CALLN		<-	V(21 'getch')+0 	{}
-0008 (1117)		CALLN		<-	V(17 'vdc_cls')+0 	{}
-0009 (1120)		CALLN		<-	V(49 'plotcursor')+0 	{}
-000a (1122)		STOREG1		<-	V(333 'showbar')+0 , CC:1	{}
-000b (1121)		CONST	R0(P)	<-	CG11(331:0 'programmode')	{S}
-000c (1121)		CONST	R1(P)	<-	CG0(332:0 '')	{S}
-000d (1121)		STRCPYII		<-	R0(PF)+0 {V(331 'programmode' A)} , R1(PF)+0 {V(332 '')} 	{}
-000e (1123)		CALLN		<-	V(51 'initstatusbar')+0 	{}
-000f (1129)		JUMP		<-		{}
+0000 (1112)		CALLN		<-	V(44 'bnk_memcpy')+0 	{}
+0001 (1115)		STOREG1		<-	V(-1 'sstack')+5 , CC:32	{}
+0002 (1115)		STOREG1		<-	V(-1 'sstack')+6 , CC:15	{}
+0003 (1115)		CALLN		<-	V(45 'screenmapfill')+0 	{}
+0004 (1118)		CONST	R0(P)	<-	CG0(302:0 '')	{S}
+0005 (1118)		STOREZ2		<-	V(9 '')+0 , R0(PF)	{}
+0006 (1118)		CALLN		<-	V(31 'printcentered')+0 	{}
+0007 (1119)		CALLN		<-	V(21 'getch')+0 	{}
+0008 (1122)		CALLN		<-	V(17 'vdc_cls')+0 	{}
+0009 (1125)		CALLN		<-	V(49 'plotcursor')+0 	{}
+000a (1127)		STOREG1		<-	V(333 'showbar')+0 , CC:1	{}
+000b (1126)		CONST	R0(P)	<-	CG11(331:0 'programmode')	{S}
+000c (1126)		CONST	R1(P)	<-	CG0(332:0 '')	{S}
+000d (1126)		STRCPYII		<-	R0(PF)+0 {V(331 'programmode' A)} , R1(PF)+0 {V(332 '')} 	{}
+000e (1128)		CALLN		<-	V(51 'initstatusbar')+0 	{}
+000f (1134)		JUMP		<-		{}
 		==> 25
 L25: <= D-1: (2) Head P509 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1129)		CALLN		<-	V(52 'printstatusbar')+0 	{}
-0001 (1131)		JUMP		<-		{}
+0000 (1134)		CALLN		<-	V(52 'printstatusbar')+0 	{}
+0001 (1136)		JUMP		<-		{}
 		==> 27
 L27: <= D-1: (2) Head P508 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1131)		CALLN	R0(I)	<-	V(42 'vdcwin_getch')+0 	{}
-0001 (1133)		RELOP19	R2(B)	<-	R0(C), CC:76	{}
-0002 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1136)		CALLN	R0(I)	<-	V(42 'vdcwin_getch')+0 	{}
+0001 (1138)		RELOP19	R2(B)	<-	R0(C), CC:76	{}
+0002 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 235
 		==> 124
 L235: <= D-1: (24)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1408)		LOADG1	R2(C)[-128..255]	<-	V(44 'appexit')+0 	{}
-0001 (1408)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
-0002 (1408)		BRANCH		<-	R2(BF)	{}
+0000 (1413)		LOADG1	R2(C)[-128..255]	<-	V(44 'appexit')+0 	{}
+0001 (1413)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
+0002 (1413)		BRANCH		<-	R2(BF)	{}
 		==> 23
 		==> 24
 L23: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1127)		LOADG1	R2(C)[-128..255]	<-	V(333 'showbar')+0 	{}
-0001 (1127)		BRANCH		<-	R2(CF)[-128..255]	{}
+0000 (1132)		LOADG1	R2(C)[-128..255]	<-	V(333 'showbar')+0 	{}
+0001 (1132)		BRANCH		<-	R2(CF)[-128..255]	{}
 		==> 25
 		==> 27
 L24: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_core.c
@@ -179,264 +179,264 @@ L24: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_core.c
 0003 ( 273)		CALLN		<-	V(25 'vdc_set_mode')+0 	{}
 0004 ( 274)		CALLN		<-	V(17 'vdc_cls')+0 	{}
 0005 ( 148)		STOREA1		<-	V(-1 '')+54534 , CC:4	{V}
-0006 (1412)		RETV		<-	CI:0	{}
+0006 (1417)		RETV		<-	CI:0	{}
 L124: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		CONV33	R1(I)[0..255]	<-	R0(C)	{}
-0001 (1133)		RELOP28	R2(B)	<-	R0(C), CC:76	{}
-0002 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		CONV33	R1(I)[0..255]	<-	R0(C)	{}
+0001 (1138)		RELOP28	R2(B)	<-	R0(C), CC:76	{}
+0002 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 126
 		==> 125
 L126: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[0..75], CC:45	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[0..75], CC:45	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 31
 		==> 127
 L31: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1151)		LOADG1	R2(C)[-127..255]	<-	V(49 'plotscreencode')+0 	{}
-0001 (1151)		BINOP1	R2(C)[-128..254]	<-	R2(CF)[-127..255], CI:-1	{}
-0002 (1408)		JUMP		<-		{}
+0000 (1156)		LOADG1	R2(C)[-127..255]	<-	V(49 'plotscreencode')+0 	{}
+0001 (1156)		BINOP1	R2(C)[-128..254]	<-	R2(CF)[-127..255], CI:-1	{}
+0002 (1413)		JUMP		<-		{}
 		==> 284
 L284: <= D-1: (3)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1151)		STOREG1		<-	V(49 'plotscreencode')+0 , R2(CF)[-128..255]	{}
-0001 (1408)		JUMP		<-		{}
+0000 (1156)		STOREG1		<-	V(49 'plotscreencode')+0 , R2(CF)[-128..255]	{}
+0001 (1413)		JUMP		<-		{}
 		==> 282
 L282: <= D-1: (11)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1152)		CALLN		<-	V(49 'plotcursor')+0 	{}
-0001 (1408)		JUMP		<-		{}
+0000 (1157)		CALLN		<-	V(49 'plotcursor')+0 	{}
+0001 (1413)		JUMP		<-		{}
 		==> 235
 L127: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C)[0..75], CC:45	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C)[0..75], CC:45	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 129
 		==> 128
 L129: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[0..44], CC:29	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[0..44], CC:29	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 29
 		==> 130
 L29: <= D-1: (4)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1140)		STOREG1		<-	V(-1 'sstack')+9 , R0(CF)[17..157]	{}
-0001 (1140)		CALLN		<-	V(53 'plotmove')+0 	{}
-0002 (1408)		JUMP		<-		{}
+0000 (1145)		STOREG1		<-	V(-1 'sstack')+9 , R0(CF)[17..157]	{}
+0001 (1145)		CALLN		<-	V(53 'plotmove')+0 	{}
+0002 (1413)		JUMP		<-		{}
 		==> 235
 L130: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C)[0..44], CC:29	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C)[0..44], CC:29	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 132
 		==> 131
 L132: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[0..28], CC:19	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[0..28], CC:19	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 106
 		==> 133
 L106: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1362)		STOREG2		<-	V(46 'screen_row')+0 , CI:0	{}
-0001 (1363)		STOREG2		<-	V(45 'screen_col')+0 , CI:0	{}
-0002 (1365)		STOREG2		<-	V(25 'canvas' A)+7 , CI:0	{}
-0003 (1364)		STOREG2		<-	V(25 'canvas' A)+9 , CI:0	{}
-0004 (1366)		CONST	R0(P)	<-	CG0(25:0 'canvas')	{S}
-0005 (1366)		STOREZ2		<-	V(9 '')+0 , R0(PF)	{}
-0006 (1366)		CALLN		<-	V(62 'vdcwin_cpy_viewport')+0 	{}
-0007 (1367)		LOADG1	R2(C)[-128..255]	<-	V(333 'showbar')+0 	{}
-0008 (1367)		BRANCH		<-	R2(CF)[-128..255]	{}
+0000 (1367)		STOREG2		<-	V(46 'screen_row')+0 , CI:0	{}
+0001 (1368)		STOREG2		<-	V(45 'screen_col')+0 , CI:0	{}
+0002 (1370)		STOREG2		<-	V(25 'canvas' A)+7 , CI:0	{}
+0003 (1369)		STOREG2		<-	V(25 'canvas' A)+9 , CI:0	{}
+0004 (1371)		CONST	R0(P)	<-	CG21(25:0 'canvas')	{S}
+0005 (1371)		STOREZ2		<-	V(9 '')+0 , R0(PF)	{}
+0006 (1371)		CALLN		<-	V(62 'vdcwin_cpy_viewport')+0 	{}
+0007 (1372)		LOADG1	R2(C)[-128..255]	<-	V(333 'showbar')+0 	{}
+0008 (1372)		BRANCH		<-	R2(CF)[-128..255]	{}
 		==> 107
 		==> 109
 L107: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1369)		CALLN		<-	V(51 'initstatusbar')+0 	{}
-0001 (1367)		JUMP		<-		{}
+0000 (1374)		CALLN		<-	V(51 'initstatusbar')+0 	{}
+0001 (1372)		JUMP		<-		{}
 		==> 109
 L109: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1371)		STOREZ1		<-	V(0 '')+0 , CC:0	{}
-0001 (1371)		STOREZ1		<-	V(1 '')+0 , CC:0	{}
-0002 (1371)		CALLN		<-	V(67 'gotoxy')+0 	{}
-0003 (1408)		JUMP		<-		{}
+0000 (1376)		STOREZ1		<-	V(0 '')+0 , CC:0	{}
+0001 (1376)		STOREZ1		<-	V(1 '')+0 , CC:0	{}
+0002 (1376)		CALLN		<-	V(67 'gotoxy')+0 	{}
+0003 (1413)		JUMP		<-		{}
 		==> 235
 L133: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C)[0..28], CC:19	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C)[0..28], CC:19	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 135
 		==> 134
 L135: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[0..18], CC:17	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[0..18], CC:17	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 29
 		==> 114
 L114: <= D-1: (12)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1394)		RELOP27	R2(B)	<-	R0(C), CC:47	{}
-0001 (1394)		BRANCH		<-	R2(BF)	{}
+0000 (1399)		RELOP27	R2(B)	<-	R0(C), CC:47	{}
+0001 (1399)		BRANCH		<-	R2(BF)	{}
 		==> 118
 		==> 117
 L118: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1394)		RELOP28	R2(B)	<-	R0(C)[48..], CC:58	{}
-0001 (1394)		BRANCH		<-	R2(BF)	{}
+0000 (1399)		RELOP28	R2(B)	<-	R0(C)[48..], CC:58	{}
+0001 (1399)		BRANCH		<-	R2(BF)	{}
 		==> 115
 		==> 117
 L115: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1396)		BINOP16	R4(I)[96..114]	<-	R1(I)[48..57], CI:1	{}
-0001 (1396)		LEAG	R5(P)	<-	V(593 'favourites' A)+-96 , R4(I)[96..114]	{}
-0002 (1396)		LOADI1	R2(C)[-128..255]	<-	R5(PF)+0 {V(593 'favourites' A)} 	{}
-0003 (1396)		STOREG1		<-	V(49 'plotscreencode')+0 , R2(CF)[-128..255]	{}
-0004 (1397)		LEAG	R4(P)[-128..255]	<-	V(593 'favourites' A)+-95 , R4(IF)[96..114]	{}
-0005 (1397)		LOADI1	R2(C)[-128..255]	<-	R4(PF)+0 {V(593 'favourites' A)} 	{}
-0006 (1397)		STOREG1		<-	V(54 'plotaltchar')+0 , R2(CF)[-128..255]	{}
-0007 (1398)		CALLN		<-	V(49 'plotcursor')+0 	{}
-0008 (1401)		JUMP		<-		{}
+0000 (1401)		BINOP16	R4(I)[96..114]	<-	R1(I)[48..57], CI:1	{}
+0001 (1401)		LEAG	R5(P)	<-	V(593 'favourites' A)+-96 , R4(I)[96..114]	{}
+0002 (1401)		LOADI1	R2(C)[-128..255]	<-	R5(PF)+0 {V(593 'favourites' A)} 	{}
+0003 (1401)		STOREG1		<-	V(49 'plotscreencode')+0 , R2(CF)[-128..255]	{}
+0004 (1402)		LEAG	R4(P)[-128..255]	<-	V(593 'favourites' A)+-95 , R4(IF)[96..114]	{}
+0005 (1402)		LOADI1	R2(C)[-128..255]	<-	R4(PF)+0 {V(593 'favourites' A)} 	{}
+0006 (1402)		STOREG1		<-	V(54 'plotaltchar')+0 , R2(CF)[-128..255]	{}
+0007 (1403)		CALLN		<-	V(49 'plotcursor')+0 	{}
+0008 (1406)		JUMP		<-		{}
 		==> 122
 L122: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1401)		RELOP28	R2(B)	<-	R0(CF)[33..], CC:43	{}
-0001 (1401)		BRANCH		<-	R2(BF)	{}
+0000 (1406)		RELOP28	R2(B)	<-	R0(CF)[33..], CC:43	{}
+0001 (1406)		BRANCH		<-	R2(BF)	{}
 		==> 119
 		==> 235
 L119: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1403)		BINOP16	R0(I)[66..84]	<-	R1(IF)[33..42], CI:1	{}
-0001 (1403)		LEAG	R1(P)	<-	V(593 'favourites' A)+-66 , R0(I)[66..84]	{}
-0002 (1403)		LOADG1	R2(C)[-128..255]	<-	V(49 'plotscreencode')+0 	{}
-0003 (1403)		STOREI1		<-	R1(PF)+0 {V(593 'favourites' A)} , R2(CF)[-128..255]	{}
-0004 (1404)		LEAG	R0(P)	<-	V(593 'favourites' A)+-65 , R0(IF)[66..84]	{}
-0005 (1404)		LOADG1	R2(C)[-128..255]	<-	V(54 'plotaltchar')+0 	{}
-0006 (1404)		STOREI1		<-	R0(PF)+0 {V(593 'favourites' A)} , R2(CF)[-128..255]	{}
-0007 (1408)		JUMP		<-		{}
+0000 (1408)		BINOP16	R0(I)[66..84]	<-	R1(IF)[33..42], CI:1	{}
+0001 (1408)		LEAG	R1(P)	<-	V(593 'favourites' A)+-66 , R0(I)[66..84]	{}
+0002 (1408)		LOADG1	R2(C)[-128..255]	<-	V(49 'plotscreencode')+0 	{}
+0003 (1408)		STOREI1		<-	R1(PF)+0 {V(593 'favourites' A)} , R2(CF)[-128..255]	{}
+0004 (1409)		LEAG	R0(P)	<-	V(593 'favourites' A)+-65 , R0(IF)[66..84]	{}
+0005 (1409)		LOADG1	R2(C)[-128..255]	<-	V(54 'plotaltchar')+0 	{}
+0006 (1409)		STOREI1		<-	R0(PF)+0 {V(593 'favourites' A)} , R2(CF)[-128..255]	{}
+0007 (1413)		JUMP		<-		{}
 		==> 235
 L117: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1401)		RELOP27	R2(B)	<-	R0(C)[0..], CC:32	{}
-0001 (1401)		BRANCH		<-	R2(BF)	{}
+0000 (1406)		RELOP27	R2(B)	<-	R0(C)[0..], CC:32	{}
+0001 (1406)		BRANCH		<-	R2(BF)	{}
 		==> 122
 		==> 235
 L134: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[19..28], CC:20	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[19..28], CC:20	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 102
 		==> 114
 L102: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1353)		LOADG1	R2(C)[-128..255]	<-	V(206 'undoenabled')+0 	{}
-0001 (1353)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:1	{}
-0002 (1353)		BRANCH		<-	R2(BF)	{}
+0000 (1358)		LOADG1	R2(C)[-128..255]	<-	V(206 'undoenabled')+0 	{}
+0001 (1358)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:1	{}
+0002 (1358)		BRANCH		<-	R2(BF)	{}
 		==> 103
 		==> 105
 L103: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1355)		STOREZ1		<-	V(11 '')+0 , CC:1	{}
-0001 (1355)		STOREG1		<-	V(-1 'sstack')+0 , CC:1	{}
-0002 (1355)		LOADG2	R0(I)[-32768..65535]	<-	V(46 'screen_row')+0 	{}
-0003 (1355)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+9 	{}
-0004 (1355)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
-0005 (1355)		STOREZ1		<-	V(9 '')+0 , R0(CF)[-32768..65535]	{}
-0006 (1355)		LOADG2	R0(I)[-32768..65535]	<-	V(45 'screen_col')+0 	{}
-0007 (1355)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+7 	{}
-0008 (1355)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
-0009 (1355)		STOREZ1		<-	V(10 '')+0 , R0(CF)[-32768..65535]	{}
-000a (1355)		CALLN		<-	V(65 'undo_new')+0 	{}
-000b (1353)		JUMP		<-		{}
+0000 (1360)		STOREZ1		<-	V(11 '')+0 , CC:1	{}
+0001 (1360)		STOREG1		<-	V(-1 'sstack')+0 , CC:1	{}
+0002 (1360)		LOADG2	R0(I)[-32768..65535]	<-	V(46 'screen_row')+0 	{}
+0003 (1360)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+9 	{}
+0004 (1360)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
+0005 (1360)		STOREZ1		<-	V(9 '')+0 , R0(CF)[-32768..65535]	{}
+0006 (1360)		LOADG2	R0(I)[-32768..65535]	<-	V(45 'screen_col')+0 	{}
+0007 (1360)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+7 	{}
+0008 (1360)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
+0009 (1360)		STOREZ1		<-	V(10 '')+0 , R0(CF)[-32768..65535]	{}
+000a (1360)		CALLN		<-	V(65 'undo_new')+0 	{}
+000b (1358)		JUMP		<-		{}
 		==> 105
 L105: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1357)		STOREZ1		<-	V(5 '')+0 , CC:32	{}
-0001 (1357)		STOREZ1		<-	V(6 '')+0 , CC:15	{}
-0002 (1357)		LOADG2	R0(I)[-32768..65535]	<-	V(46 'screen_row')+0 	{}
-0003 (1357)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+9 	{}
-0004 (1357)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
-0005 (1357)		STOREZ1		<-	V(3 '')+0 , R0(CF)[-32768..65535]	{}
-0006 (1357)		LOADG2	R0(I)[-32768..65535]	<-	V(45 'screen_col')+0 	{}
-0007 (1357)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+7 	{}
-0008 (1357)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
-0009 (1357)		STOREZ1		<-	V(4 '')+0 , R0(CF)[-32768..65535]	{}
-000a (1408)		JUMP		<-		{}
+0000 (1362)		STOREZ1		<-	V(5 '')+0 , CC:32	{}
+0001 (1362)		STOREZ1		<-	V(6 '')+0 , CC:15	{}
+0002 (1362)		LOADG2	R0(I)[-32768..65535]	<-	V(46 'screen_row')+0 	{}
+0003 (1362)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+9 	{}
+0004 (1362)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
+0005 (1362)		STOREZ1		<-	V(3 '')+0 , R0(CF)[-32768..65535]	{}
+0006 (1362)		LOADG2	R0(I)[-32768..65535]	<-	V(45 'screen_col')+0 	{}
+0007 (1362)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+7 	{}
+0008 (1362)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
+0009 (1362)		STOREZ1		<-	V(4 '')+0 , R0(CF)[-32768..65535]	{}
+000a (1413)		JUMP		<-		{}
 		==> 283
 L283: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1357)		CALLN		<-	V(66 'screenmapplot')+0 	{}
-0001 (1408)		JUMP		<-		{}
+0000 (1362)		CALLN		<-	V(66 'screenmapplot')+0 	{}
+0001 (1413)		JUMP		<-		{}
 		==> 235
 L131: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[29..44], CC:43	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[29..44], CC:43	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 30
 		==> 138
 L30: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1145)		LOADG1	R2(C)[-128..254]	<-	V(49 'plotscreencode')+0 	{}
-0001 (1145)		BINOP1	R2(C)[-127..255]	<-	R2(CF)[-128..254], CI:1	{}
-0002 (1408)		JUMP		<-		{}
+0000 (1150)		LOADG1	R2(C)[-128..254]	<-	V(49 'plotscreencode')+0 	{}
+0001 (1150)		BINOP1	R2(C)[-127..255]	<-	R2(CF)[-128..254], CI:1	{}
+0002 (1413)		JUMP		<-		{}
 		==> 284
 L138: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C)[29..44], CC:43	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C)[29..44], CC:43	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 140
 		==> 32
 L140: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[29..42], CC:32	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[29..42], CC:32	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 96
 		==> 114
 L96: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1344)		LOADG1	R2(C)[-128..255]	<-	V(206 'undoenabled')+0 	{}
-0001 (1344)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:1	{}
-0002 (1344)		BRANCH		<-	R2(BF)	{}
+0000 (1349)		LOADG1	R2(C)[-128..255]	<-	V(206 'undoenabled')+0 	{}
+0001 (1349)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:1	{}
+0002 (1349)		BRANCH		<-	R2(BF)	{}
 		==> 97
 		==> 99
 L97: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1346)		STOREZ1		<-	V(11 '')+0 , CC:1	{}
-0001 (1346)		STOREG1		<-	V(-1 'sstack')+0 , CC:1	{}
-0002 (1346)		LOADG2	R0(I)[-32768..65535]	<-	V(46 'screen_row')+0 	{}
-0003 (1346)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+9 	{}
-0004 (1346)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
-0005 (1346)		STOREZ1		<-	V(9 '')+0 , R0(CF)[-32768..65535]	{}
-0006 (1346)		LOADG2	R0(I)[-32768..65535]	<-	V(45 'screen_col')+0 	{}
-0007 (1346)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+7 	{}
-0008 (1346)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
-0009 (1346)		STOREZ1		<-	V(10 '')+0 , R0(CF)[-32768..65535]	{}
-000a (1346)		CALLN		<-	V(65 'undo_new')+0 	{}
-000b (1344)		JUMP		<-		{}
+0000 (1351)		STOREZ1		<-	V(11 '')+0 , CC:1	{}
+0001 (1351)		STOREG1		<-	V(-1 'sstack')+0 , CC:1	{}
+0002 (1351)		LOADG2	R0(I)[-32768..65535]	<-	V(46 'screen_row')+0 	{}
+0003 (1351)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+9 	{}
+0004 (1351)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
+0005 (1351)		STOREZ1		<-	V(9 '')+0 , R0(CF)[-32768..65535]	{}
+0006 (1351)		LOADG2	R0(I)[-32768..65535]	<-	V(45 'screen_col')+0 	{}
+0007 (1351)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+7 	{}
+0008 (1351)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
+0009 (1351)		STOREZ1		<-	V(10 '')+0 , R0(CF)[-32768..65535]	{}
+000a (1351)		CALLN		<-	V(65 'undo_new')+0 	{}
+000b (1349)		JUMP		<-		{}
 		==> 99
 L99: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1348)		LOADG2	R0(I)[-32768..65535]	<-	V(46 'screen_row')+0 	{}
-0001 (1348)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+9 	{}
-0002 (1348)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
-0003 (1348)		STOREZ1		<-	V(3 '')+0 , R0(CF)[-32768..65535]	{}
-0004 (1348)		LOADG2	R0(I)[-32768..65535]	<-	V(45 'screen_col')+0 	{}
-0005 (1348)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+7 	{}
-0006 (1348)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
-0007 (1348)		STOREZ1		<-	V(4 '')+0 , R0(CF)[-32768..65535]	{}
-0008 (1348)		LOADG1	R2(C)[-128..255]	<-	V(49 'plotscreencode')+0 	{}
-0009 (1348)		STOREZ1		<-	V(5 '')+0 , R2(CF)[-128..255]	{}
-000a (1348)		LOADG1	R2(C)[-128..255]	<-	V(53 'plotblink')+0 	{}
+0000 (1353)		LOADG2	R0(I)[-32768..65535]	<-	V(46 'screen_row')+0 	{}
+0001 (1353)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+9 	{}
+0002 (1353)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
+0003 (1353)		STOREZ1		<-	V(3 '')+0 , R0(CF)[-32768..65535]	{}
+0004 (1353)		LOADG2	R0(I)[-32768..65535]	<-	V(45 'screen_col')+0 	{}
+0005 (1353)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+7 	{}
+0006 (1353)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
+0007 (1353)		STOREZ1		<-	V(4 '')+0 , R0(CF)[-32768..65535]	{}
+0008 (1353)		LOADG1	R2(C)[-128..255]	<-	V(49 'plotscreencode')+0 	{}
+0009 (1353)		STOREZ1		<-	V(5 '')+0 , R2(CF)[-128..255]	{}
+000a (1353)		LOADG1	R2(C)[-128..255]	<-	V(53 'plotblink')+0 	{}
 000b ( 219)		CONV33	R0(I)[0..255]	<-	R2(CF)[-128..255]	{}
 000c ( 219)		BINOP3	R0(I)[0..4080]	<-	R0(IF)[0..255], CI:16	{}
-000d (1348)		LOADG1	R2(C)[-128..255]	<-	V(50 'plotcolor')+0 	{}
+000d (1353)		LOADG1	R2(C)[-128..255]	<-	V(50 'plotcolor')+0 	{}
 000e ( 219)		CONV33	R1(I)[0..255]	<-	R2(CF)[-128..255]	{}
 000f ( 219)		BINOP1	R0(I)[0..4335]	<-	R1(IF)[0..255], R0(IF)[0..4080]	{}
-0010 (1348)		LOADG1	R2(C)[-128..255]	<-	V(52 'plotunderline')+0 	{}
+0010 (1353)		LOADG1	R2(C)[-128..255]	<-	V(52 'plotunderline')+0 	{}
 0011 ( 219)		CONV33	R1(I)[0..255]	<-	R2(CF)[-128..255]	{}
 0012 ( 219)		BINOP3	R1(I)[0..8160]	<-	R1(IF)[0..255], CI:32	{}
 0013 ( 219)		BINOP1	R0(I)[0..12495]	<-	R1(IF)[0..8160], R0(IF)[0..4335]	{}
-0014 (1348)		LOADG1	R2(C)[-128..255]	<-	V(51 'plotreverse')+0 	{}
+0014 (1353)		LOADG1	R2(C)[-128..255]	<-	V(51 'plotreverse')+0 	{}
 0015 ( 219)		CONV33	R1(I)[0..255]	<-	R2(CF)[-128..255]	{}
 0016 ( 219)		BINOP3	R1(I)[0..16320]	<-	R1(IF)[0..255], CI:64	{}
 0017 ( 219)		BINOP1	R0(I)[0..28815]	<-	R1(IF)[0..16320], R0(IF)[0..12495]	{}
-0018 (1348)		LOADG1	R2(C)[-128..255]	<-	V(54 'plotaltchar')+0 	{}
+0018 (1353)		LOADG1	R2(C)[-128..255]	<-	V(54 'plotaltchar')+0 	{}
 0019 ( 219)		CONV33	R1(I)[0..255]	<-	R2(CF)[-128..255]	{}
 001a ( 219)		BINOP3	R1(I)[0..32640]	<-	R1(IF)[0..255], CI:128	{}
 001b ( 219)		BINOP1	R0(I)[0..61455]	<-	R1(IF)[0..32640], R0(IF)[0..28815]	{}
-001c (1348)		STOREZ1		<-	V(6 '')+0 , R0(CF)[0..61455]	{}
-001d (1408)		JUMP		<-		{}
+001c (1353)		STOREZ1		<-	V(6 '')+0 , R0(CF)[0..61455]	{}
+001d (1413)		JUMP		<-		{}
 		==> 283
 L32: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1165)		LOADG1	R2(C)[-128..255]	<-	V(48 'screenbackground')+0 	{}
-0001 (1157)		LOADG1	R3(C)[-128..255]	<-	V(50 'plotcolor')+0 	{}
-0002 (1157)		RELOP19	R6(B)	<-	R3(C)[-128..255], CC:0	{}
-0003 (1157)		BRANCH		<-	R6(BF)	{}
+0000 (1170)		LOADG1	R2(C)[-128..255]	<-	V(48 'screenbackground')+0 	{}
+0001 (1162)		LOADG1	R3(C)[-128..255]	<-	V(50 'plotcolor')+0 	{}
+0002 (1162)		RELOP19	R6(B)	<-	R3(C)[-128..255], CC:0	{}
+0003 (1162)		BRANCH		<-	R6(BF)	{}
 		==> 33
 		==> 34
 L33: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1159)		CONST	R0(C)[15..15]	<-	CI:15	{}
-0001 (1165)		RELOP19	R2(B)	<-	CC:15, R2(CF)[-128..255]	{}
-0002 (1165)		BRANCH		<-	R2(BF)	{}
+0000 (1164)		CONST	R0(C)[15..15]	<-	CI:15	{}
+0001 (1170)		RELOP19	R2(B)	<-	CC:15, R2(CF)[-128..255]	{}
+0002 (1170)		BRANCH		<-	R2(BF)	{}
 		==> 36
 		==> 38
 L36: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1167)		RELOP19	R2(B)	<-	R0(C)[-1..254], CC:0	{}
-0001 (1167)		BRANCH		<-	R2(BF)	{}
+0000 (1172)		RELOP19	R2(B)	<-	R0(C)[-1..254], CC:0	{}
+0001 (1172)		BRANCH		<-	R2(BF)	{}
 		==> 39
 		==> 40
 L39: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1169)		CONST	R0(C)[15..15]	<-	CI:15	{}
-0001 (1167)		JUMP		<-		{}
+0000 (1174)		CONST	R0(C)[15..15]	<-	CI:15	{}
+0001 (1172)		JUMP		<-		{}
 		==> 38
 L38: <= D-1: (8)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0000 ( 820)		STOREG1		<-	V(50 'plotcolor')+0 , R0(C)[-2..256]	{}
@@ -446,403 +446,409 @@ L38: <= D-1: (8)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0004 ( 449)		CONV33	R0(I)[0..255]	<-	R0(CF)[-2..256]	{}
 0005 ( 449)		BINOP1	R0(I)[0..510]	<-	R0(IF)[0..255], R1(IF)[0..255]	{}
 0006 ( 449)		STOREG1		<-	V(26 'vdc_state')+7 , R0(CF)[0..510]	{}
-0007 (1408)		JUMP		<-		{}
+0007 (1413)		JUMP		<-		{}
 		==> 282
 L40: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1173)		BINOP1	R0(C)[-2..253]	<-	R0(CF)[-1..254], CI:-1	{}
-0001 (1167)		JUMP		<-		{}
+0000 (1178)		BINOP1	R0(C)[-2..253]	<-	R0(CF)[-1..254], CI:-1	{}
+0001 (1172)		JUMP		<-		{}
 		==> 38
 L34: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1157)		CONV33	R0(I)[0..255]	<-	R3(CF)[-128..255]	{}
-0001 (1163)		BINOP2	R0(I)[-1..254]	<-	R0(IF)[0..255], CI:1	{}
-0002 (1165)		RELOP19	R2(B)	<-	R0(C)[-1..254], R2(CF)[-128..255]	{}
-0003 (1165)		BRANCH		<-	R2(BF)	{}
+0000 (1162)		CONV33	R0(I)[0..255]	<-	R3(CF)[-128..255]	{}
+0001 (1168)		BINOP2	R0(I)[-1..254]	<-	R0(IF)[0..255], CI:1	{}
+0002 (1170)		RELOP19	R2(B)	<-	R0(C)[-1..254], R2(CF)[-128..255]	{}
+0003 (1170)		BRANCH		<-	R2(BF)	{}
 		==> 36
 		==> 38
 L128: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[45..75], CC:67	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[45..75], CC:67	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 235
 		==> 142
 L142: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C)[45..75], CC:67	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C)[45..75], CC:67	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 144
 		==> 143
 L144: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[45..66], CC:65	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[45..66], CC:65	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 59
 		==> 145
 L59: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1223)		LOADG1	R2(C)[-128..255]	<-	V(54 'plotaltchar')+0 	{}
-0001 (1223)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
-0002 (1223)		BRANCH		<-	R2(BF)	{}
+0000 (1228)		LOADG1	R2(C)[-128..255]	<-	V(54 'plotaltchar')+0 	{}
+0001 (1228)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
+0002 (1228)		BRANCH		<-	R2(BF)	{}
 		==> 194
 		==> 195
 L194: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1223)		STOREG1		<-	V(54 'plotaltchar')+0 , CC:1	{}
-0001 (1223)		JUMP		<-		{}
+0000 (1228)		STOREG1		<-	V(54 'plotaltchar')+0 , CC:1	{}
+0001 (1228)		JUMP		<-		{}
 		==> 282
 L195: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1223)		STOREG1		<-	V(54 'plotaltchar')+0 , CC:0	{}
-0001 (1223)		JUMP		<-		{}
+0000 (1228)		STOREG1		<-	V(54 'plotaltchar')+0 , CC:0	{}
+0001 (1228)		JUMP		<-		{}
 		==> 282
 L145: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C)[45..66], CC:65	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C)[45..66], CC:65	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 147
 		==> 57
 L147: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[45..64], CC:46	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[45..64], CC:46	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 44
 		==> 114
 L44: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1189)		LOADG1	R2(C)[-128..255]	<-	V(48 'screenbackground')+0 	{}
-0001 (1181)		LOADG1	R3(C)[-128..255]	<-	V(50 'plotcolor')+0 	{}
-0002 (1181)		RELOP19	R6(B)	<-	R3(C)[-128..255], CC:15	{}
-0003 (1181)		BRANCH		<-	R6(BF)	{}
+0000 (1194)		LOADG1	R2(C)[-128..255]	<-	V(48 'screenbackground')+0 	{}
+0001 (1186)		LOADG1	R3(C)[-128..255]	<-	V(50 'plotcolor')+0 	{}
+0002 (1186)		RELOP19	R6(B)	<-	R3(C)[-128..255], CC:15	{}
+0003 (1186)		BRANCH		<-	R6(BF)	{}
 		==> 45
 		==> 46
 L45: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1183)		CONST	R0(C)[0..0]	<-	CI:0	{}
-0001 (1189)		RELOP19	R2(B)	<-	CC:0, R2(CF)[-128..255]	{}
-0002 (1189)		BRANCH		<-	R2(BF)	{}
+0000 (1188)		CONST	R0(C)[0..0]	<-	CI:0	{}
+0001 (1194)		RELOP19	R2(B)	<-	CC:0, R2(CF)[-128..255]	{}
+0002 (1194)		BRANCH		<-	R2(BF)	{}
 		==> 48
 		==> 38
 L48: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1191)		RELOP19	R2(B)	<-	R0(C)[0..256], CC:15	{}
-0001 (1191)		BRANCH		<-	R2(BF)	{}
+0000 (1196)		RELOP19	R2(B)	<-	R0(C)[0..256], CC:15	{}
+0001 (1196)		BRANCH		<-	R2(BF)	{}
 		==> 51
 		==> 52
 L51: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1193)		CONST	R0(C)[0..0]	<-	CI:0	{}
-0001 (1191)		JUMP		<-		{}
+0000 (1198)		CONST	R0(C)[0..0]	<-	CI:0	{}
+0001 (1196)		JUMP		<-		{}
 		==> 38
 L52: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1197)		BINOP1	R0(C)[1..255]	<-	R0(CF)[0..254], CI:1	{}
-0001 (1191)		JUMP		<-		{}
+0000 (1202)		BINOP1	R0(C)[1..255]	<-	R0(CF)[0..254], CI:1	{}
+0001 (1196)		JUMP		<-		{}
 		==> 38
 L46: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1181)		CONV33	R0(I)[0..255]	<-	R3(CF)[-128..255]	{}
-0001 (1187)		BINOP1	R0(I)[1..256]	<-	R0(IF)[0..255], CI:1	{}
-0002 (1189)		RELOP19	R2(B)	<-	R0(C)[1..256], R2(CF)[-128..255]	{}
-0003 (1189)		BRANCH		<-	R2(BF)	{}
+0000 (1186)		CONV33	R0(I)[0..255]	<-	R3(CF)[-128..255]	{}
+0001 (1192)		BINOP1	R0(I)[1..256]	<-	R0(IF)[0..255], CI:1	{}
+0002 (1194)		RELOP19	R2(B)	<-	R0(C)[1..256], R2(CF)[-128..255]	{}
+0003 (1194)		BRANCH		<-	R2(BF)	{}
 		==> 48
 		==> 38
 L57: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1211)		LOADG1	R2(C)[-128..255]	<-	V(53 'plotblink')+0 	{}
-0001 (1211)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
-0002 (1211)		BRANCH		<-	R2(BF)	{}
+0000 (1216)		LOADG1	R2(C)[-128..255]	<-	V(53 'plotblink')+0 	{}
+0001 (1216)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
+0002 (1216)		BRANCH		<-	R2(BF)	{}
 		==> 197
 		==> 198
 L197: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1211)		STOREG1		<-	V(53 'plotblink')+0 , CC:1	{}
-0001 (1211)		JUMP		<-		{}
+0000 (1216)		STOREG1		<-	V(53 'plotblink')+0 , CC:1	{}
+0001 (1216)		JUMP		<-		{}
 		==> 282
 L198: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1211)		STOREG1		<-	V(53 'plotblink')+0 , CC:0	{}
-0001 (1211)		JUMP		<-		{}
+0000 (1216)		STOREG1		<-	V(53 'plotblink')+0 , CC:0	{}
+0001 (1216)		JUMP		<-		{}
 		==> 282
 L143: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[67..75], CC:71	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[67..75], CC:71	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 62
 		==> 149
 L62: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1241)		LOADG2	R0(I)[-32768..65535]	<-	V(45 'screen_col')+0 	{}
-0001 (1241)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+7 	{}
-0002 (1241)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
-0003 (1241)		LOADG2	R1(I)[-32768..65535]	<-	V(46 'screen_row')+0 	{}
-0004 (1241)		LOADG2	R4(I)[-32768..65535]	<-	V(25 'canvas' A)+9 	{}
-0005 (1241)		BINOP1	R1(I)[-32768..65535]	<-	R4(IF)[-32768..65535], R1(IF)[-32768..65535]	{}
-0006 (1241)		LOADG2	R4(I)[-32768..65535]	<-	V(25 'canvas' A)+3 	{}
+0000 (1246)		LOADG2	R0(I)[-32768..65535]	<-	V(45 'screen_col')+0 	{}
+0001 (1246)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+7 	{}
+0002 (1246)		BINOP1	R0(I)[-32768..65535]	<-	R1(IF)[-32768..65535], R0(IF)[-32768..65535]	{}
+0003 (1246)		LOADG2	R1(I)[-32768..65535]	<-	V(46 'screen_row')+0 	{}
+0004 (1246)		LOADG2	R4(I)[-32768..65535]	<-	V(25 'canvas' A)+9 	{}
+0005 (1246)		BINOP1	R1(I)[-32768..65535]	<-	R4(IF)[-32768..65535], R1(IF)[-32768..65535]	{}
+0006 (1246)		LOADG2	R4(I)[-32768..65535]	<-	V(25 'canvas' A)+3 	{}
 0007 ( 405)		BINOP3	R1(I)	<-	R4(I)[-32768..65535], R1(IF)[-32768..65535]	{}
 0008 ( 405)		BINOP1	R1(I)	<-	R1(IF), CI:22528	{}
 0009 ( 405)		BINOP1	R0(I)	<-	R1(IF), R0(IF)[-32768..65535]	{}
 000a ( 405)		CAST	R1(P)	<-	R0(I)	{}
-000b (1241)		STOREZ2		<-	V(0 '')+0 , R1(PF)	{}
-000c (1241)		CALLN	R2(C)	<-	V(54 'bnk_readb')+0 	{}
-000d (1241)		STOREG1		<-	V(49 'plotscreencode')+0 , R2(CF)	{}
-000e (1242)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+5 	{}
+000b (1246)		STOREZ2		<-	V(0 '')+0 , R1(PF)	{}
+000c (1246)		CALLN	R2(C)	<-	V(54 'bnk_readb')+0 	{}
+000d (1246)		STOREG1		<-	V(49 'plotscreencode')+0 , R2(CF)	{}
+000e (1247)		LOADG2	R1(I)[-32768..65535]	<-	V(25 'canvas' A)+5 	{}
 000f ( 412)		BINOP3	R1(I)	<-	R1(IF)[-32768..65535], R4(IF)[-32768..65535]	{}
 0010 ( 412)		BINOP1	R0(I)	<-	R1(IF), R0(IF)	{}
 0011 ( 412)		BINOP1	R0(I)	<-	R0(IF), CI:48	{}
 0012 ( 412)		CAST	R0(P)	<-	R0(IF)	{}
-0013 (1242)		STOREZ2		<-	V(0 '')+0 , R0(PF)	{}
-0014 (1242)		CALLN	R2(C)	<-	V(54 'bnk_readb')+0 	{}
-0015 (1243)		RELOP27	R3(B)	<-	R2(C), CC:128	{}
-0016 (1243)		BRANCH		<-	R3(BF)	{}
+0013 (1247)		STOREZ2		<-	V(0 '')+0 , R0(PF)	{}
+0014 (1247)		CALLN	R2(C)	<-	V(54 'bnk_readb')+0 	{}
+0015 (1248)		RELOP27	R3(B)	<-	R2(C), CC:128	{}
+0016 (1248)		BRANCH		<-	R3(BF)	{}
 		==> 67
 		==> 68
 L67: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1245)		STOREG1		<-	V(54 'plotaltchar')+0 , CC:1	{}
-0001 (1246)		BINOP2	R2(C)[1..]	<-	R2(CF)[129..], CC:128	{}
-0002 (1252)		JUMP		<-		{}
+0000 (1250)		STOREG1		<-	V(54 'plotaltchar')+0 , CC:1	{}
+0001 (1251)		BINOP2	R2(C)[1..]	<-	R2(CF)[129..], CC:128	{}
+0002 (1257)		JUMP		<-		{}
 		==> 261
 L261: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1252)		RELOP27	R3(B)	<-	R2(C)[0..], CC:64	{}
-0001 (1252)		BRANCH		<-	R3(BF)	{}
+0000 (1257)		RELOP27	R3(B)	<-	R2(C)[0..], CC:64	{}
+0001 (1257)		BRANCH		<-	R3(BF)	{}
 		==> 70
 		==> 71
 L70: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1254)		STOREG1		<-	V(51 'plotreverse')+0 , CC:1	{}
-0001 (1255)		BINOP2	R2(C)[1..]	<-	R2(CF)[65..], CC:64	{}
-0002 (1261)		JUMP		<-		{}
+0000 (1259)		STOREG1		<-	V(51 'plotreverse')+0 , CC:1	{}
+0001 (1260)		BINOP2	R2(C)[1..]	<-	R2(CF)[65..], CC:64	{}
+0002 (1266)		JUMP		<-		{}
 		==> 262
 L262: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1261)		RELOP27	R3(B)	<-	R2(C)[0..], CC:32	{}
-0001 (1261)		BRANCH		<-	R3(BF)	{}
+0000 (1266)		RELOP27	R3(B)	<-	R2(C)[0..], CC:32	{}
+0001 (1266)		BRANCH		<-	R3(BF)	{}
 		==> 73
 		==> 74
 L73: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1263)		STOREG1		<-	V(52 'plotunderline')+0 , CC:1	{}
-0001 (1264)		BINOP2	R2(C)[1..]	<-	R2(CF)[33..], CC:32	{}
-0002 (1270)		JUMP		<-		{}
+0000 (1268)		STOREG1		<-	V(52 'plotunderline')+0 , CC:1	{}
+0001 (1269)		BINOP2	R2(C)[1..]	<-	R2(CF)[33..], CC:32	{}
+0002 (1275)		JUMP		<-		{}
 		==> 263
 L263: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1270)		RELOP27	R3(B)	<-	R2(C)[0..], CC:16	{}
-0001 (1270)		BRANCH		<-	R3(BF)	{}
+0000 (1275)		RELOP27	R3(B)	<-	R2(C)[0..], CC:16	{}
+0001 (1275)		BRANCH		<-	R3(BF)	{}
 		==> 76
 		==> 77
 L76: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1272)		STOREG1		<-	V(53 'plotblink')+0 , CC:1	{}
-0001 (1273)		BINOP2	R2(C)[1..]	<-	R2(CF)[17..], CC:16	{}
-0002 (1270)		JUMP		<-		{}
+0000 (1277)		STOREG1		<-	V(53 'plotblink')+0 , CC:1	{}
+0001 (1278)		BINOP2	R2(C)[1..]	<-	R2(CF)[17..], CC:16	{}
+0002 (1275)		JUMP		<-		{}
 		==> 78
 L78: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1279)		STOREG1		<-	V(50 'plotcolor')+0 , R2(C)[0..]	{}
-0001 (1280)		STOREG1		<-	V(26 'vdc_state')+7 , R2(CF)[0..]	{}
-0002 (1408)		JUMP		<-		{}
+0000 (1284)		STOREG1		<-	V(50 'plotcolor')+0 , R2(C)[0..]	{}
+0001 (1285)		STOREG1		<-	V(26 'vdc_state')+7 , R2(CF)[0..]	{}
+0002 (1413)		JUMP		<-		{}
 		==> 282
 L77: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1277)		STOREG1		<-	V(53 'plotblink')+0 , CC:0	{}
-0001 (1270)		JUMP		<-		{}
+0000 (1282)		STOREG1		<-	V(53 'plotblink')+0 , CC:0	{}
+0001 (1275)		JUMP		<-		{}
 		==> 78
 L74: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1268)		STOREG1		<-	V(52 'plotunderline')+0 , CC:0	{}
-0001 (1270)		JUMP		<-		{}
+0000 (1273)		STOREG1		<-	V(52 'plotunderline')+0 , CC:0	{}
+0001 (1275)		JUMP		<-		{}
 		==> 263
 L71: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1259)		STOREG1		<-	V(51 'plotreverse')+0 , CC:0	{}
-0001 (1261)		JUMP		<-		{}
+0000 (1264)		STOREG1		<-	V(51 'plotreverse')+0 , CC:0	{}
+0001 (1266)		JUMP		<-		{}
 		==> 262
 L68: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1250)		STOREG1		<-	V(54 'plotaltchar')+0 , CC:0	{}
-0001 (1252)		JUMP		<-		{}
+0000 (1255)		STOREG1		<-	V(54 'plotaltchar')+0 , CC:0	{}
+0001 (1257)		JUMP		<-		{}
 		==> 261
 L149: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C)[67..75], CC:71	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C)[67..75], CC:71	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 151
 		==> 150
 L151: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[67..70], CC:69	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[67..70], CC:69	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 235
 		==> 114
 L150: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[71..75], CC:73	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[71..75], CC:73	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 95
 		==> 114
 L95: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1338)		LOADG1	R2(C)[-128..127]	<-	V(49 'plotscreencode')+0 	{}
-0001 (1338)		BINOP1	R2(C)[0..255]	<-	R2(CF)[-128..127], CC:128	{}
-0002 (1408)		JUMP		<-		{}
+0000 (1343)		LOADG1	R2(C)[-128..127]	<-	V(49 'plotscreencode')+0 	{}
+0001 (1343)		BINOP1	R2(C)[0..255]	<-	R2(CF)[-128..127], CC:128	{}
+0002 (1413)		JUMP		<-		{}
 		==> 284
 L125: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C), CC:89	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C), CC:89	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 89
 		==> 154
 L89: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1324)		LOADG1	R2(C)[-128..255]	<-	V(206 'undoenabled')+0 	{}
-0001 (1324)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:1	{}
-0002 (1324)		BRANCH		<-	R2(BF)	{}
+0000 (1329)		LOADG1	R2(C)[-128..255]	<-	V(206 'undoenabled')+0 	{}
+0001 (1329)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:1	{}
+0002 (1329)		BRANCH		<-	R2(BF)	{}
 		==> 93
 		==> 235
 L93: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1324)		LOADG1	R2(C)[-128..255]	<-	V(210 'undo_redopossible')+0 	{}
-0001 (1324)		RELOP27	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
-0002 (1324)		BRANCH		<-	R2(BF)	{}
+0000 (1329)		LOADG1	R2(C)[-128..255]	<-	V(210 'undo_redopossible')+0 	{}
+0001 (1329)		RELOP27	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
+0002 (1329)		BRANCH		<-	R2(BF)	{}
 		==> 90
 		==> 235
 L90: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1326)		CALLN		<-	V(64 'undo_performredo')+0 	{}
-0001 (1408)		JUMP		<-		{}
+0000 (1331)		CALLN		<-	V(64 'undo_performredo')+0 	{}
+0001 (1413)		JUMP		<-		{}
 		==> 235
 L154: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C), CC:89	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C), CC:89	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 156
 		==> 155
 L156: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[0..88], CC:83	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[0..88], CC:83	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 235
 		==> 157
 L157: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C)[0..88], CC:83	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C)[0..88], CC:83	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 159
 		==> 158
 L159: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[0..82], CC:80	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[0..82], CC:80	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 235
 		==> 160
 L160: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C)[0..82], CC:80	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C)[0..82], CC:80	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 162
 		==> 161
 L162: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[0..79], CC:77	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[0..79], CC:77	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 235
 		==> 114
 L161: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[80..82], CC:82	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[80..82], CC:82	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 58
 		==> 114
 L58: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1217)		LOADG1	R2(C)[-128..255]	<-	V(51 'plotreverse')+0 	{}
-0001 (1217)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
-0002 (1217)		BRANCH		<-	R2(BF)	{}
+0000 (1222)		LOADG1	R2(C)[-128..255]	<-	V(51 'plotreverse')+0 	{}
+0001 (1222)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
+0002 (1222)		BRANCH		<-	R2(BF)	{}
 		==> 200
 		==> 201
 L200: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1217)		STOREG1		<-	V(51 'plotreverse')+0 , CC:1	{}
-0001 (1217)		JUMP		<-		{}
+0000 (1222)		STOREG1		<-	V(51 'plotreverse')+0 , CC:1	{}
+0001 (1222)		JUMP		<-		{}
 		==> 282
 L201: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1217)		STOREG1		<-	V(51 'plotreverse')+0 , CC:0	{}
-0001 (1217)		JUMP		<-		{}
+0000 (1222)		STOREG1		<-	V(51 'plotreverse')+0 , CC:0	{}
+0001 (1222)		JUMP		<-		{}
 		==> 282
 L158: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[83..88], CC:85	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[83..88], CC:85	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 56
 		==> 165
 L56: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1205)		LOADG1	R2(C)[-128..255]	<-	V(52 'plotunderline')+0 	{}
-0001 (1205)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
-0002 (1205)		BRANCH		<-	R2(BF)	{}
+0000 (1210)		LOADG1	R2(C)[-128..255]	<-	V(52 'plotunderline')+0 	{}
+0001 (1210)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
+0002 (1210)		BRANCH		<-	R2(BF)	{}
 		==> 203
 		==> 204
 L203: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1205)		STOREG1		<-	V(52 'plotunderline')+0 , CC:1	{}
-0001 (1205)		JUMP		<-		{}
+0000 (1210)		STOREG1		<-	V(52 'plotunderline')+0 , CC:1	{}
+0001 (1210)		JUMP		<-		{}
 		==> 282
 L204: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1205)		STOREG1		<-	V(52 'plotunderline')+0 , CC:0	{}
-0001 (1205)		JUMP		<-		{}
+0000 (1210)		STOREG1		<-	V(52 'plotunderline')+0 , CC:0	{}
+0001 (1210)		JUMP		<-		{}
 		==> 282
 L165: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C)[83..88], CC:85	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C)[83..88], CC:85	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 235
 		==> 166
 L166: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[85..88], CC:87	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[85..88], CC:87	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 235
 		==> 114
 L155: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C), CC:140	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C), CC:140	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 112
 		==> 169
 L112: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1389)		CALLN		<-	V(75 'helpscreen_load')+0 	{}
-0001 (1408)		JUMP		<-		{}
+0000 (1394)		CALLN		<-	V(75 'helpscreen_load')+0 	{}
+0001 (1413)		JUMP		<-		{}
 		==> 235
 L169: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C), CC:140	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C), CC:140	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 171
 		==> 170
 L171: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[0..139], CC:133	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[0..139], CC:133	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 110
 		==> 172
 L110: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1376)		CONST	R0(P)	<-	CG10(25:11 'canvas')	{S}
-0001 (1376)		STOREZ2		<-	V(0 '')+0 , R0(PF)	{}
-0002 (1376)		CALLN		<-	V(50 'vdcwin_cursor_show')+0 	{}
-0003 (1377)		CALLN		<-	V(68 'mainmenuloop')+0 	{}
-0004 (1378)		CALLN		<-	V(49 'plotcursor')+0 	{}
-0005 (1379)		LOADG1	R2(C)[-128..255]	<-	V(50 'plotcolor')+0 	{}
-0006 (1379)		STOREG1		<-	V(26 'vdc_state')+7 , R2(CF)[-128..255]	{}
-0007 (1408)		JUMP		<-		{}
+0000 (1381)		CONST	R0(P)	<-	CG10(25:11 'canvas')	{S}
+0001 (1381)		STOREZ2		<-	V(0 '')+0 , R0(PF)	{}
+0002 (1381)		CALLN		<-	V(50 'vdcwin_cursor_show')+0 	{}
+0003 (1382)		CALLN		<-	V(68 'mainmenuloop')+0 	{}
+0004 (1383)		CALLN		<-	V(49 'plotcursor')+0 	{}
+0005 (1384)		LOADG1	R2(C)[-128..255]	<-	V(50 'plotcolor')+0 	{}
+0006 (1384)		STOREG1		<-	V(26 'vdc_state')+7 , R2(CF)[-128..255]	{}
+0007 (1413)		JUMP		<-		{}
 		==> 235
 L172: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP28	R2(B)	<-	R0(C)[0..139], CC:133	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP28	R2(B)	<-	R0(C)[0..139], CC:133	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 174
 		==> 173
 L174: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[0..132], CC:90	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[0..132], CC:90	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 84
 		==> 114
 L84: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1316)		LOADG1	R2(C)[-128..255]	<-	V(206 'undoenabled')+0 	{}
-0001 (1316)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:1	{}
-0002 (1316)		BRANCH		<-	R2(BF)	{}
+0000 (1321)		LOADG1	R2(C)[-128..255]	<-	V(206 'undoenabled')+0 	{}
+0001 (1321)		RELOP19	R2(B)	<-	R2(CF)[-128..255], CC:1	{}
+0002 (1321)		BRANCH		<-	R2(BF)	{}
 		==> 88
 		==> 235
 L88: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1316)		LOADG1	R2(C)[-128..255]	<-	V(209 'undo_undopossible')+0 	{}
-0001 (1316)		RELOP27	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
-0002 (1316)		BRANCH		<-	R2(BF)	{}
+0000 (1321)		LOADG1	R2(C)[-128..255]	<-	V(209 'undo_undopossible')+0 	{}
+0001 (1321)		RELOP27	R2(B)	<-	R2(CF)[-128..255], CC:0	{}
+0002 (1321)		BRANCH		<-	R2(BF)	{}
 		==> 85
 		==> 235
 L85: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1318)		CALLN		<-	V(63 'undo_performundo')+0 	{}
-0001 (1408)		JUMP		<-		{}
+0000 (1323)		CALLN		<-	V(63 'undo_performundo')+0 	{}
+0001 (1413)		JUMP		<-		{}
 		==> 235
 L173: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C)[133..139], CC:139	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C)[133..139], CC:139	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 111
 		==> 114
 L111: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1384)		CALLN		<-	V(74 'togglestatusbar')+0 	{}
-0001 (1408)		JUMP		<-		{}
+0000 (1389)		CALLN		<-	V(74 'togglestatusbar')+0 	{}
+0001 (1413)		JUMP		<-		{}
 		==> 235
 L170: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C), CC:145	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C), CC:145	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 29
 		==> 177
 L177: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1133)		RELOP19	R2(B)	<-	R0(C), CC:157	{}
-0001 (1133)		BRANCH		<-	R2(BF)	{}
+0000 (1138)		RELOP19	R2(B)	<-	R0(C), CC:157	{}
+0001 (1138)		BRANCH		<-	R2(BF)	{}
 		==> 29
 		==> 114
 L20: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
+0000 (1109)		CALLN		<-	V(37 'menu_fileerrormessage')+0 	{}
+0001 (1110)		STOREZ2		<-	V(0 '')+0 , CI:1	{}
+0002 (1110)		CALLN		<-	V(11 'exit')+0 	{}
+0003 (1107)		JUMP		<-		{}
+		==> 22
+L17: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0000 (1104)		CALLN		<-	V(37 'menu_fileerrormessage')+0 	{}
 0001 (1105)		STOREZ2		<-	V(0 '')+0 , CI:1	{}
 0002 (1105)		CALLN		<-	V(11 'exit')+0 	{}
 0003 (1102)		JUMP		<-		{}
-		==> 22
-L17: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1099)		CALLN		<-	V(37 'menu_fileerrormessage')+0 	{}
-0001 (1100)		STOREZ2		<-	V(0 '')+0 , CI:1	{}
-0002 (1100)		CALLN		<-	V(11 'exit')+0 	{}
-0003 (1097)		JUMP		<-		{}
 		==> 19
 L14: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 (1091)		CALLN		<-	V(37 'menu_fileerrormessage')+0 	{}
-0001 (1092)		STOREZ2		<-	V(0 '')+0 , CI:1	{}
-0002 (1092)		CALLN		<-	V(11 'exit')+0 	{}
-0003 (1089)		JUMP		<-		{}
+0000 (1096)		CALLN		<-	V(37 'menu_fileerrormessage')+0 	{}
+0001 (1097)		STOREZ2		<-	V(0 '')+0 , CI:1	{}
+0002 (1097)		CALLN		<-	V(11 'exit')+0 	{}
+0003 (1094)		JUMP		<-		{}
 		==> 16
+L12: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
+0000 (1085)		CALLN		<-	V(37 'menu_fileerrormessage')+0 	{}
+0001 (1086)		STOREZ2		<-	V(0 '')+0 , CI:1	{}
+0002 (1086)		CALLN		<-	V(11 'exit')+0 	{}
+0003 (1079)		JUMP		<-		{}
+		==> 13
 L4: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/banking.c
 0000 ( 105)		CONST	R2(C)[8..8]	<-	CI:8	{}
 0001 ( 105)		JUMP		<-		{}
@@ -1864,7 +1870,7 @@ L0: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0008 (1143)		STOREZ1		<-	V(5 '')+0 , CC:25	{}
 0009 (1138)		CONST	R0(P)	<-	CA0(-1:22528 '')	{S}
 000a (1138)		STOREG2		<-	V(25 'canvas' A)+1 , R0(PF)	{}
-000b (1143)		CONST	R0(P)	<-	CG0(25:11 'canvas')	{S}
+000b (1143)		CONST	R0(P)	<-	CG21(25:11 'canvas')	{S}
 000c (1143)		STOREZ2		<-	V(0 '')+0 , R0(PF)	{}
 000d (1143)		CALLN		<-	V(13 'vdcwin_init')+0 	{}
 000e ( 267)		RET		<-		{}
@@ -3189,12 +3195,12 @@ L0: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 0008 ( 504)		STOREZ1		<-	V(2 '')+0 , CC:10	{}
 0009 ( 504)		STOREZ1		<-	V(3 '')+0 , CC:9	{}
 000a ( 504)		STOREZ1		<-	V(6 '')+0 , CC:141	{}
-000b ( 349)		CONST	R1(P)	<-	CG0(270:0 '')	{S}
+000b ( 349)		CONST	R1(P)	<-	CG0(268:0 '')	{S}
 000c ( 504)		STOREZ2		<-	V(4 '')+0 , R1(PF)	{}
 000d ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
-000e ( 351)		CONST	R1(P)	<-	CG81(271:0 'linebuffer')	{S}
+000e ( 351)		CONST	R1(P)	<-	CG81(269:0 'linebuffer')	{S}
 000f ( 351)		STOREF2		<-	V(0 '')+0 , R1(P)	{}
-0010 ( 351)		CONST	R2(P)	<-	CG0(272:0 '')	{S}
+0010 ( 351)		CONST	R2(P)	<-	CG0(270:0 '')	{S}
 0011 ( 351)		STOREF2		<-	V(2 '')+0 , R2(PF)	{}
 0012 ( 351)		LOADG1	R3(C)[0..128]	<-	V(22 'krnio_pstatus' A)+1 	{}
 0013 ( 351)		CONV33	R2(I)[0..128]	<-	R3(CF)[0..128]	{}
@@ -3208,7 +3214,7 @@ L0: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 001b ( 504)		STOREZ1		<-	V(2 '')+0 , CC:10	{}
 001c ( 504)		STOREZ1		<-	V(3 '')+0 , CC:13	{}
 001d ( 504)		STOREZ1		<-	V(6 '')+0 , CC:141	{}
-001e ( 354)		CONST	R1(P)	<-	CG0(273:0 '')	{S}
+001e ( 354)		CONST	R1(P)	<-	CG0(271:0 '')	{S}
 001f ( 504)		STOREZ2		<-	V(4 '')+0 , R1(PF)	{}
 0020 ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
 0021 ( 355)		CALLN		<-	V(42 'vdcwin_getch')+0 	{}
@@ -3327,13 +3333,13 @@ L25: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0005 (1055)		STOREG1		<-	V(6 'winCfg')+5 , R0(C)[1..3]	{}
 0006 (1056)		CONV33	R5(I)[1..3]	<-	R0(CF)[1..3]	{}
 0007 (1056)		BINOP3	R5(I)[13..49]	<-	R5(IF)[1..3], CI:13	{}
-0008 (1056)		LEAG	R10(P)	<-	V(234 'windows' A)+-10 , R5(I)[13..49]	{}
+0008 (1056)		LEAG	R10(P)	<-	V(232 'windows' A)+-10 , R5(I)[13..49]	{}
 0009 (1056)		STOREZ2		<-	V(0 '')+0 , R10(P)	{}
 000a (1056)		CALLN		<-	V(13 'vdcwin_init')+0 	{}
-000b (1057)		LEAG	R11(P)	<-	V(234 'windows' A)+-13 , R5(I)[13..49]	{}
-000c (1057)		STOREI2		<-	R11(PF)+0 {V(234 'windows' A)} , R7(PF)	{}
-000d (1058)		LEAG	R5(P)	<-	V(234 'windows' A)+-11 , R5(IF)[13..49]	{}
-000e (1058)		STOREI1		<-	R5(PF)+0 {V(234 'windows' A)} , R9(C)[-128..255]	{}
+000b (1057)		LEAG	R11(P)	<-	V(232 'windows' A)+-13 , R5(I)[13..49]	{}
+000c (1057)		STOREI2		<-	R11(PF)+0 {V(232 'windows' A)} , R7(PF)	{}
+000d (1058)		LEAG	R5(P)	<-	V(232 'windows' A)+-11 , R5(IF)[13..49]	{}
+000e (1058)		STOREI1		<-	R5(PF)+0 {V(232 'windows' A)} , R9(C)[-128..255]	{}
 000f (1061)		RELOP28	R0(B)	<-	CC:0, R3(C)[-128..255]	{}
 0010 (1061)		BRANCH		<-	R0(BF)	{}
 		==> 32
@@ -3451,9 +3457,9 @@ L0: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0001 ( 949)		CONV33	R1(I)[0..255]	<-	R0(C)[-128..255]	{}
 0002 ( 949)		BINOP9	R2(I)[0..1]	<-	R1(I)[0..255], CI:15	{}
 0003 ( 950)		BINOP3	R3(I)[0..9]	<-	R2(I)[0..1], CI:9	{}
-0004 ( 950)		LEAG	R3(P)	<-	V(246 'winStyles' A)+0 , R3(IF)[0..9]	{}
+0004 ( 950)		LEAG	R3(P)	<-	V(244 'winStyles' A)+0 , R3(IF)[0..9]	{}
 0005 ( 953)		BINOP9	R5(I)[0..127]	<-	R1(I)[0..255], CI:64	{}
-0006 ( 950)		LOADI1	R4(C)[-128..255]	<-	R3(P)+0 {V(246 'winStyles' A)} 	{}
+0006 ( 950)		LOADI1	R4(C)[-128..255]	<-	R3(P)+0 {V(244 'winStyles' A)} 	{}
 0007 ( 953)		BRANCH		<-	R5(IF)[0..127]	{}
 		==> 4
 		==> 53
@@ -3517,7 +3523,7 @@ L9: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 L13: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0000 ( 967)		STOREZ1		<-	V(1 '')+0 , R7(C)[0..254]	{}
 0001 ( 967)		STOREZ1		<-	V(3 '')+0 , R4(C)[-128..255]	{}
-0002 ( 967)		LOADI1	R0(C)[-128..255]	<-	R3(P)+1 {V(246 'winStyles' A)} 	{}
+0002 ( 967)		LOADI1	R0(C)[-128..255]	<-	R3(P)+1 {V(244 'winStyles' A)} 	{}
 0003 ( 967)		STOREZ1		<-	V(2 '')+0 , R0(CF)[-128..255]	{}
 0004 ( 967)		LOADI1	R0(C)[-127..255]	<-	R5(P)+0	{}
 0005 ( 967)		BINOP2	R0(C)[-128..254]	<-	R0(CF)[-127..255], CI:1	{}
@@ -3530,7 +3536,7 @@ L15: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0001 ( 969)		STOREZ1		<-	V(2 '')+0 , R0(C)[-128..255]	{}
 0002 ( 969)		STOREZ1		<-	V(3 '')+0 , R7(C)[0..254]	{}
 0003 ( 969)		STOREZ1		<-	V(5 '')+0 , R4(C)[-128..255]	{}
-0004 ( 969)		LOADI1	R6(C)[-128..255]	<-	R3(P)+5 {V(246 'winStyles' A)} 	{}
+0004 ( 969)		LOADI1	R6(C)[-128..255]	<-	R3(P)+5 {V(244 'winStyles' A)} 	{}
 0005 ( 969)		STOREZ1		<-	V(4 '')+0 , R6(CF)[-128..255]	{}
 0006 ( 969)		LOADI1	R6(C)[-128..255]	<-	R5(PF)+2	{}
 0007 ( 969)		STOREZ1		<-	V(6 '')+0 , R6(C)[-128..255]	{}
@@ -3542,7 +3548,7 @@ L15: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 L16: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0000 ( 972)		STOREZ1		<-	V(1 '')+0 , R7(CF)[0..254]	{}
 0001 ( 972)		STOREZ1		<-	V(3 '')+0 , R4(C)[-128..255]	{}
-0002 ( 972)		LOADI1	R9(C)[-128..255]	<-	R3(P)+2 {V(246 'winStyles' A)} 	{}
+0002 ( 972)		LOADI1	R9(C)[-128..255]	<-	R3(P)+2 {V(244 'winStyles' A)} 	{}
 0003 ( 972)		STOREZ1		<-	V(2 '')+0 , R9(CF)[-128..255]	{}
 0004 ( 972)		CONV33	R5(I)[0..255]	<-	R0(CF)[-128..255]	{}
 0005 ( 972)		CONV33	R7(I)[0..255]	<-	R6(CF)[-128..255]	{}
@@ -3576,7 +3582,7 @@ L19: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 L23: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0000 ( 979)		STOREZ1		<-	V(1 '')+0 , R7(C)[0..510]	{}
 0001 ( 979)		STOREZ1		<-	V(3 '')+0 , R4(C)[-128..255]	{}
-0002 ( 979)		LOADI1	R0(C)[-128..255]	<-	R3(P)+3 {V(246 'winStyles' A)} 	{}
+0002 ( 979)		LOADI1	R0(C)[-128..255]	<-	R3(P)+3 {V(244 'winStyles' A)} 	{}
 0003 ( 979)		STOREZ1		<-	V(2 '')+0 , R0(CF)[-128..255]	{}
 0004 ( 979)		LOADI1	R0(C)[-127..255]	<-	R5(P)+0	{}
 0005 ( 979)		BINOP2	R0(C)[-128..254]	<-	R0(CF)[-127..255], CI:1	{}
@@ -3589,7 +3595,7 @@ L25: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0001 ( 981)		STOREZ1		<-	V(2 '')+0 , R0(C)[-128..255]	{}
 0002 ( 981)		STOREZ1		<-	V(3 '')+0 , R7(C)[0..510]	{}
 0003 ( 981)		STOREZ1		<-	V(5 '')+0 , R4(C)[-128..255]	{}
-0004 ( 981)		LOADI1	R6(C)[-128..255]	<-	R3(P)+6 {V(246 'winStyles' A)} 	{}
+0004 ( 981)		LOADI1	R6(C)[-128..255]	<-	R3(P)+6 {V(244 'winStyles' A)} 	{}
 0005 ( 981)		STOREZ1		<-	V(4 '')+0 , R6(CF)[-128..255]	{}
 0006 ( 981)		LOADI1	R6(C)[-128..255]	<-	R5(PF)+2	{}
 0007 ( 981)		STOREZ1		<-	V(6 '')+0 , R6(C)[-128..255]	{}
@@ -3601,7 +3607,7 @@ L25: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 L26: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0000 ( 984)		STOREZ1		<-	V(1 '')+0 , R7(CF)[0..510]	{}
 0001 ( 984)		STOREZ1		<-	V(3 '')+0 , R4(C)[-128..255]	{}
-0002 ( 984)		LOADI1	R9(C)[-128..255]	<-	R3(PF)+4 {V(246 'winStyles' A)} 	{}
+0002 ( 984)		LOADI1	R9(C)[-128..255]	<-	R3(PF)+4 {V(244 'winStyles' A)} 	{}
 0003 ( 984)		STOREZ1		<-	V(2 '')+0 , R9(CF)[-128..255]	{}
 0004 ( 984)		CONV33	R1(I)[0..255]	<-	R0(CF)[-128..255]	{}
 0005 ( 984)		CONV33	R3(I)[0..255]	<-	R6(CF)[-128..255]	{}
@@ -3640,8 +3646,8 @@ L33: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0007 ( 993)		STOREZ1		<-	V(1 '')+0 , R7(CF)[0..509]	{}
 0008 ( 993)		CONV33	R7(I)[0..1]	<-	R2(C)[0..1]	{}
 0009 ( 993)		BINOP3	R7(I)[0..9]	<-	R7(IF)[0..1], CI:9	{}
-000a ( 993)		LEAG	R7(P)	<-	V(246 'winStyles' A)+7 , R7(IF)[0..9]	{}
-000b ( 993)		LOADI1	R6(C)[-128..255]	<-	R7(PF)+0 {V(246 'winStyles' A)} 	{}
+000a ( 993)		LEAG	R7(P)	<-	V(244 'winStyles' A)+7 , R7(IF)[0..9]	{}
+000b ( 993)		LOADI1	R6(C)[-128..255]	<-	R7(PF)+0 {V(244 'winStyles' A)} 	{}
 000c ( 993)		STOREZ1		<-	V(2 '')+0 , R6(CF)[-128..255]	{}
 000d ( 993)		CALLN		<-	V(41 'vdc_printc')+0 	{}
 000e ( 991)		JUMP		<-		{}
@@ -3672,8 +3678,8 @@ L36: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0005 ( 998)		STOREZ1		<-	V(0 '')+0 , R3(CF)[0..510]	{}
 0006 ( 998)		CONV33	R3(I)[0..1]	<-	R2(C)[0..1]	{}
 0007 ( 998)		BINOP3	R3(I)[0..9]	<-	R3(IF)[0..1], CI:9	{}
-0008 ( 998)		LEAG	R3(P)	<-	V(246 'winStyles' A)+8 , R3(IF)[0..9]	{}
-0009 ( 998)		LOADI1	R6(C)[-128..255]	<-	R3(PF)+0 {V(246 'winStyles' A)} 	{}
+0008 ( 998)		LEAG	R3(P)	<-	V(244 'winStyles' A)+8 , R3(IF)[0..9]	{}
+0009 ( 998)		LOADI1	R6(C)[-128..255]	<-	R3(PF)+0 {V(244 'winStyles' A)} 	{}
 000a ( 998)		STOREZ1		<-	V(2 '')+0 , R6(CF)[-128..255]	{}
 000b ( 998)		CALLN		<-	V(41 'vdc_printc')+0 	{}
 000c ( 989)		JUMP		<-		{}
@@ -3792,27 +3798,27 @@ L0: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 L3: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0000 (1092)		CONV33	R1(I)[1..3]	<-	R0(C)[1..3]	{}
 0001 (1092)		BINOP3	R1(I)[13..45]	<-	R1(IF)[1..3], CI:13	{}
-0002 (1093)		LEAG	R2(P)[-128..255]	<-	V(234 'windows' A)+-8 , R1(I)[13..45]	{}
-0003 (1093)		LOADI1	R3(C)[-128..255]	<-	R2(PF)+0 {V(234 'windows' A)} 	{}
+0002 (1093)		LEAG	R2(P)[-128..255]	<-	V(232 'windows' A)+-8 , R1(I)[13..45]	{}
+0003 (1093)		LOADI1	R3(C)[-128..255]	<-	R2(PF)+0 {V(232 'windows' A)} 	{}
 0004 (1093)		MOVE	R4(C)[-128..255]	<-	R3(C)[-128..255]	{}
-0005 (1094)		LEAG	R2(P)[-128..255]	<-	V(234 'windows' A)+-7 , R1(I)[13..45]	{}
-0006 (1094)		LOADI1	R5(C)[-128..255]	<-	R2(PF)+0 {V(234 'windows' A)} 	{}
+0005 (1094)		LEAG	R2(P)[-128..255]	<-	V(232 'windows' A)+-7 , R1(I)[13..45]	{}
+0006 (1094)		LOADI1	R5(C)[-128..255]	<-	R2(PF)+0 {V(232 'windows' A)} 	{}
 0007 (1094)		MOVE	R6(C)[-128..255]	<-	R5(C)[-128..255]	{}
-0008 (1092)		LEAG	R2(P)	<-	V(234 'windows' A)+-13 , R1(I)[13..45]	{}
-0009 (1116)		LOADI2	R2(P)	<-	R2(PF)+0 {V(234 'windows' A)} 	{}
+0008 (1092)		LEAG	R2(P)	<-	V(232 'windows' A)+-13 , R1(I)[13..45]	{}
+0009 (1116)		LOADI2	R2(P)	<-	R2(PF)+0 {V(232 'windows' A)} 	{}
 000a (1116)		STOREG2		<-	V(6 'winCfg')+6 , R2(P)	{}
-000b (1092)		LEAG	R7(P)[-128..255]	<-	V(234 'windows' A)+-10 , R1(I)[13..45]	{}
-000c (1092)		LOADI1	R8(C)[-128..255]	<-	R7(PF)+0 {V(234 'windows' A)} 	{}
+000b (1092)		LEAG	R7(P)[-128..255]	<-	V(232 'windows' A)+-10 , R1(I)[13..45]	{}
+000c (1092)		LOADI1	R8(C)[-128..255]	<-	R7(PF)+0 {V(232 'windows' A)} 	{}
 000d ( 281)		CONV33	R7(I)[0..255]	<-	R8(C)[-128..255]	{}
-000e (1092)		LEAG	R9(P)[0..71]	<-	V(234 'windows' A)+-9 , R1(I)[13..45]	{}
-000f (1092)		LOADI1	R10(C)[0..71]	<-	R9(PF)+0 {V(234 'windows' A)} 	{}
+000e (1092)		LEAG	R9(P)[0..71]	<-	V(232 'windows' A)+-9 , R1(I)[13..45]	{}
+000f (1092)		LOADI1	R10(C)[0..71]	<-	R9(PF)+0 {V(232 'windows' A)} 	{}
 0010 ( 281)		CONV33	R9(I)[0..71]	<-	R10(C)[0..71]	{}
 0011 ( 281)		BINOP16	R11(I)[0..142]	<-	R9(I)[0..71], CI:1	{}
 0012 ( 281)		LEAG	R11(P)	<-	V(27 'multab' A)+0 , R11(IF)[0..142]	{}
 0013 ( 281)		LOADI2	R11(I)[-32768..65535]	<-	R11(PF)+0 {V(27 'multab' A)} 	{}
 0014 ( 281)		BINOP1	R11(I)[-32768..65535]	<-	R11(IF)[-32768..65535], R7(I)[0..255]	{}
-0015 (1095)		LEAG	R1(P)[-128..255]	<-	V(234 'windows' A)+-11 , R1(IF)[13..45]	{}
-0016 (1095)		LOADI1	R12(C)[-128..255]	<-	R1(PF)+0 {V(234 'windows' A)} 	{}
+0015 (1095)		LEAG	R1(P)[-128..255]	<-	V(232 'windows' A)+-11 , R1(IF)[13..45]	{}
+0016 (1095)		LOADI1	R12(C)[-128..255]	<-	R1(PF)+0 {V(232 'windows' A)} 	{}
 0017 (1096)		CONV33	R1(I)[0..255]	<-	R12(CF)[-128..255]	{}
 0018 (1096)		BINOP9	R13(I)[0..127]	<-	R1(I)[0..255], CI:64	{}
 0019 (1096)		BRANCH		<-	R13(IF)[0..127]	{}
@@ -4050,9 +4056,9 @@ L0: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/banking.c
 plotcursor: /home/xahmol/VDCScreenEditor2/src/main.c:779
 $00 R0(I), $00 R1(C), $00 R2(I), 
 L0: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 ( 782)		LOADG2	R0(I)[-32768..65535]	<-	V(46 'screen_row')+0 	{}
+0000 ( 782)		LOADG2	R0(I)[-32768..65535]	<-	V(45 'screen_col')+0 	{}
 0001 ( 782)		STOREZ1		<-	V(0 '')+0 , R0(CF)[-32768..65535]	{}
-0002 ( 782)		LOADG2	R0(I)[-32768..65535]	<-	V(45 'screen_col')+0 	{}
+0002 ( 782)		LOADG2	R0(I)[-32768..65535]	<-	V(46 'screen_row')+0 	{}
 0003 ( 782)		STOREZ1		<-	V(1 '')+0 , R0(CF)[-32768..65535]	{}
 0004 ( 782)		LOADG1	R1(C)[-128..255]	<-	V(49 'plotscreencode')+0 	{}
 0005 ( 782)		STOREZ1		<-	V(2 '')+0 , R1(CF)[-128..255]	{}
@@ -4175,7 +4181,7 @@ L36: <= D-1: (1)  P-1 /home/xahmol/oscar64/include/c128/vdc.c
 0001 ( 152)		RET		<-		{}
 --------------------------------------------------------------------
 initstatusbar: /home/xahmol/VDCScreenEditor2/src/main.c:357
-$00 R0(I), $00 R1(I), $02 R2(I), $10 R3(B), 
+$10 R0(I), $00 R1(I), $02 R2(I), $11 R3(B), 
 L0: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0000 ( 359)		LOADG2	R0(I)[-32767..65535]	<-	V(26 'vdc_state')+5 	{}
 0001 ( 359)		BINOP2	R0(I)[-32768..65534]	<-	R0(IF)[-32767..65535], CI:1	{}
@@ -4188,39 +4194,39 @@ L0: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 L1: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0000 ( 363)		RET		<-		{}
 L3: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 ( 368)		STOREZ1		<-	V(2 '')+0 , R0(C)[-32768..65534]	{}
+0000 ( 368)		STOREZ1		<-	V(2 '')+0 , CC:0	{}
 0001 ( 368)		STOREZ1		<-	V(6 '')+0 , CC:80	{}
-0002 ( 368)		STOREZ1		<-	V(7 '')+0 , CC:0	{}
+0002 ( 368)		STOREZ1		<-	V(7 '')+0 , R0(C)[-32768..65534]	{}
 0003 ( 368)		STOREZ1		<-	V(8 '')+0 , CC:1	{}
 0004 ( 366)		LOADG1	R3(C)[-128..255]	<-	V(334 'mc_menupopup')+0 	{}
 0005 ( 366)		STOREG1		<-	V(26 'vdc_state')+7 , R3(C)[-128..255]	{}
 0006 ( 368)		CALLN		<-	V(18 'vdc_clear')+0 	{}
-0007 ( 504)		STOREZ1		<-	V(2 '')+0 , R0(C)[-32768..65534]	{}
-0008 ( 504)		STOREZ1		<-	V(3 '')+0 , CC:0	{}
+0007 ( 504)		STOREZ1		<-	V(2 '')+0 , CC:0	{}
+0008 ( 504)		STOREZ1		<-	V(3 '')+0 , R0(C)[-32768..65534]	{}
 0009 ( 504)		STOREZ1		<-	V(6 '')+0 , R3(C)[-128..255]	{}
 000a ( 369)		CONST	R1(P)	<-	CG0(335:0 '')	{S}
 000b ( 504)		STOREZ2		<-	V(4 '')+0 , R1(PF)	{}
 000c ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
-000d ( 504)		STOREZ1		<-	V(2 '')+0 , R0(C)[-32768..65534]	{}
-000e ( 504)		STOREZ1		<-	V(3 '')+0 , CC:17	{}
+000d ( 504)		STOREZ1		<-	V(2 '')+0 , CC:17	{}
+000e ( 504)		STOREZ1		<-	V(3 '')+0 , R0(C)[-32768..65534]	{}
 000f ( 504)		STOREZ1		<-	V(6 '')+0 , R3(C)[-128..255]	{}
 0010 ( 370)		CONST	R1(P)	<-	CG0(336:0 '')	{S}
 0011 ( 504)		STOREZ2		<-	V(4 '')+0 , R1(PF)	{}
 0012 ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
-0013 ( 504)		STOREZ1		<-	V(2 '')+0 , R0(C)[-32768..65534]	{}
-0014 ( 504)		STOREZ1		<-	V(3 '')+0 , CC:31	{}
+0013 ( 504)		STOREZ1		<-	V(2 '')+0 , CC:31	{}
+0014 ( 504)		STOREZ1		<-	V(3 '')+0 , R0(C)[-32768..65534]	{}
 0015 ( 504)		STOREZ1		<-	V(6 '')+0 , R3(C)[-128..255]	{}
 0016 ( 371)		CONST	R1(P)	<-	CG0(337:0 '')	{S}
 0017 ( 504)		STOREZ2		<-	V(4 '')+0 , R1(PF)	{}
 0018 ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
-0019 ( 504)		STOREZ1		<-	V(2 '')+0 , R0(C)[-32768..65534]	{}
-001a ( 504)		STOREZ1		<-	V(3 '')+0 , CC:41	{}
+0019 ( 504)		STOREZ1		<-	V(2 '')+0 , CC:41	{}
+001a ( 504)		STOREZ1		<-	V(3 '')+0 , R0(C)[-32768..65534]	{}
 001b ( 504)		STOREZ1		<-	V(6 '')+0 , R3(C)[-128..255]	{}
 001c ( 372)		CONST	R1(P)	<-	CG0(338:0 '')	{S}
 001d ( 504)		STOREZ2		<-	V(4 '')+0 , R1(PF)	{}
 001e ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
-001f ( 504)		STOREZ1		<-	V(2 '')+0 , R0(CF)[-32768..65534]	{}
-0020 ( 504)		STOREZ1		<-	V(3 '')+0 , CC:73	{}
+001f ( 504)		STOREZ1		<-	V(2 '')+0 , CC:73	{}
+0020 ( 504)		STOREZ1		<-	V(3 '')+0 , R0(CF)[-32768..65534]	{}
 0021 ( 504)		STOREZ1		<-	V(6 '')+0 , R3(CF)[-128..255]	{}
 0022 ( 373)		CONST	R0(P)	<-	CG0(339:0 '')	{S}
 0023 ( 504)		STOREZ2		<-	V(4 '')+0 , R0(PF)	{}
@@ -4251,8 +4257,8 @@ L3: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0006 ( 306)		CONST	R4(P)	<-	CG11(331:0 'programmode')	{S}
 0007 ( 306)		STOREF2		<-	V(4 '')+0 , R4(PF)	{}
 0008 ( 306)		CALLN		<-	V(14 'sprintf')+0 	{}
-0009 ( 504)		STOREZ1		<-	V(2 '')+0 , R0(C)[-32768..65534]	{}
-000a ( 504)		STOREZ1		<-	V(3 '')+0 , CC:6	{}
+0009 ( 504)		STOREZ1		<-	V(2 '')+0 , CC:6	{}
+000a ( 504)		STOREZ1		<-	V(3 '')+0 , R0(C)[-32768..65534]	{}
 000b ( 504)		STOREZ2		<-	V(4 '')+0 , R1(P)	{}
 000c ( 504)		STOREZ1		<-	V(6 '')+0 , R3(C)[-128..255]	{}
 000d ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
@@ -4267,13 +4273,13 @@ L3: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0016 ( 308)		BINOP1	R2(I)[-32768..65535]	<-	R4(IF)[-32768..65535], R2(IF)[-32768..65535]	{}
 0017 ( 308)		STOREF2		<-	V(6 '')+0 , R2(IF)[-32768..65535]	{}
 0018 ( 308)		CALLN		<-	V(14 'sprintf')+0 	{}
-0019 ( 504)		STOREZ1		<-	V(2 '')+0 , R0(C)[-32768..65534]	{}
-001a ( 504)		STOREZ1		<-	V(3 '')+0 , CC:22	{}
+0019 ( 504)		STOREZ1		<-	V(2 '')+0 , CC:22	{}
+001a ( 504)		STOREZ1		<-	V(3 '')+0 , R0(C)[-32768..65534]	{}
 001b ( 504)		STOREZ2		<-	V(4 '')+0 , R1(P)	{}
 001c ( 504)		STOREZ1		<-	V(6 '')+0 , R3(C)[-128..255]	{}
 001d ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
-001e ( 312)		STOREZ1		<-	V(0 '')+0 , R0(C)[-32768..65534]	{}
-001f ( 312)		STOREZ1		<-	V(1 '')+0 , CC:36	{}
+001e ( 312)		STOREZ1		<-	V(0 '')+0 , CC:36	{}
+001f ( 312)		STOREZ1		<-	V(1 '')+0 , R0(C)[-32768..65534]	{}
 0020 ( 312)		LOADG1	R6(C)[-128..255]	<-	V(49 'plotscreencode')+0 	{}
 0021 ( 312)		STOREZ1		<-	V(2 '')+0 , R6(C)[-128..255]	{}
 0022 ( 310)		LOADG1	R7(C)[-128..255]	<-	V(54 'plotaltchar')+0 	{}
@@ -4292,13 +4298,13 @@ L9: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0004 ( 318)		CONV33	R2(I)[0..255]	<-	R6(CF)[-128..255]	{}
 0005 ( 318)		STOREF2		<-	V(4 '')+0 , R2(IF)[0..255]	{}
 0006 ( 318)		CALLN		<-	V(14 'sprintf')+0 	{}
-0007 ( 504)		STOREZ1		<-	V(2 '')+0 , R0(C)[-32768..65534]	{}
-0008 ( 504)		STOREZ1		<-	V(3 '')+0 , CC:38	{}
+0007 ( 504)		STOREZ1		<-	V(2 '')+0 , CC:38	{}
+0008 ( 504)		STOREZ1		<-	V(3 '')+0 , R0(C)[-32768..65534]	{}
 0009 ( 504)		STOREZ2		<-	V(4 '')+0 , R1(P)	{}
 000a ( 504)		STOREZ1		<-	V(6 '')+0 , R3(C)[-128..255]	{}
 000b ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
-000c ( 320)		STOREZ1		<-	V(0 '')+0 , R0(C)[-32768..65534]	{}
-000d ( 320)		STOREZ1		<-	V(1 '')+0 , CC:48	{}
+000c ( 320)		STOREZ1		<-	V(0 '')+0 , CC:48	{}
+000d ( 320)		STOREZ1		<-	V(1 '')+0 , R0(C)[-32768..65534]	{}
 000e ( 320)		STOREZ1		<-	V(2 '')+0 , CC:32	{}
 000f ( 320)		LOADG1	R6(C)[-128..191]	<-	V(50 'plotcolor')+0 	{}
 0010 ( 320)		BINOP1	R8(C)[-64..255]	<-	R6(C)[-128..191], CI:64	{}
@@ -4310,13 +4316,13 @@ L9: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0016 ( 321)		CONST	R2(P)	<-	CG0(344:0 '')	{S}
 0017 ( 321)		STOREF2		<-	V(2 '')+0 , R2(PF)	{}
 0018 ( 321)		CALLN		<-	V(14 'sprintf')+0 	{}
-0019 ( 504)		STOREZ1		<-	V(2 '')+0 , R0(C)[-32768..65534]	{}
-001a ( 504)		STOREZ1		<-	V(3 '')+0 , CC:50	{}
+0019 ( 504)		STOREZ1		<-	V(2 '')+0 , CC:50	{}
+001a ( 504)		STOREZ1		<-	V(3 '')+0 , R0(C)[-32768..65534]	{}
 001b ( 504)		STOREZ2		<-	V(4 '')+0 , R1(PF)	{}
 001c ( 504)		STOREZ1		<-	V(6 '')+0 , R3(C)[-128..255]	{}
 001d ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
-001e ( 504)		STOREZ1		<-	V(2 '')+0 , R0(C)[-32768..65534]	{}
-001f ( 504)		STOREZ1		<-	V(3 '')+0 , CC:54	{}
+001e ( 504)		STOREZ1		<-	V(2 '')+0 , CC:54	{}
+001f ( 504)		STOREZ1		<-	V(3 '')+0 , R0(C)[-32768..65534]	{}
 0020 ( 504)		STOREZ1		<-	V(6 '')+0 , R3(C)[-128..255]	{}
 0021 ( 323)		LOADG1	R6(C)[-128..255]	<-	V(51 'plotreverse')+0 	{}
 0022 ( 323)		BRANCH		<-	R6(CF)[-128..255]	{}
@@ -4329,7 +4335,7 @@ L12: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 L35: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_core.c
 0000 ( 504)		STOREZ2		<-	V(4 '')+0 , R1(PF)	{}
 0001 ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
-0002 ( 504)		STOREZ1		<-	V(2 '')+0 , R0(C)[-32768..65534]	{}
+0002 ( 504)		STOREZ1		<-	V(2 '')+0 , CC:58	{}
 0003 ( 331)		LOADG1	R6(C)[-128..255]	<-	V(52 'plotunderline')+0 	{}
 0004 ( 331)		BRANCH		<-	R6(CF)[-128..255]	{}
 		==> 17
@@ -4339,25 +4345,25 @@ L17: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0001 ( 339)		JUMP		<-		{}
 		==> 36
 L36: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_core.c
-0000 ( 504)		STOREZ1		<-	V(3 '')+0 , CC:58	{}
+0000 ( 504)		STOREZ1		<-	V(3 '')+0 , R0(C)[-32768..65534]	{}
 0001 ( 504)		STOREZ2		<-	V(4 '')+0 , R1(PF)	{}
 0002 ( 504)		STOREZ1		<-	V(6 '')+0 , R3(C)[-128..255]	{}
 0003 ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
-0004 ( 504)		STOREZ1		<-	V(2 '')+0 , R0(C)[-32768..65534]	{}
+0004 ( 504)		STOREZ1		<-	V(3 '')+0 , R0(C)[-32768..65534]	{}
 0005 ( 339)		LOADG1	R6(C)[-128..255]	<-	V(53 'plotblink')+0 	{}
 0006 ( 339)		BRANCH		<-	R6(CF)[-128..255]	{}
 		==> 22
 		==> 23
-L22: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 ( 341)		CONST	R1(P)	<-	CG0(349:0 '')	{S}
-0001 ( 347)		JUMP		<-		{}
+L22: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_core.c
+0000 ( 504)		STOREZ1		<-	V(2 '')+0 , CC:62	{}
+0001 ( 341)		CONST	R1(P)	<-	CG0(349:0 '')	{S}
+0002 ( 347)		JUMP		<-		{}
 		==> 37
 L37: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_core.c
-0000 ( 504)		STOREZ1		<-	V(3 '')+0 , CC:62	{}
-0001 ( 504)		STOREZ2		<-	V(4 '')+0 , R1(PF)	{}
-0002 ( 504)		STOREZ1		<-	V(6 '')+0 , R3(C)[-128..255]	{}
-0003 ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
-0004 ( 347)		BRANCH		<-	R7(CF)[-128..255]	{}
+0000 ( 504)		STOREZ2		<-	V(4 '')+0 , R1(PF)	{}
+0001 ( 504)		STOREZ1		<-	V(6 '')+0 , R3(C)[-128..255]	{}
+0002 ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
+0003 ( 347)		BRANCH		<-	R7(CF)[-128..255]	{}
 		==> 27
 		==> 28
 L27: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
@@ -4365,8 +4371,8 @@ L27: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0001 ( 349)		JUMP		<-		{}
 		==> 29
 L29: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_core.c
-0000 ( 504)		STOREZ1		<-	V(2 '')+0 , R0(CF)[-32768..65534]	{}
-0001 ( 504)		STOREZ1		<-	V(3 '')+0 , CC:66	{}
+0000 ( 504)		STOREZ1		<-	V(2 '')+0 , CC:66	{}
+0001 ( 504)		STOREZ1		<-	V(3 '')+0 , R0(CF)[-32768..65534]	{}
 0002 ( 504)		STOREZ2		<-	V(4 '')+0 , R1(PF)	{}
 0003 ( 504)		STOREZ1		<-	V(6 '')+0 , R3(CF)[-128..255]	{}
 0004 ( 504)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
@@ -4375,9 +4381,10 @@ L28: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0000 ( 353)		CONST	R1(P)	<-	CG0(352:0 '')	{S}
 0001 ( 353)		JUMP		<-		{}
 		==> 29
-L23: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 ( 345)		CONST	R1(P)	<-	CG0(350:0 '')	{S}
-0001 ( 347)		JUMP		<-		{}
+L23: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_core.c
+0000 ( 504)		STOREZ1		<-	V(2 '')+0 , CC:61	{}
+0001 ( 345)		CONST	R1(P)	<-	CG0(350:0 '')	{S}
+0002 ( 347)		JUMP		<-		{}
 		==> 37
 L18: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0000 ( 337)		CONST	R1(P)	<-	CG0(348:0 '')	{S}
@@ -4416,8 +4423,8 @@ L0: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0011 ( 412)		CAST	R1(P)	<-	R1(IF)	{}
 0012 ( 790)		STOREZ2		<-	V(0 '')+0 , R1(PF)	{}
 0013 ( 790)		CALLN	R6(C)	<-	V(54 'bnk_readb')+0 	{}
-0014 ( 790)		STOREZ1		<-	V(0 '')+0 , R2(CF)[-32768..65535]	{}
-0015 ( 790)		STOREZ1		<-	V(1 '')+0 , R0(CF)[-32768..65535]	{}
+0014 ( 790)		STOREZ1		<-	V(0 '')+0 , R0(CF)[-32768..65535]	{}
+0015 ( 790)		STOREZ1		<-	V(1 '')+0 , R2(CF)[-32768..65535]	{}
 0016 ( 790)		STOREZ1		<-	V(2 '')+0 , R5(CF)	{}
 0017 ( 790)		STOREZ1		<-	V(3 '')+0 , R6(CF)	{}
 0018 ( 790)		CALLN		<-	V(41 'vdc_printc')+0 	{}
@@ -4597,7 +4604,7 @@ L38: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 		==> 41
 		==> 43
 L41: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 ( 379)		CONST	R1(P)	<-	CG0(25:0 'canvas')	{S}
+0000 ( 379)		CONST	R1(P)	<-	CG21(25:0 'canvas')	{S}
 0001 ( 379)		STOREZ2		<-	V(9 '')+0 , R1(PF)	{}
 0002 ( 379)		CALLN		<-	V(62 'vdcwin_cpy_viewport')+0 	{}
 0003 ( 515)		JUMP		<-		{}
@@ -4680,7 +4687,7 @@ L0: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 		==> 1
 		==> 14
 L1: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
-0000 (1183)		CONST	R2(P)	<-	CG0(25:11 'canvas')	{S}
+0000 (1183)		CONST	R2(P)	<-	CG21(25:11 'canvas')	{S}
 0001 (1183)		STOREZ2		<-	V(9 '')+0 , R2(PF)	{}
 0002 (1183)		CALLN		<-	V(57 'vdcwin_scroll_right')+0 	{}
 0003 (1186)		STOREZ1		<-	V(4 '')+0 , CC:1	{}
@@ -4707,7 +4714,7 @@ L14: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 		==> 4
 		==> 15
 L4: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
-0000 (1190)		CONST	R2(P)	<-	CG0(25:11 'canvas')	{S}
+0000 (1190)		CONST	R2(P)	<-	CG21(25:11 'canvas')	{S}
 0001 (1190)		STOREZ2		<-	V(9 '')+0 , R2(PF)	{}
 0002 (1190)		CALLN		<-	V(59 'vdcwin_scroll_left')+0 	{}
 0003 (1193)		STOREZ1		<-	V(4 '')+0 , CC:1	{}
@@ -4739,7 +4746,7 @@ L15: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 		==> 7
 		==> 16
 L7: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
-0000 (1197)		CONST	R2(P)	<-	CG0(25:11 'canvas')	{S}
+0000 (1197)		CONST	R2(P)	<-	CG21(25:11 'canvas')	{S}
 0001 (1197)		STOREZ2		<-	V(8 '')+0 , R2(PF)	{}
 0002 (1197)		CALLN		<-	V(60 'vdcwin_scroll_down')+0 	{}
 0003 (1200)		STOREZ1		<-	V(5 '')+0 , CC:1	{}
@@ -4767,7 +4774,7 @@ L16: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 		==> 10
 		==> 12
 L10: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
-0000 (1204)		CONST	R1(P)	<-	CG0(25:11 'canvas')	{S}
+0000 (1204)		CONST	R1(P)	<-	CG21(25:11 'canvas')	{S}
 0001 (1204)		STOREZ2		<-	V(8 '')+0 , R1(PF)	{}
 0002 (1204)		CALLN		<-	V(61 'vdcwin_scroll_up')+0 	{}
 0003 (1207)		STOREZ1		<-	V(5 '')+0 , CC:1	{}
@@ -4861,7 +4868,7 @@ L9: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 L6: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0000 ( 102)		STOREZ1		<-	V(0 '')+0 , CC:14	{}
 0001 ( 102)		STOREZ2		<-	V(3 '')+0 , R3(I)	{}
-0002 ( 102)		CONST	R8(P)	<-	CG81(271:0 'linebuffer')	{S}
+0002 ( 102)		CONST	R8(P)	<-	CG81(269:0 'linebuffer')	{S}
 0003 ( 102)		STOREZ2		<-	V(1 '')+0 , R8(P)	{}
 0004 ( 102)		CONV33	R9(I)[0..255]	<-	R2(C)[-1..254]	{}
 0005 ( 102)		STOREZ2		<-	V(5 '')+0 , R9(I)[0..255]	{}
@@ -5114,7 +5121,7 @@ L12: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 L9: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_win.c
 0000 ( 102)		STOREZ1		<-	V(0 '')+0 , CC:14	{}
 0001 ( 102)		STOREZ2		<-	V(3 '')+0 , R5(IF)	{}
-0002 ( 102)		CONST	R5(P)	<-	CG81(271:0 'linebuffer')	{S}
+0002 ( 102)		CONST	R5(P)	<-	CG81(269:0 'linebuffer')	{S}
 0003 ( 102)		STOREZ2		<-	V(1 '')+0 , R5(P)	{}
 0004 ( 102)		CONV33	R8(I)[0..255]	<-	R2(C)[-1..254]	{}
 0005 ( 102)		STOREZ2		<-	V(5 '')+0 , R8(I)[0..255]	{}
@@ -5423,7 +5430,7 @@ L10: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 		==> 5
 		==> 7
 L7: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 ( 607)		CONST	R1(P)	<-	CG0(25:0 'canvas')	{S}
+0000 ( 607)		CONST	R1(P)	<-	CG21(25:0 'canvas')	{S}
 0001 ( 607)		STOREZ2		<-	V(9 '')+0 , R1(PF)	{}
 0002 ( 607)		CALLN		<-	V(62 'vdcwin_cpy_viewport')+0 	{}
 0003 ( 608)		LOADG1	R0(C)[-128..255]	<-	V(333 'showbar')+0 	{}
@@ -5593,7 +5600,7 @@ L8: <= D-1: (2) Head P130 /home/xahmol/VDCScreenEditor2/src/main.c
 		==> 8
 		==> 10
 L10: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
-0000 ( 678)		CONST	R3(P)	<-	CG0(25:0 'canvas')	{S}
+0000 ( 678)		CONST	R3(P)	<-	CG21(25:0 'canvas')	{S}
 0001 ( 678)		STOREZ2		<-	V(9 '')+0 , R3(PF)	{}
 0002 ( 678)		CALLN		<-	V(62 'vdcwin_cpy_viewport')+0 	{}
 0003 ( 679)		LOADG1	R1(C)[-128..255]	<-	V(333 'showbar')+0 	{}
@@ -5891,7 +5898,7 @@ L11: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 L88: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0000 ( 942)		CALLN		<-	V(45 'screenmapfill')+0 	{}
 0001 ( 943)		CALLN		<-	V(43 'vdcwin_win_free')+0 	{}
-0002 ( 944)		CONST	R0(P)	<-	CG0(25:0 'canvas')	{S}
+0002 ( 944)		CONST	R0(P)	<-	CG21(25:0 'canvas')	{S}
 0003 ( 944)		STOREZ2		<-	V(9 '')+0 , R0(PF)	{}
 0004 ( 944)		CALLN		<-	V(62 'vdcwin_cpy_viewport')+0 	{}
 0005 ( 945)		STOREZ1		<-	V(10 '')+0 , CC:0	{}
@@ -6102,11 +6109,11 @@ L0: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 0002 ( 258)		CALLN		<-	V(71 'menu_placebar')+0 	{}
 0003 ( 309)		JUMP		<-		{}
 		==> 84
-L84: <= D-1: (2) Head P171 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
+L84: <= D-1: (2) Head P179 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 0000 ( 309)		CONST	R0(C)[1..1]	<-	CI:1	{}
 0001 ( 264)		JUMP		<-		{}
 		==> 3
-L3: <= D-1: (3) Head P170 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
+L3: <= D-1: (4) Head P178 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 0000 ( 264)		STOREZ1		<-	V(6 '')+0 , CC:207	{}
 0001 ( 264)		CONV33	R1(I)[0..4]	<-	R0(C)[0..4]	{}
 0002 ( 264)		LEAG	R2(P)	<-	V(546 'menubar')+47 , R1(I)[0..4]	{}
@@ -6120,7 +6127,7 @@ L3: <= D-1: (3) Head P170 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 000a ( 264)		CALLN		<-	V(33 'vdc_prints_attr')+0 	{}
 000b ( 268)		JUMP		<-		{}
 		==> 5
-L5: <= D-1: (2) Head P169 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
+L5: <= D-1: (2) Head P177 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 0000 ( 268)		CALLN	R1(I)	<-	V(42 'vdcwin_getch')+0 	{}
 0001 ( 269)		RELOP20	R3(B)	<-	R1(C), CC:13	{}
 0002 ( 269)		BRANCH		<-	R3(B)[~1..~1]	{}
@@ -6218,7 +6225,7 @@ L32: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 0000 ( 300)		CONST	R0(C)[4..4]	<-	CI:4	{}
 0001 ( 303)		JUMP		<-		{}
 		==> 27
-L27: <= D-1: (3)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
+L27: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 0000 ( 317)		RELOP19	R4(B)	<-	R3(C), CC:0	{}
 0001 ( 317)		BRANCH		<-	R4(BF)	{}
 		==> 3
@@ -6239,11 +6246,7 @@ L35: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 0001 ( 307)		RELOP27	R3(B)	<-	R0(C)[..5], CC:4	{}
 0002 ( 307)		BRANCH		<-	R3(BF)	{}
 		==> 84
-		==> 63
-L63: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
-0000 ( 305)		CONST	R3(C)[0..0]	<-	CI:0	{}
-0001 ( 307)		JUMP		<-		{}
-		==> 27
+		==> 3
 L26: <= D-1: (3)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 0000 ( 315)		CONST	R3(C)[99..99]	<-	CI:99	{}
 0001 ( 317)		JUMP		<-		{}
@@ -6364,7 +6367,7 @@ L58: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 0000 ( 173)		CONV33	R3(I)[0..255]	<-	R5(CF)[-128..255]	{IS}
 0001 ( 170)		CONST	R5(C)[0..0]	<-	CI:0	{}
 0002 ( 172)		CONST	R8(I)[0..0]	<-	CI:0	{}
-0003 ( 172)		CONST	R9(P)	<-	CG81(271:0 'linebuffer')	{IS}
+0003 ( 172)		CONST	R9(P)	<-	CG81(269:0 'linebuffer')	{IS}
 0004 ( 172)		CONST	R10(P)	<-	CG0(548:0 '')	{IS}
 0005 ( 172)		JUMP		<-		{}
 		==> 2
@@ -6389,7 +6392,7 @@ L2: <= D-1: (2) Head P221 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 		==> 5
 L5: <= D-1: (12) Head P220 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 0000 ( 178)		STOREF2		<-	V(4 '')+0 , CI:45	{}
-0001 ( 178)		CONST	R3(P)	<-	CG81(271:0 'linebuffer')	{S}
+0001 ( 178)		CONST	R3(P)	<-	CG81(269:0 'linebuffer')	{S}
 0002 ( 178)		STOREF2		<-	V(0 '')+0 , R3(P)	{}
 0003 ( 178)		CONST	R8(P)	<-	CG0(549:0 '')	{S}
 0004 ( 178)		STOREF2		<-	V(2 '')+0 , R8(PF)	{}
@@ -6485,7 +6488,7 @@ L46: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
 		==> 29
 		==> 5
 L29: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/include/vdc_menu.c
-0000 ( 219)		CONST	R9(P)	<-	CG81(271:0 'linebuffer')	{S}
+0000 ( 219)		CONST	R9(P)	<-	CG81(269:0 'linebuffer')	{S}
 0001 ( 219)		STOREF2		<-	V(0 '')+0 , R9(P)	{}
 0002 ( 219)		CONST	R10(P)	<-	CG0(550:0 '')	{S}
 0003 ( 219)		STOREF2		<-	V(2 '')+0 , R10(PF)	{}
@@ -6614,7 +6617,7 @@ L3: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 		==> 6
 L5: <= D-1: (1)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0000 ( 393)		STOREG1		<-	V(333 'showbar')+0 , CC:0	{}
-0001 ( 379)		CONST	R0(P)	<-	CG0(25:0 'canvas')	{S}
+0001 ( 379)		CONST	R0(P)	<-	CG21(25:0 'canvas')	{S}
 0002 ( 379)		STOREZ2		<-	V(9 '')+0 , R0(PF)	{}
 0003 ( 379)		CALLN		<-	V(62 'vdcwin_cpy_viewport')+0 	{}
 0004 ( 394)		JUMP		<-		{}
@@ -6684,7 +6687,7 @@ L19: <= D-1: (2)  P-1 /home/xahmol/VDCScreenEditor2/src/main.c
 0003 ( 721)		CONST	R3(P)	<-	CG0(568:0 '')	{S}
 0004 ( 721)		STOREF2		<-	V(2 '')+0 , R3(PF)	{}
 0005 ( 721)		CALLN		<-	V(14 'sprintf')+0 	{}
-0006 ( 723)		STOREZ1		<-	V(3 '')+0 , CC:127	{}
+0006 ( 723)		STOREZ1		<-	V(3 '')+0 , CC:1	{}
 0007 ( 723)		STOREZ2		<-	V(6 '')+0 , R1(PF)	{}
 0008 ( 723)		LOADG1	R2(C)[-128..255]	<-	V(7 'bootdevice')+0 	{}
 0009 ( 723)		STOREZ1		<-	V(2 '')+0 , R2(CF)[-128..255]	{}
@@ -6741,7 +6744,7 @@ L147: <= D-1: (2) Head P258 /home/xahmol/oscar64/include/c128/vdc.c
 		==> 38
 L38: <= D-1: (1)  P-1 /home/xahmol/oscar64/include/c128/vdc.c
 0000 (  12)		STOREA1		<-	V(-1 '')+54785 , R1(CF)[0..510]	{V}
-0001 ( 740)		CONST	R1(P)	<-	CG0(25:0 'canvas')	{S}
+0001 ( 740)		CONST	R1(P)	<-	CG21(25:0 'canvas')	{S}
 0002 ( 740)		STOREZ2		<-	V(9 '')+0 , R1(PF)	{}
 0003 ( 740)		CALLN		<-	V(62 'vdcwin_cpy_viewport')+0 	{}
 0004 ( 741)		LOADG1	R0(C)[-128..255]	<-	V(333 'showbar')+0 	{}

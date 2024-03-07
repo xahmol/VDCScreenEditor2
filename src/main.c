@@ -304,53 +304,53 @@ void printstatusbar()
     vdc_state.text_attr = mc_menupopup;
 
     sprintf(buffer, "%-10s", programmode);
-    vdc_prints(ypos, 6, buffer);
+    vdc_prints(6, ypos, buffer);
     sprintf(buffer, "%3u,%3u", screen_col + canvas.sourcexoffset, screen_row + canvas.sourceyoffset);
-    vdc_prints(ypos, 22, buffer);
+    vdc_prints(22, ypos, buffer);
     if (plotaltchar)
     {
-        vdc_printc(ypos, 36, plotscreencode, mc_menupopup);
+        vdc_printc(36, ypos, plotscreencode, mc_menupopup);
     }
     else
     {
-        vdc_printc(ypos, 36, plotscreencode, mc_menupopup - VDC_A_ALTCHAR);
+        vdc_printc(36, ypos, plotscreencode, mc_menupopup - VDC_A_ALTCHAR);
     }
     sprintf(buffer, "%2X", plotscreencode);
-    vdc_prints(ypos, 38, buffer);
-    vdc_printc(ypos, 48, CH_SPACE, plotcolor + VDC_A_REVERSE);
+    vdc_prints(38, ypos, buffer);
+    vdc_printc(48, ypos, CH_SPACE, plotcolor + VDC_A_REVERSE);
     sprintf(buffer, "%2u", plotcolor);
-    vdc_prints(ypos, 50, buffer);
+    vdc_prints(50, ypos, buffer);
     if (plotreverse)
     {
-        vdc_prints(ypos, 54, "REV");
+        vdc_prints(54, ypos, "REV");
     }
     else
     {
-        vdc_prints(ypos, 54, "   ");
+        vdc_prints(54, ypos, "   ");
     }
     if (plotunderline)
     {
-        vdc_prints(ypos, 58, "UND");
+        vdc_prints(58, ypos, "UND");
     }
     else
     {
-        vdc_prints(ypos, 58, "   ");
+        vdc_prints(58, ypos, "   ");
     }
     if (plotblink)
     {
-        vdc_prints(ypos, 62, "BLI");
+        vdc_prints(62, ypos, "BLI");
     }
     else
     {
-        vdc_prints(ypos, 62, "   ");
+        vdc_prints(61, ypos, "   ");
     }
     if (plotaltchar)
     {
-        vdc_prints(ypos, 66, "ALT");
+        vdc_prints(66, ypos, "ALT");
     }
     else
     {
-        vdc_prints(ypos, 66, "   ");
+        vdc_prints(66, ypos, "   ");
     }
 }
 
@@ -365,12 +365,12 @@ void initstatusbar()
 
     vdc_state.text_attr = mc_menupopup;
 
-    vdc_clear(ypos, 0, CH_SPACE, 80, 1);
-    vdc_prints(ypos, 0, "Mode:");
-    vdc_prints(ypos, 17, "X,Y:");
-    vdc_prints(ypos, 31, "Char:");
-    vdc_prints(ypos, 41, "Color:");
-    vdc_prints(ypos, 73, "F8=Help");
+    vdc_clear(0, ypos, CH_SPACE, 80, 1);
+    vdc_prints(0, ypos, "Mode:");
+    vdc_prints(17, ypos, "X,Y:");
+    vdc_prints(31, ypos, "Char:");
+    vdc_prints(41, ypos, "Color:");
+    vdc_prints(73, ypos, "F8=Help");
     printstatusbar();
 }
 
@@ -402,14 +402,14 @@ void togglestatusbar()
 
 char *screenmap_screenaddr(unsigned row, unsigned col, unsigned width)
 {
-    return (char*)(SCREENMAPBASE + (row * width) + col);
+    return (char *)(SCREENMAPBASE + (row * width) + col);
 }
 
 char *screenmap_attraddr(unsigned row, unsigned col, unsigned width, unsigned height)
 {
     // Function to calculate screenmap address for the attribute space
     // Input: row, col, width and height for screenmap
-    return (char*)(SCREENMAPBASE + (row * width) + col + (width * height) + 48);
+    return (char *)(SCREENMAPBASE + (row * width) + col + (width * height) + 48);
 }
 
 void screenmapplot(char row, char col, char screencode, char attribute)
@@ -720,7 +720,7 @@ void helpscreen_load(char screennumber)
     // Load selected help screen
     sprintf(buffer, "vdcsehsc%u", screennumber);
 
-    if (bnk_load(bootdevice, BNK_1_FULL, (char *)WINDOWBASEADDRESS, buffer))
+    if (bnk_load(bootdevice, 1, (char *)WINDOWBASEADDRESS, buffer))
     {
         bnk_cpytovdc(vdc_state.base_text, BNK_1_FULL, (char *)WINDOWBASEADDRESS, 4048);
     }
@@ -779,7 +779,7 @@ void restorealtcharset()
 void plotcursor()
 // Plot cursor at present position
 {
-    vdc_printc(screen_row, screen_col, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
+    vdc_printc(screen_col, screen_row, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
     vdcwin_cursor_show(&canvas.view, 1);
 }
 
@@ -787,7 +787,7 @@ void plotmove(char direction)
 // Drive cursor move
 // Input: ASCII code of cursor key pressed
 {
-    vdc_printc(screen_row, screen_col, bnk_readb(BNK_1_FULL, screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
+    vdc_printc(screen_col, screen_row, bnk_readb(BNK_1_FULL, screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
 
     switch (direction)
     {
@@ -1076,9 +1076,14 @@ int main(void)
 
     // Load and show title screen
     printcentered("Load title screen", 29, 24, 22);
-    if (bnk_load(bootdevice, BNK_1_FULL, (char *)SCREENMAPBASE, "vdcsetscr"))
+    if (bnk_load(bootdevice, 1, (char *)SCREENMAPBASE, "vdcsetscr"))
     {
         bnk_cpytovdc(vdc_state.base_text, BNK_1_FULL, (char *)SCREENMAPBASE, 4048);
+    }
+    else
+    {
+        menu_fileerrormessage();
+        exit(1);
     }
 
     // Init overlays
@@ -1094,12 +1099,12 @@ int main(void)
 
     // Load default charsets to bank 1
     printcentered("Load charsets", 29, 24, 22);
-    if (!bnk_load(bootdevice, BNK_1_FULL, (char *)CHARSETSYSTEM, "vdcsefalt"))
+    if (!bnk_load(bootdevice, 1, (char *)CHARSETSYSTEM, "vdcsefalt"))
     {
         menu_fileerrormessage();
         exit(1);
     }
-    if (!bnk_load(bootdevice, BNK_1_FULL, (char *)CHARSETNORMAL, "vdcsefstd"))
+    if (!bnk_load(bootdevice, 1, (char *)CHARSETNORMAL, "vdcsefstd"))
     {
         menu_fileerrormessage();
         exit(1);
