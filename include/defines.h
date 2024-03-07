@@ -29,66 +29,62 @@
 
 struct OverlayStruct
 {
-    unsigned char bank;
-    unsigned int address;
+    char bank;
+    unsigned address;
 };
 extern struct OverlayStruct overlaydata[4];
-extern unsigned char overlay_active;
+extern char overlay_active;
 
 // Undo data
-extern unsigned char undoenabled;
-extern unsigned int undoaddress;
-extern unsigned char undonumber;
-extern unsigned char undo_undopossible;
-extern unsigned char undo_redopossible;
+extern char undoenabled;
+extern unsigned undoaddress;
+extern char undonumber;
+extern char undo_undopossible;
+extern char undo_redopossible;
 struct UndoStruct
 {
-    unsigned int address;
-    unsigned char ystart;
-    unsigned char xstart;
-    unsigned char height;
-    unsigned char width;
-    unsigned char redopresent;
+    unsigned address;
+    char ystart;
+    char xstart;
+    char height;
+    char width;
+    char redopresent;
 };
 extern struct UndoStruct Undo[41];
 
 // Menucolors
-extern unsigned char mc_mb_normal;
-extern unsigned char mc_mb_select;
-extern unsigned char mc_pd_normal;
-extern unsigned char mc_pd_select;
-extern unsigned char mc_menupopup;
+extern char mc_mb_normal;
+extern char mc_mb_select;
+extern char mc_pd_normal;
+extern char mc_pd_select;
+extern char mc_menupopup;
 
 // Global variables
-extern unsigned char bootdevice;
+extern char bootdevice;
 extern char DOSstatus[40];
-extern unsigned char charsetchanged[2];
-extern unsigned char appexit;
-extern unsigned char targetdevice;
+extern char charsetchanged[2];
+extern char appexit;
+extern char targetdevice;
 extern char filename[21];
 extern char programmode[11];
-extern unsigned char showbar;
+extern char showbar;
 
-extern unsigned char screen_col;
-extern unsigned char screen_row;
-// extern unsigned int xoffset;
-// extern unsigned int yoffset;
-// extern unsigned int screenwidth;
-// extern unsigned int screenheight;
-extern unsigned int screentotal;
-extern unsigned char screenbackground;
-extern unsigned char plotscreencode;
-extern unsigned char plotcolor;
-extern unsigned char plotreverse;
-extern unsigned char plotunderline;
-extern unsigned char plotblink;
-extern unsigned char plotaltchar;
-extern unsigned int select_startx, select_starty, select_endx, select_endy, select_width, select_height, select_accept;
-extern unsigned char rowsel;
-extern unsigned char colsel;
-extern unsigned char palettechar;
-extern unsigned char visualmap;
-extern unsigned char favourites[10][2];
+extern unsigned screen_col;
+extern unsigned screen_row;
+extern unsigned screentotal;
+extern char screenbackground;
+extern char plotscreencode;
+extern char plotcolor;
+extern char plotreverse;
+extern char plotunderline;
+extern char plotblink;
+extern char plotaltchar;
+extern unsigned select_startx, select_starty, select_endx, select_endy, select_width, select_height, select_accept;
+extern unsigned rowsel;
+extern unsigned colsel;
+extern char palettechar;
+extern char visualmap;
+extern char favourites[10][2];
 extern struct VDCViewport canvas;
 
 extern char buffer[81];
@@ -144,6 +140,6 @@ extern char version[22];
 #define CH_F8 140         // Petscii control code for F8
 
 /* Declaration global variables as externals */
-extern unsigned char bootdevice;
+extern char bootdevice;
 
 #endif // __DEFINES_H_

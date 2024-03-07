@@ -75,53 +75,53 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #pragma region( vdcse, 0x1c80, 0xc000 - OVERLAYSIZE, , , {code, data, bss, heap, stack} )
 
 // Undo data
-unsigned char undoenabled = 0;
-unsigned int undoaddress;
-unsigned char undonumber;
-unsigned char undo_undopossible;
-unsigned char undo_redopossible;
+char undoenabled = 0;
+unsigned undoaddress;
+char undonumber;
+char undo_undopossible;
+char undo_redopossible;
 struct UndoStruct Undo[41];
 
 // Menucolors
-unsigned char mc_mb_normal = VDC_LGREEN + VDC_A_REVERSE + VDC_A_ALTCHAR;
-unsigned char mc_mb_select = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
-unsigned char mc_pd_normal = VDC_DCYAN + VDC_A_REVERSE + VDC_A_ALTCHAR;
-unsigned char mc_pd_select = VDC_LYELLOW + VDC_A_REVERSE + VDC_A_ALTCHAR;
-unsigned char mc_menupopup = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+char mc_mb_normal = VDC_LGREEN + VDC_A_REVERSE + VDC_A_ALTCHAR;
+char mc_mb_select = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+char mc_pd_normal = VDC_DCYAN + VDC_A_REVERSE + VDC_A_ALTCHAR;
+char mc_pd_select = VDC_LYELLOW + VDC_A_REVERSE + VDC_A_ALTCHAR;
+char mc_menupopup = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
 
 // Global variables
-unsigned char bootdevice;
+char bootdevice;
 char DOSstatus[40];
-unsigned char charsetchanged[2];
-unsigned char appexit;
-unsigned char targetdevice;
+char charsetchanged[2];
+char appexit;
+char targetdevice;
 char filename[21];
 char programmode[11];
-unsigned char showbar;
+char showbar;
 
-unsigned char screen_col;
-unsigned char screen_row;
+unsigned screen_col;
+unsigned screen_row;
 struct VDCViewport canvas;
-unsigned int screentotal;
-unsigned char screenbackground;
-unsigned char plotscreencode;
-unsigned char plotcolor;
-unsigned char plotreverse;
-unsigned char plotunderline;
-unsigned char plotblink;
-unsigned char plotaltchar;
-unsigned int select_startx, select_starty, select_endx, select_endy, select_width, select_height, select_accept;
-unsigned char rowsel = 0;
-unsigned char colsel = 0;
-unsigned char palettechar;
-unsigned char visualmap = 0;
-unsigned char favourites[10][2];
+unsigned screentotal;
+char screenbackground;
+char plotscreencode;
+char plotcolor;
+char plotreverse;
+char plotunderline;
+char plotblink;
+char plotaltchar;
+unsigned select_startx, select_starty, select_endx, select_endy, select_width, select_height, select_accept;
+unsigned rowsel = 0;
+unsigned colsel = 0;
+char palettechar;
+char visualmap = 0;
+char favourites[10][2];
 
 char buffer[81];
 char version[22];
 
 // Generic routines
-unsigned char dosCommand(const unsigned char lfn, const unsigned char drive, const unsigned char sec_addr, const char *cmd)
+char dosCommand(const char lfn, const char drive, const char sec_addr, const char *cmd)
 // Send DOS command - extended
 {
     // Send DOS command
@@ -164,7 +164,7 @@ unsigned char dosCommand(const unsigned char lfn, const unsigned char drive, con
     return (DOSstatus[0] - 48) * 10 + DOSstatus[1] - 48;
 }
 
-unsigned int cmd(const unsigned char device, const char *cmd)
+unsigned cmd(const char device, const char *cmd)
 // Set DOS Command - simplified
 {
     // Prepare DOS command
@@ -174,11 +174,11 @@ unsigned int cmd(const unsigned char device, const char *cmd)
     return dosCommand(15, device, 15, cmd);
 }
 
-signed int textInput(unsigned char xpos, unsigned char ypos, char *str, unsigned char width, unsigned char lines)
+signed int textInput(char xpos, char ypos, char *str, char width, char lines)
 // Textinput from window. Returns length of input, or -1 on ESC or STOP
 {
     struct VDCWin inputwin;
-    unsigned char returncode;
+    char returncode;
 
     vdcwin_init(&inputwin, xpos, ypos, width, lines);
     returncode = vdcwin_edit(&inputwin);
@@ -194,7 +194,7 @@ signed int textInput(unsigned char xpos, unsigned char ypos, char *str, unsigned
 }
 
 /* General screen functions */
-void printcentered(const char *text, unsigned char xpos, unsigned char ypos, unsigned char width)
+void printcentered(const char *text, char xpos, char ypos, char width)
 {
     /* Function to print a text centered
        Input:
@@ -211,7 +211,7 @@ void printcentered(const char *text, unsigned char xpos, unsigned char ypos, uns
     vdc_prints(xpos, ypos, text);
 }
 
-unsigned char VDC_Attribute(unsigned char textcolor, unsigned char blink, unsigned char underline, unsigned char reverse, unsigned char alternate)
+char VDC_Attribute(char textcolor, char blink, char underline, char reverse, char alternate)
 {
     // Function to calculate attribute code from color and other attribute bits
     // Input: Color code 0-15 and flags for blink, underline, reverse and alternate charset
@@ -225,9 +225,9 @@ void initoverlay()
 {
     // Load all overlays into memory if possible
 
-    unsigned char x;
-    unsigned int address = OVERLAYBANK0;
-    unsigned char destbank = BNK_0_FULL;
+    char x;
+    unsigned address = OVERLAYBANK0;
+    char destbank = BNK_0_FULL;
 
     for (x = 0; x < OVERLAYNUMBER; x++)
     {
@@ -244,7 +244,7 @@ void initoverlay()
 
             // Copy to overlay storage memory location
             overlaydata[x].bank = destbank;
-            bnk_memcpy(BNK_0_FULL, OVERLAYLOAD, destbank, address, OVERLAYSIZE);
+            bnk_memcpy(BNK_0_FULL, (char *)OVERLAYLOAD, destbank, (char *)address, OVERLAYSIZE);
             overlaydata[x].address = address;
             address += OVERLAYSIZE;
 
@@ -267,7 +267,7 @@ void initoverlay()
     }
 }
 
-void loadoverlay(unsigned char overlay_select)
+void loadoverlay(char overlay_select)
 {
     // Load memory overlay with given number
 
@@ -277,7 +277,7 @@ void loadoverlay(unsigned char overlay_select)
         overlay_active = overlay_select;
         if (overlaydata[overlay_select - 1].bank)
         {
-            bnk_memcpy(overlaydata[overlay_select - 1].bank, overlaydata[overlay_select - 1].address, BNK_DEFAULT, OVERLAYLOAD, OVERLAYSIZE);
+            bnk_memcpy(overlaydata[overlay_select - 1].bank, (char *)overlaydata[overlay_select - 1].address, BNK_DEFAULT, (char *)OVERLAYLOAD, OVERLAYSIZE);
         }
         else
         {
@@ -294,7 +294,7 @@ void loadoverlay(unsigned char overlay_select)
 
 void printstatusbar()
 {
-    unsigned char ypos = vdc_state.height - 1;
+    char ypos = vdc_state.height - 1;
 
     if (screen_row == ypos)
     {
@@ -356,7 +356,7 @@ void printstatusbar()
 
 void initstatusbar()
 {
-    unsigned char ypos = vdc_state.height - 1;
+    char ypos = vdc_state.height - 1;
 
     if (screen_row == ypos)
     {
@@ -381,7 +381,7 @@ void hidestatusbar()
 
 void togglestatusbar()
 {
-    unsigned char ypos = vdc_state.height - 1;
+    char ypos = vdc_state.height - 1;
 
     if (screen_row == ypos)
     {
@@ -400,25 +400,25 @@ void togglestatusbar()
     }
 }
 
-unsigned int screenmap_screenaddr(unsigned char row, unsigned char col, unsigned int width)
+char *screenmap_screenaddr(unsigned row, unsigned col, unsigned width)
 {
-    return SCREENMAPBASE + (row * width) + col;
+    return (char*)(SCREENMAPBASE + (row * width) + col);
 }
 
-unsigned int screenmap_attraddr(unsigned char row, unsigned char col, unsigned int width, unsigned int height)
+char *screenmap_attraddr(unsigned row, unsigned col, unsigned width, unsigned height)
 {
     // Function to calculate screenmap address for the attribute space
     // Input: row, col, width and height for screenmap
-    return SCREENMAPBASE + (row * width) + col + (width * height) + 48;
+    return (char*)(SCREENMAPBASE + (row * width) + col + (width * height) + 48);
 }
 
-void screenmapplot(unsigned char row, unsigned char col, unsigned char screencode, unsigned char attribute)
+void screenmapplot(char row, char col, char screencode, char attribute)
 {
     // Function to plot a screencodes at bank 1 memory screen map
     // Input: row and column, screencode to plot, attribute code
 
-    bnk_writeb(BNK_1_FULL, (char *)screenmap_screenaddr(row, col, canvas.sourcewidth), screencode);
-    bnk_writeb(BNK_1_FULL, (char *)screenmap_attraddr(row, col, canvas.sourcewidth, canvas.sourceheight), attribute);
+    bnk_writeb(BNK_1_FULL, screenmap_screenaddr(row, col, canvas.sourcewidth), screencode);
+    bnk_writeb(BNK_1_FULL, screenmap_attraddr(row, col, canvas.sourcewidth, canvas.sourceheight), attribute);
 }
 
 void placesignature()
@@ -426,22 +426,22 @@ void placesignature()
     // Place signature in screenmap with program version
 
     char versiontext[49] = "";
-    unsigned char x;
-    unsigned int address = SCREENMAPBASE + (canvas.sourcewidth * canvas.sourceheight);
+    char x;
+    char *address = (char *)(SCREENMAPBASE + (canvas.sourcewidth * canvas.sourceheight));
 
     sprintf(versiontext, "VDC Screen Editor %s X.Mol ", VERSION);
 
     for (x = 0; x < strlen(versiontext); x++)
     {
-        bnk_writeb(BNK_1_FULL, (char *)(address + x), versiontext[x]);
+        bnk_writeb(BNK_1_FULL, address + x, versiontext[x]);
     }
 }
 
-void screenmapfill(unsigned char screencode, unsigned char attribute)
+void screenmapfill(char screencode, char attribute)
 {
     // Function to fill screen with the screencode and attribute code provided as input
 
-    unsigned int address = SCREENMAPBASE;
+    unsigned address = SCREENMAPBASE;
 
     bnk_memset(BNK_1_FULL, (char *)address, screencode, screentotal + 48);
     placesignature();
@@ -449,7 +449,7 @@ void screenmapfill(unsigned char screencode, unsigned char attribute)
     bnk_memset(BNK_1_FULL, (char *)address, attribute, screentotal);
 }
 
-void cursormove(unsigned char left, unsigned char right, unsigned char up, unsigned char down)
+void cursormove(char left, char right, char up, char down)
 {
     // Move cursor and scroll screen if needed
     // Input: flags to enable (1) or disable (0) move in the different directions
@@ -530,12 +530,12 @@ void cursormove(unsigned char left, unsigned char right, unsigned char up, unsig
 
 // Functions for undo system
 
-void undo_new(unsigned char row, unsigned char col, unsigned char width, unsigned char height)
+void undo_new(char row, char col, char width, char height)
 {
     // Function to create a new undo buffer position
 
-    unsigned char y;
-    unsigned char redoroompresent = 1;
+    char y;
+    char redoroompresent = 1;
 
     if (undo_redopossible > 0)
     {
@@ -562,8 +562,8 @@ void undo_new(unsigned char row, unsigned char col, unsigned char width, unsigne
     }
     for (y = 0; y < height; y++)
     {
-        bnk_cpytovdc(undoaddress + (y * width), BNK_1_FULL, (char *)screenmap_screenaddr(row + y, col, canvas.sourcewidth), width);
-        bnk_cpytovdc(undoaddress + (width * height) + (y * width), BNK_1_FULL, (char *)screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), width);
+        bnk_cpytovdc(undoaddress + (y * width), BNK_1_FULL, screenmap_screenaddr(row + y, col, canvas.sourcewidth), width);
+        bnk_cpytovdc(undoaddress + (width * height) + (y * width), BNK_1_FULL, screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), width);
     }
     Undo[undonumber - 1].address = undoaddress;
     if (undonumber < 40)
@@ -586,7 +586,7 @@ void undo_performundo()
 {
     // Function to perform an undo if a filled undo slot is present
 
-    unsigned char y, row, col, width, height;
+    char y, row, col, width, height;
 
     if (undo_undopossible > 0)
     {
@@ -598,11 +598,11 @@ void undo_performundo()
         {
             if (Undo[undonumber - 1].redopresent > 0)
             {
-                bnk_cpytovdc(Undo[undonumber - 1].address + (width * height * 2) + (y * width), BNK_1_FULL, (char *)screenmap_screenaddr(row + y, col, canvas.sourcewidth), width);
-                bnk_cpytovdc(Undo[undonumber - 1].address + (width * height * 3) + (y * width), BNK_1_FULL, (char *)screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), width);
+                bnk_cpytovdc(Undo[undonumber - 1].address + (width * height * 2) + (y * width), BNK_1_FULL, screenmap_screenaddr(row + y, col, canvas.sourcewidth), width);
+                bnk_cpytovdc(Undo[undonumber - 1].address + (width * height * 3) + (y * width), BNK_1_FULL, screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), width);
             }
-            bnk_cpyfromvdc(BNK_1_FULL, (char *)screenmap_screenaddr(row + y, col, canvas.sourcewidth), Undo[undonumber - 1].address + (y * width), width);
-            bnk_cpyfromvdc(BNK_1_FULL, (char *)screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), Undo[undonumber - 1].address + (width * height) + (y * width), width);
+            bnk_cpyfromvdc(BNK_1_FULL, screenmap_screenaddr(row + y, col, canvas.sourcewidth), Undo[undonumber - 1].address + (y * width), width);
+            bnk_cpyfromvdc(BNK_1_FULL, screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), Undo[undonumber - 1].address + (width * height) + (y * width), width);
         }
         vdcwin_cpy_viewport(&canvas);
         if (showbar)
@@ -654,7 +654,7 @@ void undo_performredo()
 {
     // Function to perform an redo if a filled redo slot is present
 
-    unsigned char y, row, col, width, height;
+    char y, row, col, width, height;
 
     if (undo_redopossible > 0)
     {
@@ -672,8 +672,8 @@ void undo_performredo()
         height = Undo[undonumber - 1].height;
         for (y = 0; y < height; y++)
         {
-            bnk_cpyfromvdc(BNK_1_FULL, (char *)screenmap_screenaddr(row + y, col, canvas.sourcewidth), Undo[undonumber - 1].address + (width * height * 2) + (y * width), width);
-            bnk_cpyfromvdc(BNK_1_FULL, (char *)screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), Undo[undonumber - 1].address + (width * height * 3) + (y * width), width);
+            bnk_cpyfromvdc(BNK_1_FULL, screenmap_screenaddr(row + y, col, canvas.sourcewidth), Undo[undonumber - 1].address + (width * height * 2) + (y * width), width);
+            bnk_cpyfromvdc(BNK_1_FULL, screenmap_attraddr(row + y, col, canvas.sourcewidth, canvas.sourceheight), Undo[undonumber - 1].address + (width * height * 3) + (y * width), width);
         }
         vdcwin_cpy_viewport(&canvas);
         if (showbar)
@@ -695,9 +695,9 @@ void undo_performredo()
 }
 
 // Help screens
-void helpscreen_load(unsigned char screennumber)
+void helpscreen_load(char screennumber)
 {
-    unsigned char oldmode = vdc_state.mode;
+    char oldmode = vdc_state.mode;
 
     // Function to show selected help screen
     // Input: screennumber: 1-Main mode, 2-Character editor, 3-SelectMoveLinebox, 4-Write/colorwrite mode
@@ -783,11 +783,11 @@ void plotcursor()
     vdcwin_cursor_show(&canvas.view, 1);
 }
 
-void plotmove(unsigned char direction)
+void plotmove(char direction)
 // Drive cursor move
 // Input: ASCII code of cursor key pressed
 {
-    vdc_printc(screen_row, screen_col, bnk_readb(BNK_1_FULL, (char *)screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, (char *)screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
+    vdc_printc(screen_row, screen_col, bnk_readb(BNK_1_FULL, screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
 
     switch (direction)
     {
@@ -814,7 +814,7 @@ void plotmove(unsigned char direction)
     plotcursor();
 }
 
-void change_plotcolor(unsigned char newval)
+void change_plotcolor(char newval)
 // Change the current color to plot in
 {
     plotcolor = newval;
@@ -822,7 +822,7 @@ void change_plotcolor(unsigned char newval)
     plotcursor();
 }
 
-void showchareditfield(unsigned char stdoralt)
+void showchareditfield(char stdoralt)
 // Function to draw char editor background field
 // Input: Flag for which charset is edited, standard (0) or alternate (1)
 {
@@ -830,12 +830,12 @@ void showchareditfield(unsigned char stdoralt)
     vdcwin_win_new(0, 67, 0, 13, 12);
 }
 
-unsigned int charaddress(unsigned char screencode, unsigned char stdoralt, unsigned char vdcormem)
+unsigned charaddress(char screencode, char stdoralt, char vdcormem)
 // Function to calculate address of character to edit
 // Input:   screencode to edit, flag for standard (0) or alternate (1) charset,
 //          flag for VDC (0) or bank 1 (1) memory address
 {
-    unsigned int address;
+    unsigned address;
 
     if (vdcormem == 0)
     {
@@ -850,11 +850,11 @@ unsigned int charaddress(unsigned char screencode, unsigned char stdoralt, unsig
     return address;
 }
 
-void showchareditgrid(unsigned int screencode, unsigned char stdoralt)
+void showchareditgrid(unsigned screencode, char stdoralt)
 // Function to draw grid with present char to edit
 {
-    unsigned char x, y, char_byte, colorbase, colorbit;
-    unsigned int address;
+    char x, y, char_byte, colorbase, colorbit;
+    unsigned address;
 
     address = charaddress(screencode, stdoralt, 0);
 
@@ -889,7 +889,7 @@ void mainmenuloop()
 {
     // Function for main menu selection loop
 
-    unsigned char menuchoice;
+    char menuchoice;
 
     vdcwin_win_new(0, 0, 0, vdc_state.width, 1);
     loadsyscharset();
@@ -1027,7 +1027,7 @@ int main(void)
 {
     // Main application initialization, loop and exit
 
-    unsigned char key, newval;
+    char key, newval;
 
     // Initialize memory settings for backing up windows backgrounds
     vdcwin_winstorage_init(BNK_1_FULL, (char *)WINDOWBASEADDRESS, WIN_MEMORY);
@@ -1036,7 +1036,7 @@ int main(void)
     bnk_init();
 
     // Reset startvalues global variables
-    vdcwin_viewport_init(&canvas, BNK_1_FULL, SCREENMAPBASE, 80, 25, 80, 25, 0, 0);
+    vdcwin_viewport_init(&canvas, BNK_1_FULL, (char *)SCREENMAPBASE, 80, 25, 80, 25, 0, 0);
     charsetchanged[0] = 0;
     charsetchanged[1] = 0;
     appexit = 0;
@@ -1104,7 +1104,7 @@ int main(void)
         menu_fileerrormessage();
         exit(1);
     }
-    bnk_memcpy(BNK_1_FULL, CHARSETALTERNATE, BNK_1_FULL, CHARSETSYSTEM, 2048);
+    bnk_memcpy(BNK_1_FULL, (char *)CHARSETALTERNATE, BNK_1_FULL, (char *)CHARSETSYSTEM, 2048);
 
     // Clear screen map in bank 1 with spaces in text color white
     screenmapfill(CH_SPACE, VDC_WHITE);
@@ -1238,8 +1238,8 @@ int main(void)
 
         // Grab underlying character and attributes
         case 'g':
-            plotscreencode = bnk_readb(BNK_1_FULL, (char *)screenmap_screenaddr(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, canvas.sourcewidth));
-            newval = bnk_readb(BNK_1_FULL, (char *)screenmap_attraddr(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, canvas.sourcewidth, canvas.sourceheight));
+            plotscreencode = bnk_readb(BNK_1_FULL, screenmap_screenaddr(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, canvas.sourcewidth));
+            newval = bnk_readb(BNK_1_FULL, screenmap_attraddr(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, canvas.sourcewidth, canvas.sourceheight));
             if (newval > 128)
             {
                 plotaltchar = 1;

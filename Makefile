@@ -60,9 +60,9 @@ bootsect.bin: $(MAIN).prg
 
 d64:	bootsect.bin
 	c1541 -cd build/ -format "vdcse,xm" d64 $(MAIN).d64
-	c1541 -cd build/ $(MAIN).d64 -bwrite bootsect.bin 1 0
-	c1541 -cd build/ $(MAIN).d64 -bpoke 18 0 4 $14 %11111110
-	c1541 -cd build/ $(MAIN).d64 -bam 1 1
+	c1541 -cd build/ -attach $(MAIN).d64 -bwrite bootsect.bin 1 0
+	c1541 -cd build/ -attach $(MAIN).d64 -bpoke 18 0 4 $14 %11111110
+	c1541 -cd build/ -attach $(MAIN).d64 -bam 1 1
 	c1541 -cd build/ -attach $(MAIN).d64 -write vdcse.prg vdcse
 	c1541 -cd build/ -attach $(MAIN).d64 -write vdcselmc.prg vdcsemlc
 #	c1541 -cd build/ -attach $(MAIN).d64 -write vdcseovl1.prg vdcseovl1
@@ -83,9 +83,9 @@ d64:	bootsect.bin
 
 d71:	bootsect.bin
 	c1541 -cd build/ -format "vdcse,xm" d71 $(MAIN).d71
-	c1541 -cd build/ $(MAIN).d71 -bwrite bootsect.bin 1 0
-	c1541 -cd build/ $(MAIN).d71 -bpoke 18 0 4 $14 %11111110
-	c1541 -cd build/ $(MAIN).d71 -bam 1 1
+	c1541 -cd build/ -attach $(MAIN).d71 -bwrite bootsect.bin 1 0
+	c1541 -cd build/ -attach $(MAIN).d71 -bpoke 18 0 4 $14 %11111110
+	c1541 -cd build/ -attach $(MAIN).d71 -bam 1 1
 	c1541 -cd build/ -attach $(MAIN).d71 -write vdcse.prg vdcse
 	c1541 -cd build/ -attach $(MAIN).d71 -write vdcselmc.prg vdcsemlc
 #	c1541 -cd build/ -attach $(MAIN).d71 -write vdcseovl1.prg vdcseovl1
@@ -106,9 +106,9 @@ d71:	bootsect.bin
 
 d81:	bootsect.bin
 	c1541 -cd build/ -format "vdcse,xm" d81 $(MAIN).d81
-	c1541 -cd build/ $(MAIN).d81 -bwrite bootsect.bin 1 0
-	c1541 -cd build/ $(MAIN).d81 -bpoke 40 1 16 $27 %11111110
-	c1541 -cd build/ $(MAIN).d81 -bam 1 1
+	c1541 -cd build/ -attach $(MAIN).d81 -bwrite bootsect.bin 1 0
+	c1541 -cd build/ -attach $(MAIN).d81 -bpoke 40 1 16 $27 %11111110
+	c1541 -cd build/ -attach $(MAIN).d81 -bam 1 1
 	c1541 -cd build/ -attach $(MAIN).d81 -write vdcse.prg vdcse
 	c1541 -cd build/ -attach $(MAIN).d81 -write vdcselmc.prg vdcsemlc
 #	c1541 -cd build/ -attach $(MAIN).d81 -write vdcseovl1.prg vdcseovl1

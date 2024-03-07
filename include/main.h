@@ -1,35 +1,35 @@
 #ifndef __MAIN_H_
 #define __MAIN_H_
 
-unsigned char dosCommand(const unsigned char lfn, const unsigned char drive, const unsigned char sec_addr, const char *cmd);
-unsigned int cmd(const unsigned char device, const char *cmd);
-signed int textInput(unsigned char xpos, unsigned char ypos, char *str, unsigned char width, unsigned char lines);
-void printcentered(const char *text, unsigned char xpos, unsigned char ypos, unsigned char width);
-unsigned char VDC_Attribute(unsigned char textcolor, unsigned char blink, unsigned char underline, unsigned char reverse, unsigned char alternate);
+char dosCommand(const char lfn, const char drive, const char sec_addr, const char *cmd);
+unsigned cmd(const char device, const char *cmd);
+signed int textInput(char xpos, char ypos, char *str, char width, char lines);
+void printcentered(const char *text, char xpos, char ypos, char width);
+char VDC_Attribute(char textcolor, char blink, char underline, char reverse, char alternate);
 void initoverlay();
-void loadoverlay(unsigned char overlay_select);
-unsigned int screenmap_screenaddr(unsigned char row, unsigned char col, unsigned int width);
-unsigned int screenmap_attraddr(unsigned char row, unsigned char col, unsigned int width, unsigned int height);
-void screenmapplot(unsigned char row, unsigned char col, unsigned char screencode, unsigned char attribute);
+void loadoverlay(char overlay_select);
+char *screenmap_screenaddr(unsigned row, unsigned col, unsigned width);
+char *screenmap_attraddr(unsigned row, unsigned col, unsigned width, unsigned height);
+void screenmapplot(char row, char col, char screencode, char attribute);
 void placesignature();
-void screenmapfill(unsigned char screencode, unsigned char attribute);
-void cursormove(unsigned char left, unsigned char right, unsigned char up, unsigned char down);
-void undo_new(unsigned char row, unsigned char col, unsigned char width, unsigned char height);
+void screenmapfill(char screencode, char attribute);
+void cursormove(char left, char right, char up, char down);
+void undo_new(char row, char col, char width, char height);
 void undo_performundo();
 void undo_escapeundo();
 void undo_performredo();
-void helpscreen_load(unsigned char screennumber);
+void helpscreen_load(char screennumber);
 void loadsyscharset();
 void restorealtcharset();
 void plotcursor();
-void plotmove(unsigned char direction);
-void change_plotcolor(unsigned char newval);
+void plotmove(char direction);
+void change_plotcolor(char newval);
 void printstatusbar();
 void initstatusbar();
 void hidestatusbar();
 void togglestatusbar();
-void showchareditfield(unsigned char stdoralt);
-unsigned int charaddress(unsigned char screencode, unsigned char stdoralt, unsigned char vdcormem);
-void showchareditgrid(unsigned int screencode, unsigned char stdoralt);
+void showchareditfield(char stdoralt);
+unsigned charaddress(char screencode, char stdoralt, char vdcormem);
+void showchareditgrid(unsigned screencode, char stdoralt);
 
 #endif // __MAIN_H_
