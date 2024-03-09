@@ -342,7 +342,7 @@ void printstatusbar()
     }
     else
     {
-        vdc_prints(61, ypos, "   ");
+        vdc_prints(62, ypos, "   ");
     }
     if (plotaltchar)
     {
@@ -528,6 +528,13 @@ void cursormove(char left, char right, char up, char down)
     }
 }
 
+void plotcursor()
+// Plot cursor at present position
+{
+    vdc_printc(screen_col, screen_row, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
+    vdcwin_cursor_show(&canvas.view, 1);
+}
+
 // Functions for undo system
 
 void undo_new(char row, char col, char width, char height)
@@ -633,6 +640,7 @@ void undo_performundo()
             undo_undopossible = 0;
         }
     }
+    plotcursor();
 }
 
 void undo_escapeundo()
@@ -648,6 +656,7 @@ void undo_escapeundo()
             undonumber = 40;
         }
     }
+    plotcursor();
 }
 
 void undo_performredo()
@@ -692,6 +701,7 @@ void undo_performredo()
             undo_redopossible = 0;
         }
     }
+    plotcursor();
 }
 
 // Help screens
@@ -774,13 +784,6 @@ void restorealtcharset()
     {
         bnk_redef_charset(vdc_state.char_alt, BNK_1_FULL, (char *)CHARSETALTERNATE, 256);
     }
-}
-
-void plotcursor()
-// Plot cursor at present position
-{
-    vdc_printc(screen_col, screen_row, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
-    vdcwin_cursor_show(&canvas.view, 1);
 }
 
 void plotmove(char direction)
@@ -1036,13 +1039,11 @@ int main(void)
     bnk_init();
 
     // Reset startvalues global variables
-    vdcwin_viewport_init(&canvas, BNK_1_FULL, (char *)SCREENMAPBASE, 80, 25, 80, 25, 0, 0);
     charsetchanged[0] = 0;
     charsetchanged[1] = 0;
     appexit = 0;
     screen_col = 0;
     screen_row = 0;
-    screentotal = canvas.sourcewidth * canvas.sourceheight;
     screenbackground = 0;
     plotscreencode = 0;
     plotcolor = VDC_WHITE;
@@ -1051,16 +1052,17 @@ int main(void)
     plotblink = 0;
     plotaltchar = 0;
 
-    sprintf(pulldown_titles[0][0], "Width:   %5i ", canvas.sourcewidth);
-    sprintf(pulldown_titles[0][1], "Height:  %5i ", canvas.sourceheight);
-    sprintf(pulldown_titles[0][2], "Background: %2i ", screenbackground);
-
     // Obtain device number the application was started from
     bootdevice = getcurrentdevice();
     targetdevice = bootdevice;
 
     // Init screen and banking functions, start with default 80x25 text mode
     vdc_init(VDC_TEXT_80x25_PAL, 1);
+    vdcwin_viewport_init(&canvas, BNK_1_FULL, (char *)SCREENMAPBASE, 80, 25, 80, 25, 0, 0);
+    screentotal = canvas.sourcewidth * canvas.sourceheight;
+    sprintf(pulldown_titles[0][0], "Width:   %5u ", canvas.sourcewidth);
+    sprintf(pulldown_titles[0][1], "Height:  %5u ", canvas.sourceheight);
+    sprintf(pulldown_titles[0][2], "Background: %2u ", screenbackground);
 
     // Detect VDC memory size and set VDC memory config size to 64K if present
     if (vdc_state.memsize == 64)
@@ -1133,7 +1135,7 @@ int main(void)
         {
             printstatusbar();
         }
-        key = vdcwin_getch();
+        key = getch();
 
         switch (key)
         {
@@ -1373,7 +1375,8 @@ int main(void)
             {
                 initstatusbar();
             }
-            gotoxy(screen_col, screen_row);
+            vdcwin_cursor_move(&canvas.view, screen_col, screen_row);
+            plotcursor();
             break;
 
         // Go to menu
@@ -1387,6 +1390,7 @@ int main(void)
         // Toggle statusbar
         case CH_F6:
             togglestatusbar();
+            plotcursor();
             break;
 
         // Help screen

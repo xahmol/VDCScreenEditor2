@@ -137,7 +137,7 @@ clean:
 	$(DEL) build/*.* 2>$(NULLDEV)
 
 # To deploy software to UII+ enter make deploy. Obviously C128 needs to powered on with UII+ and USB drive connected.
-deploy: $(MAIN).d64 $(MAIN).d71 $(MAIN).d81
+deploy:
 	wput -u build/*.prg build/$(MAIN).d* $(ULTHOST)
 #	wput -u build/$(MAIN).d64 $(ULTHOST2)
 

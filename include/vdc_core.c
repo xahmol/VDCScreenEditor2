@@ -58,7 +58,7 @@ Code and resources from others used:
 -   Bart van Leeuwen: For inspiration and advice while coding. Also for providing the excellent Device Manager ROM to make testing on real hardware very easy
 
 -   Original windowing system code on Commodore 128 by unknown author.
-   
+
 -   Tested using real hardware (C128D and C128DCR) plus VICE.
 
 The code can be used freely as long as you retain a notice describing original source and author.
@@ -236,6 +236,17 @@ char vdc_set_mode(char mode)
 void vdc_init(char mode, char extmem)
 // Initialize VDC screen
 {
+    // Function key values
+    char functionkeys[20] = {
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        133, 137, 134, 138, 135, 139, 136, 140, 10, 140};
+
+    // Init function keys definitions
+    for(char i=0;i<20;i++)
+    {
+        POKE(0x1000+i,functionkeys[i]);
+    }
+    
     // Init screen colors
     vdc_bgcolor(VDC_BLACK);
     vdc_fgcolor(VDC_LYELLOW);
@@ -501,7 +512,7 @@ void vdc_prints_attr(char x, char y, const char *string, char attr)
 void vdc_prints(char x, char y, const char *string)
 // Function to plot a string at a given coordinate with active attributes
 {
-    vdc_prints_attr(x,y,string,vdc_state.text_attr);
+    vdc_prints_attr(x, y, string, vdc_state.text_attr);
 }
 
 void vdc_hchar(char x, char y, char val, char attr, char length)
