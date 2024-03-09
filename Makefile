@@ -65,8 +65,8 @@ d64:	bootsect.bin
 	c1541 -cd build/ -attach $(MAIN).d64 -bam 1 1
 	c1541 -cd build/ -attach $(MAIN).d64 -write vdcse.prg vdcse
 	c1541 -cd build/ -attach $(MAIN).d64 -write vdcselmc.prg vdcselmc
-#	c1541 -cd build/ -attach $(MAIN).d64 -write vdcseovl1.prg vdcseovl1
-#	c1541 -cd build/ -attach $(MAIN).d64 -write vdcseovl2.prg vdcseovl2
+	c1541 -cd build/ -attach $(MAIN).d64 -write vdcseovl1.prg vdcseovl1
+	c1541 -cd build/ -attach $(MAIN).d64 -write vdcseovl2.prg vdcseovl2
 #	c1541 -cd build/ -attach $(MAIN).d64 -write vdcseovl3.prg vdcseovl3
 #	c1541 -cd build/ -attach $(MAIN).d64 -write vdcseovl4.prg vdcseovl4
 	c1541 -cd build/ -attach $(MAIN).d64 -write vdcsefalt.prg vdcsefalt
@@ -88,8 +88,8 @@ d71:	bootsect.bin
 	c1541 -cd build/ -attach $(MAIN).d71 -bam 1 1
 	c1541 -cd build/ -attach $(MAIN).d71 -write vdcse.prg vdcse
 	c1541 -cd build/ -attach $(MAIN).d71 -write vdcselmc.prg vdcselmc
-#	c1541 -cd build/ -attach $(MAIN).d71 -write vdcseovl1.prg vdcseovl1
-#	c1541 -cd build/ -attach $(MAIN).d71 -write vdcseovl2.prg vdcseovl2
+	c1541 -cd build/ -attach $(MAIN).d71 -write vdcseovl1.prg vdcseovl1
+	c1541 -cd build/ -attach $(MAIN).d71 -write vdcseovl2.prg vdcseovl2
 #	c1541 -cd build/ -attach $(MAIN).d71 -write vdcseovl3.prg vdcseovl3
 #	c1541 -cd build/ -attach $(MAIN).d71 -write vdcseovl4.prg vdcseovl4
 	c1541 -cd build/ -attach $(MAIN).d71 -write vdcsefalt.prg vdcsefalt
@@ -111,8 +111,8 @@ d81:	bootsect.bin
 	c1541 -cd build/ -attach $(MAIN).d81 -bam 1 1
 	c1541 -cd build/ -attach $(MAIN).d81 -write vdcse.prg vdcse
 	c1541 -cd build/ -attach $(MAIN).d81 -write vdcselmc.prg vdcselmc
-#	c1541 -cd build/ -attach $(MAIN).d81 -write vdcseovl1.prg vdcseovl1
-#	c1541 -cd build/ -attach $(MAIN).d81 -write vdcseovl2.prg vdcseovl2
+	c1541 -cd build/ -attach $(MAIN).d81 -write vdcseovl1.prg vdcseovl1
+	c1541 -cd build/ -attach $(MAIN).d81 -write vdcseovl2.prg vdcseovl2
 #	c1541 -cd build/ -attach $(MAIN).d81 -write vdcseovl3.prg vdcseovl3
 #	c1541 -cd build/ -attach $(MAIN).d81 -write vdcseovl4.prg vdcseovl4
 	c1541 -cd build/ -attach $(MAIN).d81 -write vdcsefalt.prg vdcsefalt

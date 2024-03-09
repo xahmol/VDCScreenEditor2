@@ -242,10 +242,7 @@ void vdc_init(char mode, char extmem)
         133, 137, 134, 138, 135, 139, 136, 140, 10, 140};
 
     // Init function keys definitions
-    for(char i=0;i<20;i++)
-    {
-        POKE(0x1000+i,functionkeys[i]);
-    }
+    memcpy((char*)0x1000,functionkeys,20);
     
     // Init screen colors
     vdc_bgcolor(VDC_BLACK);

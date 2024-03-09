@@ -70,6 +70,8 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "banking.h"
 #include "vdc_win.h"
 #include "vdc_menu.h"
+#include "overlay1.h"
+#include "overlay2.h"
 
 // Memory region for code, data etc. from 0x1c80 to 0xbfff
 #pragma region( vdcse, 0x1c80, 0xc000 - OVERLAYSIZE, , , {code, data, bss, heap, stack} )
@@ -238,13 +240,19 @@ void initoverlay()
         // Compose filename
         sprintf(buffer, "vdcseovl%u", x + 1);
 
+        // Load overlay file, exit if not found
+        load_overlay(buffer);
+
+        // Copy to overlay storage memory location
+        overlaydata[x].bank = destbank;
+
         if (destbank)
         {
             // Load overlay file, exit if not found
 
             // Copy to overlay storage memory location
             overlaydata[x].bank = destbank;
-            bnk_memcpy(BNK_0_FULL, (char *)OVERLAYLOAD, destbank, (char *)address, OVERLAYSIZE);
+            bnk_memcpy(destbank, (char *)address, BNK_0_FULL, (char *)OVERLAYLOAD, OVERLAYSIZE);
             overlaydata[x].address = address;
             address += OVERLAYSIZE;
 
@@ -277,7 +285,7 @@ void loadoverlay(char overlay_select)
         overlay_active = overlay_select;
         if (overlaydata[overlay_select - 1].bank)
         {
-            bnk_memcpy(overlaydata[overlay_select - 1].bank, (char *)overlaydata[overlay_select - 1].address, BNK_DEFAULT, (char *)OVERLAYLOAD, OVERLAYSIZE);
+            bnk_memcpy(BNK_DEFAULT, (char *)OVERLAYLOAD, overlaydata[overlay_select - 1].bank, (char *)overlaydata[overlay_select - 1].address, OVERLAYSIZE);
         }
         else
         {
@@ -1089,7 +1097,7 @@ int main(void)
     }
 
     // Init overlays
-    // initoverlay();
+    initoverlay();
 
     // Load visual PETSCII map mapping data
     printcentered("Load visual PETSCII", 29, 24, 22);
@@ -1135,7 +1143,7 @@ int main(void)
         {
             printstatusbar();
         }
-        key = getch();
+        key = vdcwin_getch();
 
         switch (key)
         {
@@ -1290,8 +1298,8 @@ int main(void)
 
         // Write mode: type in screencodes
         case 'w':
-            // loadoverlay(1);
-            // writemode();
+            loadoverlay(1);
+            writemode();
             break;
 
         // Color mode: type colors
@@ -1302,8 +1310,8 @@ int main(void)
 
         // Line and box mode
         case 'l':
-            // loadoverlay(2);
-            // lineandbox(1);
+            loadoverlay(2);
+            lineandbox(1);
             break;
 
         // Move mode

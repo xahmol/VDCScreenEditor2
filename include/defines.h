@@ -23,7 +23,7 @@
 /* Global variables */
 
 // Overlay data struct
-#define OVERLAYNUMBER 4    // Number of overlays
+#define OVERLAYNUMBER 2    // Number of overlays
 #define OVERLAYSIZE 0x1400 // Overlay size (align with config)
 #define OVERLAYLOAD 0xAC00 // Overlay load address (align with config=0xC000-OVERLAYSIZE)
 
