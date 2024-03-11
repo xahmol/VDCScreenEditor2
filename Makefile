@@ -25,8 +25,8 @@ CC = /home/xahmol/oscar64/bin/oscar64
 MAIN = vdcse
 
 # Build versioning
-VERSION_MAJOR = 1
-VERSION_MINOR = 1
+VERSION_MAJOR = 2
+VERSION_MINOR = 0
 VERSION_TIMESTAMP = $(shell date "+%Y%m%d-%H%M")
 VERSION = v$(VERSION_MAJOR)$(VERSION_MINOR)-$(VERSION_TIMESTAMP)
 

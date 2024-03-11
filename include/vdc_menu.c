@@ -108,6 +108,13 @@ char pulldown_titles[VDC_PULLDOWN_NUMBER][VDC_PULLDOWN_MAXOPTIONS][VDC_PULLDOWN_
      "NTSC 80x50",
      "NTSC 80x60"}};
 
+// Menucolors
+char mc_mb_normal = VDC_LGREEN + VDC_A_REVERSE + VDC_A_ALTCHAR;
+char mc_mb_select = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+char mc_pd_normal = VDC_DCYAN + VDC_A_REVERSE + VDC_A_ALTCHAR;
+char mc_pd_select = VDC_LYELLOW + VDC_A_REVERSE + VDC_A_ALTCHAR;
+char mc_menupopup = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+
 void menu_placeheader(const char *header)
 // Print header title
 {
@@ -123,7 +130,7 @@ void menu_placebar(char y)
 
     menubar.ypos = y;
 
-    vdc_hchar(0, y, C_SPACE, VDC_MENUBAR_BARCOL, 80);
+    vdc_hchar(0, y, C_SPACE, mc_mb_normal, 80);
 
     for (char i = 0; i < VDC_MENUBAR_MAXOPTIONS; i++)
     {
@@ -132,7 +139,7 @@ void menu_placebar(char y)
         {
             xcoord = vdc_state.width - 1 - len;
         }
-        vdc_prints_attr(xcoord, y, menubar.titles[i], VDC_MENUBAR_BARCOL);
+        vdc_prints_attr(xcoord, y, menubar.titles[i], mc_mb_normal);
         menubar.xstart[i] = xcoord;
         xcoord += len + 1;
     }
@@ -170,13 +177,13 @@ char menu_pulldown(char xpos, char ypos, char menunumber, unsigned char escapabl
     for (x = 0; x < height; x++)
     {
         sprintf(linebuffer, " %s ", pulldown_titles[menunumber][x]);
-        vdc_prints_attr(xpos, ypos + x, linebuffer, VDC_PULLDOWN_NORMALCOL);
+        vdc_prints_attr(xpos, ypos + x, linebuffer, mc_pd_normal);
     }
 
     do
     {
         sprintf(linebuffer, "%c%s ", VDC_PULLDOWN_SELECTCH, pulldown_titles[menunumber][menuchoice - 1]);
-        vdc_prints_attr(xpos, ypos + menuchoice - 1, linebuffer, VDC_PULLDOWN_SELECTCOL);
+        vdc_prints_attr(xpos, ypos + menuchoice - 1, linebuffer, mc_pd_select);
 
         do
         {
@@ -217,7 +224,7 @@ char menu_pulldown(char xpos, char ypos, char menunumber, unsigned char escapabl
         case CH_CURS_DOWN:
         case CH_CURS_UP:
             sprintf(linebuffer, " %s ", pulldown_titles[menunumber][menuchoice - 1]);
-            vdc_prints_attr(xpos, ypos + menuchoice - 1, linebuffer, VDC_PULLDOWN_NORMALCOL);
+            vdc_prints_attr(xpos, ypos + menuchoice - 1, linebuffer, mc_pd_normal);
             if (key == CH_CURS_UP)
             {
                 menuchoice--;
@@ -261,14 +268,14 @@ char menu_main()
     {
         do
         {
-            vdc_prints_attr(menubar.xstart[menubarchoice - 1], menubar.ypos, menubar.titles[menubarchoice - 1], VDC_MENUBAR_HIGHLLIGHT);
+            vdc_prints_attr(menubar.xstart[menubarchoice - 1], menubar.ypos, menubar.titles[menubarchoice - 1], mc_mb_select);
 
             do
             {
                 key = vdcwin_getch();
             } while (key != CH_ENTER && key != CH_CURS_LEFT && key != CH_CURS_RIGHT && key != CH_ESC && key != CH_STOP);
 
-            vdc_prints_attr(menubar.xstart[menubarchoice - 1], menubar.ypos, menubar.titles[menubarchoice - 1], VDC_MENUBAR_BARCOL);
+            vdc_prints_attr(menubar.xstart[menubarchoice - 1], menubar.ypos, menubar.titles[menubarchoice - 1], mc_mb_normal);
 
             if (key == CH_CURS_LEFT)
             {
@@ -325,7 +332,7 @@ char menu_areyousure(const char *message)
     char choice;
     char old_attr = vdc_state.text_attr;
 
-    vdc_state.text_attr = VDC_POPUP_COLOR;
+    vdc_state.text_attr = mc_menupopup;
 
     vdcwin_win_new(VDC_POPUP_BORDER, 8, 8, 30, 6);
     vdc_prints(10, 9, message);
@@ -343,7 +350,7 @@ void menu_fileerrormessage()
 {
     char old_attr = vdc_state.text_attr;
 
-    vdc_state.text_attr = VDC_POPUP_COLOR;
+    vdc_state.text_attr = mc_menupopup;
     vdcwin_win_new(VDC_POPUP_BORDER, 8, 8, 30, 6);
 
     vdc_prints(10, 9, "File error!");
@@ -363,7 +370,7 @@ void menu_messagepopup(const char *message)
 {
     char old_attr = vdc_state.text_attr;
 
-    vdc_state.text_attr = VDC_POPUP_COLOR;
+    vdc_state.text_attr = mc_menupopup;
     vdcwin_win_new(VDC_POPUP_BORDER, 8, 8, 30, 6);
 
     vdc_prints(10, 9, message);

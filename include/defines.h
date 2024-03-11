@@ -52,13 +52,6 @@ struct UndoStruct
 };
 extern struct UndoStruct Undo[41];
 
-// Menucolors
-extern char mc_mb_normal;
-extern char mc_mb_select;
-extern char mc_pd_normal;
-extern char mc_pd_select;
-extern char mc_menupopup;
-
 // Global variables
 extern char bootdevice;
 extern char DOSstatus[40];

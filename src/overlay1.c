@@ -479,6 +479,138 @@ void selectscreenmode()
     }
 }
 
+void changebackgroundcolor()
+{
+    // Function to change background color
+
+    unsigned char key;
+    unsigned char newcolor = screenbackground;
+    unsigned char changed = 0;
+
+    vdc_state.text_attr = mc_menupopup;
+    vdcwin_win_new(VDC_POPUP_BORDER, 20, 5, 40, 12);
+
+    vdc_underline(1);
+    vdc_prints(21, 6, "Change background color");
+    vdc_underline(0);
+    sprintf(buffer, "Color: %2u", newcolor);
+    vdc_prints(21, 8, buffer);
+    vdc_prints(21, 10, "Press:");
+    vdc_prints(21, 11, "+:     Increase color number");
+    vdc_prints(21, 12, "-:     Decrease color number");
+    vdc_prints(21, 13, "ENTER: Accept color");
+    vdc_prints(21, 14, "ESC:   Cancel");
+
+    do
+    {
+        do
+        {
+            key = vdcwin_getch();
+        } while (key != CH_ENTER && key != CH_ESC && key != CH_STOP && key != '+' && key != '-');
+
+        switch (key)
+        {
+        case '+':
+            newcolor++;
+            if (newcolor > 15)
+            {
+                newcolor = 0;
+            }
+            changed = 1;
+            break;
+
+        case '-':
+            if (newcolor == 0)
+            {
+                newcolor = 15;
+            }
+            else
+            {
+                newcolor--;
+            }
+            changed = 1;
+            break;
+
+        case CH_ESC:
+        case CH_STOP:
+            changed = 0;
+            vdc_bgcolor(screenbackground);
+            break;
+
+        default:
+            break;
+        }
+
+        if (changed == 1)
+        {
+            vdc_bgcolor(newcolor);
+            sprintf(buffer, "Color: %2u", newcolor);
+            vdc_prints(21, 8, buffer);
+        }
+    } while (key != CH_ENTER && key != CH_ESC && key != CH_STOP);
+
+    if (changed = 1)
+    {
+        screenbackground = newcolor;
+
+        // Change menu palette based on background color
+
+        // Default palette if black or dark grey background
+        if (screenbackground == VDC_BLACK || screenbackground == VDC_DGREY)
+        {
+            mc_mb_normal = VDC_LGREEN + VDC_A_REVERSE + VDC_A_ALTCHAR;
+            mc_mb_select = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+            mc_pd_normal = VDC_DCYAN + VDC_A_REVERSE + VDC_A_ALTCHAR;
+            mc_pd_select = VDC_LYELLOW + VDC_A_REVERSE + VDC_A_ALTCHAR;
+            mc_menupopup = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+        }
+        else
+        {
+            // Palette for background colors with intensity bit enabled
+            if (screenbackground & 0x01)
+            {
+                mc_mb_normal = VDC_BLACK + VDC_A_REVERSE + VDC_A_ALTCHAR;
+                mc_mb_select = VDC_BLACK + VDC_A_ALTCHAR;
+                mc_pd_normal = VDC_BLACK + VDC_A_REVERSE + VDC_A_ALTCHAR;
+                mc_pd_select = VDC_BLACK + VDC_A_ALTCHAR;
+                mc_menupopup = VDC_BLACK + VDC_A_REVERSE + VDC_A_ALTCHAR;
+            }
+            // Palette for background color with intensity bit disabled if not black/dgrey
+            else
+            {
+                mc_mb_normal = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+                mc_mb_select = VDC_WHITE + VDC_A_ALTCHAR;
+                mc_pd_normal = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+                mc_pd_select = VDC_WHITE + VDC_A_ALTCHAR;
+                mc_menupopup = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+            }
+        }
+        vdc_state.text_attr = mc_menupopup;
+        updatecanvas();
+    }
+
+    vdcwin_win_free();
+}
+
+void versioninfo()
+{
+    vdc_state.text_attr = mc_menupopup;
+    vdcwin_win_new(VDC_POPUP_BORDER, 5, 5, 60, 15);
+    vdc_underline(1);
+    vdc_prints(6, 6, "Version information and credits");
+    vdc_underline(0);
+    vdc_prints(6, 8, "VDC Screen Editor");
+    vdc_prints(6, 9, "Written in 2024 by Xander Mol");
+    sprintf(buffer, "Version: %s", VERSION);
+    vdc_prints(6, 11, buffer);
+    vdc_prints(6, 13, "Full source code, documentation and credits at:");
+    vdc_prints(6, 14, "https://github.com/xahmol/VDCScreenEditor2");
+    vdc_prints(6, 16, "(C) 2024, IDreamtIn8Bits.com");
+    vdc_prints(6, 18, "Press a key to continue.");
+    getch();
+    vdcwin_win_free();
+}
+
 #pragma code(code)
 #pragma data(data)
 #pragma bss(bss)

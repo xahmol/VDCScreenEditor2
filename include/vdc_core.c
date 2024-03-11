@@ -204,6 +204,7 @@ char vdc_set_mode(char mode)
     vdc_state.char_std = vdc_modes[mode].char_std;
     vdc_state.char_alt = vdc_modes[mode].char_alt;
     vdc_state.extended = vdc_modes[mode].extended;
+    vdc_state.text_attr = VDC_LYELLOW+VDC_A_ALTCHAR;
     vdc_state.dispaddr_offset = 0;
     vdc_state.disp_skip = 0;
 

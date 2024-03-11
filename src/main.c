@@ -84,13 +84,6 @@ char undo_undopossible;
 char undo_redopossible;
 struct UndoStruct Undo[41];
 
-// Menucolors
-char mc_mb_normal = VDC_LGREEN + VDC_A_REVERSE + VDC_A_ALTCHAR;
-char mc_mb_select = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
-char mc_pd_normal = VDC_DCYAN + VDC_A_REVERSE + VDC_A_ALTCHAR;
-char mc_pd_select = VDC_LYELLOW + VDC_A_REVERSE + VDC_A_ALTCHAR;
-char mc_menupopup = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
-
 // Global variables
 char bootdevice;
 char DOSstatus[40];
@@ -566,7 +559,7 @@ void plotcursor()
 // Plot cursor at present position
 {
     vdc_printc(screen_col, screen_row, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
-    vdcwin_cursor_show(&canvas.view, 1);
+    vdcwin_cursor_show(&canvas.view);
 }
 
 // Functions for undo system
@@ -746,6 +739,8 @@ void helpscreen_load(char screennumber)
     // Function to show selected help screen
     // Input: screennumber: 1-Main mode, 2-Character editor, 3-SelectMoveLinebox, 4-Write/colorwrite mode
 
+    vdcwin_cursor_show(&canvas.view);
+
     // Load system charset if needed
     if (charsetchanged[1] == 1)
     {
@@ -791,7 +786,7 @@ void helpscreen_load(char screennumber)
         vdcwin_cursor_move(&canvas.view, screen_col, screen_row);
         vdc_printc(screen_row, screen_col, plotscreencode, vdc_state.text_attr);
     }
-    vdcwin_cursor_show(&canvas.view, 1);
+    vdcwin_cursor_show(&canvas.view);
 
     // Restore custom charset if needed
     if (charsetchanged[1] == 1)
@@ -939,6 +934,7 @@ void mainmenuloop()
 
     char menuchoice;
 
+    vdcwin_cursor_show(&canvas.view);
     vdcwin_win_new(0, 0, 0, vdc_state.width, 1);
     loadsyscharset();
 
@@ -959,8 +955,8 @@ void mainmenuloop()
             break;
 
         case 13:
-            // loadoverlay(3);
-            // changebackgroundcolor();
+            loadoverlay(1);
+            changebackgroundcolor();
             break;
 
         case 14:
@@ -1044,8 +1040,8 @@ void mainmenuloop()
             break;
 
         case 41:
-            // loadoverlay(3);
-            // versioninfo();
+            loadoverlay(1);
+            versioninfo();
             break;
 
         case 42:
@@ -1425,7 +1421,7 @@ int main(void)
 
         // Go to menu
         case CH_F1:
-            vdcwin_cursor_show(&canvas.view, 0);
+            vdcwin_cursor_show(&canvas.view);
             mainmenuloop();
             plotcursor();
             vdc_state.text_attr = plotcolor;
