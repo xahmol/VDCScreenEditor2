@@ -88,12 +88,12 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #define VDC_MENUBAR_HIGHLLIGHT VDC_WHITE + VDC_A_ALTCHAR + VDC_A_REVERSE   // Menu bar color of selected option
 #define VDC_PULLDOWN_SELECTCOL VDC_LYELLOW + VDC_A_ALTCHAR + VDC_A_REVERSE // Pull down color of selected option
 #define VDC_PULLDOWN_NORMALCOL VDC_DCYAN + VDC_A_ALTCHAR + VDC_A_REVERSE   // Pull down color of not selected option
-#define VDC_PULLDOWN_BORFULL WIN_BOR_ALL                                   // Set borderstyle for separate pulldown
+#define VDC_PULLDOWN_BORFULL 0                                             // Set borderstyle for separate pulldown
 #define VDC_PULLDOWN_BORTOP WIN_BOR_NOTOP                                  // Set borderstyle for main menu pulldowns
 #define VDC_PULLDOWN_SELECTCH CH_MINUS                                     // Set char before selected option
 #define VDC_POPUP_COLOR VDC_LYELLOW + VDC_A_ALTCHAR                        // Set pop-up window default attributes
 #define VDC_POPUP_BORDER WIN_BOR_ALL                                       // Default pop-up border style
-#define VDC_MENU_YESNO 5                                                   // Number for Yes No pull down menu
+#define VDC_MENU_YESNO 4                                                   // Number for Yes No pull down menu
 
 // Function prototypes
 void menu_placeheader(const char *header);

@@ -88,7 +88,7 @@ void plotvisible(unsigned char row, unsigned char col, unsigned char setorrestor
     // Plot or erase part of line or box if in visible viewport
     // Input: row, column, and flag setorrestore to plot new value (1) or restore old value (0)
 
-    if (row >= canvas.sourceyoffset && row <= canvas.sourceyoffset + 24 && col >= canvas.sourcexoffset && col <= canvas.sourcexoffset + 79)
+    if (row >= canvas.sourceyoffset && row <= canvas.sourceyoffset + getmaxy() && col >= canvas.sourcexoffset && col <= canvas.sourcexoffset + getmaxx())
     {
         if (setorrestore == 1)
         {
@@ -127,7 +127,7 @@ void lineandbox(unsigned char draworselect)
             printstatusbar();
         }
         key = vdcwin_getch();
-        vdcwin_cursor_show(&canvas.view, 1);
+        vdcwin_cursor_show(&canvas.view, 0);
 
         switch (key)
         {
@@ -222,6 +222,265 @@ void lineandbox(unsigned char draworselect)
         strcpy(programmode, "Main");
     }
     plotcursor();
+}
+
+void movemode()
+{
+    // Function to move the viewport
+
+    unsigned char key, y;
+    unsigned char moved = 0;
+
+    strcpy(programmode, "Move");
+
+    vdcwin_cursor_show(&canvas.view, 0);
+    ;
+
+    if (undoenabled == 1)
+    {
+        undo_new(0, 0, getmaxx() + 1, getmaxy() + 1);
+    }
+    if (showbar)
+    {
+        hidestatusbar();
+    }
+
+    do
+    {
+        key = vdcwin_getch();
+
+        switch (key)
+        {
+        case CH_CURS_RIGHT:
+            vdcwin_scroll_right(&canvas.view, 1);
+            vdc_vchar(0, 0, CH_SPACE, VDC_WHITE, getmaxy() + 1);
+            moved = 1;
+            break;
+
+        case CH_CURS_LEFT:
+            vdcwin_scroll_left(&canvas.view, 1);
+            vdc_vchar(getmaxx(), 0, CH_SPACE, VDC_WHITE, getmaxy() + 1);
+            moved = 1;
+            break;
+
+        case CH_CURS_UP:
+            vdcwin_scroll_up(&canvas.view, 1);
+            vdc_hchar(0, getmaxy(), CH_SPACE, VDC_WHITE, getmaxx() + 1);
+            moved = 1;
+            break;
+
+        case CH_CURS_DOWN:
+            vdcwin_scroll_down(&canvas.view, 1);
+            vdc_hchar(0, 0, CH_SPACE, VDC_WHITE, getmaxx() + 1);
+            moved = 1;
+            break;
+
+        case CH_F8:
+            helpscreen_load(3);
+            break;
+
+        default:
+            break;
+        }
+    } while (key != CH_ENTER && key != CH_ESC && key != CH_STOP);
+
+    if (moved == 1)
+    {
+        if (key == CH_ENTER)
+        {
+            for (y = 0; y < (getmaxy()+1); y++)
+            {
+                bnk_cpyfromvdc(BNK_1_FULL, screenmap_screenaddr(y + canvas.sourceyoffset, canvas.sourcexoffset, canvas.sourcewidth), vdc_state.base_text + multab[y], getmaxx()+1);
+                bnk_cpyfromvdc(BNK_1_FULL, screenmap_attraddr(y + canvas.sourceyoffset, canvas.sourcexoffset, canvas.sourcewidth, canvas.sourceheight), vdc_state.base_attr + multab[y], getmaxx()+1);
+            }
+        }
+        vdcwin_cpy_viewport(&canvas);
+        if (showbar)
+        {
+            initstatusbar();
+        }
+    }
+    else
+    {
+        if (undoenabled == 1)
+        {
+            undo_escapeundo();
+        }
+    }
+
+    plotcursor();
+    strcpy(programmode, "Main");
+    if (showbar)
+    {
+        printstatusbar();
+    }
+}
+
+void selectmode()
+{
+    // Function to select a screen area to delete, cut, copy or paint
+
+    unsigned char key, movekey, x, y, ycount;
+
+    strcpy(programmode, "Select");
+
+    movekey = 0;
+    lineandbox(0);
+    if (select_accept == 0)
+    {
+        return;
+    }
+
+    strcpy(programmode, "X/C/D/A/P?");
+
+    do
+    {
+        if (showbar)
+        {
+            printstatusbar();
+        }
+        key = vdcwin_getch();
+
+        // Toggle statusbar
+        if (key == CH_F6)
+        {
+            togglestatusbar();
+        }
+
+        if (key == CH_F8)
+        {
+            helpscreen_load(3);
+        }
+
+    } while (key != 'd' && key != 'x' && key != 'c' && key != 'p' && key != 'a' && key != CH_ESC && key != CH_STOP);
+
+    if (key != CH_ESC && key != CH_STOP)
+    {
+        if ((key == 'x' || key == 'c') && (select_width > 4096))
+        {
+            loadsyscharset();
+            menu_messagepopup("Selection too big.");
+            restorealtcharset();
+            strcpy(programmode, "Main");
+            return;
+        }
+
+        if (key == 'x' || key == 'c')
+        {
+            if (key == 'x')
+            {
+                strcpy(programmode, "Cut");
+            }
+            else
+            {
+                strcpy(programmode, "Copy");
+            }
+            do
+            {
+                if (showbar)
+                {
+                    printstatusbar();
+                }
+                movekey = vdcwin_getch();
+
+                switch (movekey)
+                {
+                // Cursor move
+                case CH_CURS_LEFT:
+                case CH_CURS_RIGHT:
+                case CH_CURS_UP:
+                case CH_CURS_DOWN:
+                    plotmove(movekey);
+                    break;
+
+                case CH_F8:
+                    helpscreen_load(3);
+                    break;
+
+                default:
+                    break;
+                }
+            } while (movekey != CH_ESC && movekey != CH_STOP && movekey != CH_ENTER);
+
+            if (movekey == CH_ENTER)
+            {
+                if ((screen_col + canvas.sourcexoffset + select_width > canvas.sourcewidth) || (screen_row + canvas.sourceyoffset + select_height > canvas.sourceheight))
+                {
+                    loadsyscharset();
+                    menu_messagepopup("Selection does not fit.");
+                    restorealtcharset();
+                    strcpy(programmode, "Main");
+                    return;
+                }
+
+                if (key == 'c')
+                {
+                    undo_escapeundo();
+                }
+                undo_new(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, select_width, select_height);
+                for (ycount = 0; ycount < select_height; ycount++)
+                {
+                    y = (screen_row + canvas.sourceyoffset >= select_starty) ? select_height - ycount - 1 : ycount;
+
+                    // Text
+                    bnk_cpytovdc(vdc_state.swap_text, BNK_1_FULL, screenmap_screenaddr(select_starty + y, select_startx, canvas.sourcewidth), select_width);
+                    if (key == 'x')
+                    {
+                        bnk_memset(BNK_1_FULL, screenmap_screenaddr(select_starty + y, select_startx, canvas.sourcewidth), CH_SPACE, select_width);
+                    }
+                    bnk_cpyfromvdc(BNK_1_FULL, screenmap_screenaddr(screen_row + canvas.sourceyoffset + y, screen_col + canvas.sourcexoffset, canvas.sourcewidth), vdc_state.swap_text, select_width);
+
+                    // Attributes
+                    bnk_cpytovdc(vdc_state.swap_text, BNK_1_FULL, screenmap_attraddr(select_starty + y, select_startx, canvas.sourcewidth, canvas.sourceheight), select_width);
+                    if (key == 'x')
+                    {
+                        bnk_memset(BNK_1_FULL, screenmap_attraddr(select_starty + y, select_startx, canvas.sourcewidth, canvas.sourceheight), CH_SPACE, select_width);
+                    }
+                    bnk_cpyfromvdc(BNK_1_FULL, screenmap_attraddr(screen_row + canvas.sourceyoffset + y, screen_col + canvas.sourcexoffset, canvas.sourcewidth, canvas.sourceheight), vdc_state.swap_text, select_width);
+                }
+            }
+        }
+
+        if (key == 'd')
+        {
+            for (y = 0; y < select_height; y++)
+            {
+                bnk_memset(BNK_1_FULL, screenmap_screenaddr(select_starty + y, select_startx, canvas.sourcewidth), CH_SPACE, select_width);
+                bnk_memset(BNK_1_FULL, screenmap_attraddr(select_starty + y, select_startx, canvas.sourcewidth, canvas.sourceheight), CH_SPACE, select_width);
+            }
+        }
+
+        if (key == 'a')
+        {
+            for (y = 0; y < select_height; y++)
+            {
+                bnk_memset(BNK_1_FULL, screenmap_attraddr(select_starty + y, select_startx, canvas.sourcewidth, canvas.sourceheight), VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar), select_width);
+            }
+        }
+
+        if (key == 'p')
+        {
+            for (y = 0; y < select_height; y++)
+            {
+                for (x = 0; x < select_width; x++)
+                {
+                    bnk_writeb(BNK_1_FULL, screenmap_attraddr(select_starty + y, select_startx + x, canvas.sourcewidth, canvas.sourceheight), (bnk_readb(BNK_1_FULL, screenmap_attraddr(select_starty + y, select_startx + x, canvas.sourcewidth, canvas.sourceheight)) & 0xf0) + plotcolor);
+                }
+            }
+        }
+
+        vdcwin_cpy_viewport(&canvas);
+        if (showbar)
+        {
+            initstatusbar();
+        }
+        plotcursor();
+    }
+    else
+    {
+        undo_escapeundo();
+    }
+    strcpy(programmode, "Main");
 }
 
 #pragma code(code)

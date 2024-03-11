@@ -183,6 +183,7 @@ signed int textInput(char xpos, char ypos, char *str, char width, char lines)
     char returncode;
 
     vdcwin_init(&inputwin, xpos, ypos, width, lines);
+    vdcwin_put_string(&inputwin, str);
     returncode = vdcwin_edit(&inputwin);
     if (returncode == CH_ENTER)
     {
@@ -299,6 +300,31 @@ void loadoverlay(char overlay_select)
 }
 
 // Generic screen map routines
+char getmaxy()
+// Return the maximum y coordinate: either screen height or, if less, canvas height
+{
+    if (canvas.sourceheight < vdc_state.height)
+    {
+        return canvas.sourceheight - 1;
+    }
+    else
+    {
+        return vdc_state.height - 1;
+    }
+}
+
+char getmaxx()
+// Return the maximum x coordinate: either screen width or, if less, canvas width
+{
+    if (canvas.sourcewidth < vdc_state.width)
+    {
+        return canvas.sourcewidth - 1;
+    }
+    else
+    {
+        return vdc_state.width - 1;
+    }
+}
 
 void printstatusbar()
 {
@@ -480,7 +506,7 @@ void cursormove(char left, char right, char up, char down)
     }
     if (right == 1)
     {
-        if (screen_col == 79)
+        if (screen_col == getmaxx())
         {
             if (canvas.sourcexoffset + screen_col < canvas.sourcewidth - 1)
             {
@@ -520,7 +546,7 @@ void cursormove(char left, char right, char up, char down)
         {
             hidestatusbar();
         }
-        if (screen_row == vdc_state.height - 1)
+        if (screen_row == getmaxy())
         {
             if (canvas.sourceyoffset + screen_row < canvas.sourceheight - 1)
             {
@@ -896,6 +922,17 @@ void showchareditgrid(unsigned screencode, char stdoralt)
     }
 }
 
+void updatecanvas()
+// Update the menu with the proper screen setting values
+{
+    sprintf(pulldown_titles[0][0], "Width:   %5u ", canvas.sourcewidth);
+    sprintf(pulldown_titles[0][1], "Height:  %5u ", canvas.sourceheight);
+    sprintf(pulldown_titles[0][2], "Background: %2u ", screenbackground);
+    sprintf(pulldown_titles[0][3], "Screenmode: %2u ", vdc_state.mode);
+    vdcwin_viewport_init(&canvas, BNK_1_FULL, (char *)SCREENMAPBASE, canvas.sourcewidth, canvas.sourceheight, getmaxx() + 1, getmaxy() + 1, 0, 0);
+    screentotal = canvas.sourcewidth * canvas.sourceheight;
+}
+
 void mainmenuloop()
 {
     // Function for main menu selection loop
@@ -912,13 +949,13 @@ void mainmenuloop()
         switch (menuchoice)
         {
         case 11:
-            // loadoverlay(1);
-            // resizewidth();
+            loadoverlay(1);
+            resizewidth();
             break;
 
         case 12:
-            // loadoverlay(2);
-            // resizeheight();
+            loadoverlay(1);
+            resizeheight();
             break;
 
         case 13:
@@ -927,6 +964,8 @@ void mainmenuloop()
             break;
 
         case 14:
+            loadoverlay(1);
+            selectscreenmode();
             break;
 
         case 15:
@@ -1067,10 +1106,7 @@ int main(void)
     // Init screen and banking functions, start with default 80x25 text mode
     vdc_init(VDC_TEXT_80x25_PAL, 1);
     vdcwin_viewport_init(&canvas, BNK_1_FULL, (char *)SCREENMAPBASE, 80, 25, 80, 25, 0, 0);
-    screentotal = canvas.sourcewidth * canvas.sourceheight;
-    sprintf(pulldown_titles[0][0], "Width:   %5u ", canvas.sourcewidth);
-    sprintf(pulldown_titles[0][1], "Height:  %5u ", canvas.sourceheight);
-    sprintf(pulldown_titles[0][2], "Background: %2u ", screenbackground);
+    updatecanvas();
 
     // Detect VDC memory size and set VDC memory config size to 64K if present
     if (vdc_state.memsize == 64)
@@ -1316,14 +1352,14 @@ int main(void)
 
         // Move mode
         case 'm':
-            // loadoverlay(2);
-            // movemode();
+            loadoverlay(2);
+            movemode();
             break;
 
         // Select mode
         case 's':
-            // loadoverlay(2);
-            // selectmode();
+            loadoverlay(2);
+            selectmode();
             break;
 
         // Undo

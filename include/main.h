@@ -24,11 +24,14 @@ void restorealtcharset();
 void plotcursor();
 void plotmove(char direction);
 void change_plotcolor(char newval);
+char getmaxy();
+char getmaxx();
 void printstatusbar();
 void initstatusbar();
 void hidestatusbar();
 void togglestatusbar();
 void showchareditfield(char stdoralt);
+void updatecanvas();
 unsigned charaddress(char screencode, char stdoralt, char vdcormem);
 void showchareditgrid(unsigned screencode, char stdoralt);
 

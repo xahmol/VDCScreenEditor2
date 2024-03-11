@@ -80,12 +80,12 @@ struct VDCMenuBar menubar = {
     {0, 0, 0, 0},
     0};
 
-char pulldown_options[VDC_PULLDOWN_NUMBER] = {6, 5, 4, 2, 2};
+char pulldown_options[VDC_PULLDOWN_NUMBER] = {6, 5, 4, 2, 2, 6};
 char pulldown_titles[VDC_PULLDOWN_NUMBER][VDC_PULLDOWN_MAXOPTIONS][VDC_PULLDOWN_MAXLENGTH] = {
     {"Width:      80 ",
      "Height:     25 ",
      "Background:  0 ",
-     "Screenmode     ",
+     "Screenmode:  0 ",
      "Clear          ",
      "Fill           "},
     {"Save screen    ",
