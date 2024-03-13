@@ -72,6 +72,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "vdc_menu.h"
 #include "overlay1.h"
 #include "overlay2.h"
+#include "overlay3.h"
 
 // Memory region for code, data etc. from 0x1c80 to 0xbfff
 #pragma region( vdcse, 0x1c80, 0xc000 - OVERLAYSIZE, , , {code, data, bss, heap, stack} )
@@ -950,17 +951,17 @@ void mainmenuloop()
             break;
 
         case 12:
-            loadoverlay(1);
+            loadoverlay(2);
             resizeheight();
             break;
 
         case 13:
-            loadoverlay(1);
+            loadoverlay(3);
             changebackgroundcolor();
             break;
 
         case 14:
-            loadoverlay(1);
+            loadoverlay(3);
             selectscreenmode();
             break;
 
@@ -1040,7 +1041,7 @@ void mainmenuloop()
             break;
 
         case 41:
-            loadoverlay(1);
+            loadoverlay(3);
             versioninfo();
             break;
 
@@ -1065,6 +1066,7 @@ void mainmenuloop()
 
     vdcwin_win_free();
     restorealtcharset();
+    vdcwin_cursor_show(&canvas.view);
 }
 
 // Main loop
@@ -1279,8 +1281,8 @@ int main(void)
 
         // Palette for character selection
         case 'p':
-            // loadoverlay(1);
-            // palette();
+            loadoverlay(1);
+            palette();
             break;
 
         // Grab underlying character and attributes
@@ -1336,8 +1338,8 @@ int main(void)
 
         // Color mode: type colors
         case 'c':
-            // loadoverlay(1);
-            // colorwrite();
+            loadoverlay(1);
+            colorwrite();
             break;
 
         // Line and box mode

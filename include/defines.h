@@ -23,9 +23,9 @@
 /* Global variables */
 
 // Overlay data struct
-#define OVERLAYNUMBER 2    // Number of overlays
-#define OVERLAYSIZE 0x1400 // Overlay size (align with config)
-#define OVERLAYLOAD 0xAC00 // Overlay load address (align with config=0xC000-OVERLAYSIZE)
+#define OVERLAYNUMBER 3    // Number of overlays
+#define OVERLAYSIZE 0x2000 // Overlay size (align with config)
+#define OVERLAYLOAD 0xA000 // Overlay load address (align with config=0xC000-OVERLAYSIZE)
 
 struct OverlayStruct
 {
