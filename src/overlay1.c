@@ -393,7 +393,7 @@ void palette_draw()
     // Set coordinate of present char if no visual map
     if (visualmap == 0)
     {
-        rowsel = palettechar / 32 + plotaltchar * 9 + 2;
+        rowsel = (palettechar / 32) + (plotaltchar * 9) + 2;
         colsel = palettechar % 32;
     }
 
@@ -476,7 +476,7 @@ void palette()
 
     strcpy(programmode, "Palette");
 
-    vdcwin_cursor_show(&canvas.view);
+    hidecursor();
     palette_draw();
     vdcwin_cursor_move(&canvas.view, 45 + colsel, 2 + rowsel);
     vdcwin_cursor_show(&canvas.view);
@@ -595,9 +595,12 @@ void palette()
 
         // Help screen
         case CH_F8:
+            vdcwin_cursor_show(&canvas.view);
             vdcwin_win_free();
             helpscreen_load(2);
             palette_draw();
+            vdcwin_cursor_move(&canvas.view, 45 + colsel, 2 + rowsel);
+            vdcwin_cursor_show(&canvas.view);
             break;
 
         default:
@@ -621,7 +624,7 @@ void palette()
     } while (key != CH_ESC && key != CH_STOP);
 
     vdcwin_win_free();
-    plotcursor();
+    resetcursor();
     strcpy(programmode, "Main");
 }
 

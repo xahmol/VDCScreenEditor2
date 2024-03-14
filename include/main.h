@@ -22,6 +22,8 @@ void helpscreen_load(char screennumber);
 void loadsyscharset();
 void restorealtcharset();
 void plotcursor();
+void hidecursor();
+void resetcursor();
 void plotmove(char direction);
 void change_plotcolor(char newval);
 char getmaxy();

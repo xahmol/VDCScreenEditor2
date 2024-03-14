@@ -563,6 +563,19 @@ void plotcursor()
     vdcwin_cursor_show(&canvas.view);
 }
 
+void hidecursor()
+// Hide the cursor
+{
+    vdc_printc(screen_col, screen_row, bnk_readb(BNK_1_FULL, screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
+}
+
+void resetcursor()
+// Reset cursor after window
+{
+    vdcwin_cursor_move(&canvas.view, screen_col, screen_row);
+    plotcursor();
+}
+
 // Functions for undo system
 
 void undo_new(char row, char col, char width, char height)
@@ -740,7 +753,7 @@ void helpscreen_load(char screennumber)
     // Function to show selected help screen
     // Input: screennumber: 1-Main mode, 2-Character editor, 3-SelectMoveLinebox, 4-Write/colorwrite mode
 
-    vdcwin_cursor_show(&canvas.view);
+    hidecursor();
 
     // Load system charset if needed
     if (charsetchanged[1] == 1)
@@ -784,10 +797,8 @@ void helpscreen_load(char screennumber)
     }
     if (screennumber != 2)
     {
-        vdcwin_cursor_move(&canvas.view, screen_col, screen_row);
-        vdc_printc(screen_row, screen_col, plotscreencode, vdc_state.text_attr);
+        resetcursor();
     }
-    vdcwin_cursor_show(&canvas.view);
 
     // Restore custom charset if needed
     if (charsetchanged[1] == 1)
@@ -935,7 +946,7 @@ void mainmenuloop()
 
     char menuchoice;
 
-    vdcwin_cursor_show(&canvas.view);
+    hidecursor();
     vdcwin_win_new(0, 0, 0, vdc_state.width, 1);
     loadsyscharset();
 
@@ -1066,7 +1077,7 @@ void mainmenuloop()
 
     vdcwin_win_free();
     restorealtcharset();
-    vdcwin_cursor_show(&canvas.view);
+    resetcursor();
 }
 
 // Main loop
