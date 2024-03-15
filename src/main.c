@@ -73,6 +73,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "overlay1.h"
 #include "overlay2.h"
 #include "overlay3.h"
+#include "overlay4.h"
 
 // Memory region for code, data etc. from 0x1c80 to 0xbfff
 #pragma region( vdcse, 0x1c80, 0xc000 - OVERLAYSIZE, , , {code, data, bss, heap, stack} )
@@ -176,7 +177,7 @@ signed int textInput(char xpos, char ypos, char *str, char width, char lines)
     struct VDCWin inputwin;
     char returncode;
 
-    vdcwin_init(&inputwin, xpos, ypos, width, lines);
+    vdcwin_init(&inputwin, xpos, ypos, width+1, lines);
     vdcwin_put_string(&inputwin, str);
     returncode = vdcwin_edit(&inputwin);
     if (returncode == CH_ENTER)
@@ -962,17 +963,17 @@ void mainmenuloop()
             break;
 
         case 12:
-            loadoverlay(2);
+            loadoverlay(1);
             resizeheight();
             break;
 
         case 13:
-            loadoverlay(3);
+            loadoverlay(2);
             changebackgroundcolor();
             break;
 
         case 14:
-            loadoverlay(3);
+            loadoverlay(2);
             selectscreenmode();
             break;
 
@@ -1014,8 +1015,8 @@ void mainmenuloop()
             break;
 
         case 22:
-            // loadoverlay(3);
-            // loadscreenmap();
+            loadoverlay(3);
+            loadscreenmap();
             break;
 
         case 23:
@@ -1052,7 +1053,7 @@ void mainmenuloop()
             break;
 
         case 41:
-            loadoverlay(3);
+            loadoverlay(4);
             versioninfo();
             break;
 
@@ -1286,8 +1287,8 @@ int main(void)
 
         // Character eddit mode
         case 'e':
-            // loadoverlay(4);
-            // chareditor();
+            loadoverlay(4);
+            chareditor();
             break;
 
         // Palette for character selection
@@ -1389,8 +1390,8 @@ int main(void)
 
         // Try
         case 't':
-            // loadoverlay(3);
-            // plot_try();
+            loadoverlay(3);
+            plot_try();
             break;
 
         // Increase/decrease plot screencode by 128 (toggle 'RVS ON' and 'RVS OFF')

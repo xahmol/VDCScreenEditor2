@@ -9,10 +9,6 @@ void saveproject();
 void loadproject();
 void loadcharset(char stdoralt);
 void savecharset(char stdoralt);
-void changebackgroundcolor();
-void versioninfo();
-void plot_try();
-void selectscreenmode();
 
 #pragma compile("overlay3.c")
 

@@ -83,12 +83,12 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #define VDC_PULLDOWN_MAXLENGTH 16 // Maximum length of pull down menu option names
 
 // Set default colours and styles to use
-#define VDC_MENUBAR_HEADERCOL VDC_LGREEN + VDC_A_ALTCHAR + VDC_A_REVERSE   // Header bar color
-#define VDC_PULLDOWN_BORFULL 0                                             // Set borderstyle for separate pulldown
-#define VDC_PULLDOWN_BORTOP WIN_BOR_NOTOP                                  // Set borderstyle for main menu pulldowns
-#define VDC_PULLDOWN_SELECTCH CH_MINUS                                     // Set char before selected option
-#define VDC_POPUP_BORDER WIN_BOR_ALL                                       // Default pop-up border style
-#define VDC_MENU_YESNO 4                                                   // Number for Yes No pull down menu
+#define VDC_MENUBAR_HEADERCOL VDC_LGREEN + VDC_A_ALTCHAR + VDC_A_REVERSE // Header bar color
+#define VDC_PULLDOWN_BORFULL 0                                           // Set borderstyle for separate pulldown
+#define VDC_PULLDOWN_BORTOP 0                                            // Set borderstyle for main menu pulldowns
+#define VDC_PULLDOWN_SELECTCH CH_MINUS                                   // Set char before selected option
+#define VDC_POPUP_BORDER 0                                               // Default pop-up border style
+#define VDC_MENU_YESNO 4                                                 // Number for Yes No pull down menu
 
 // Function prototypes
 void menu_placeheader(const char *header);

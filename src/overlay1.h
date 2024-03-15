@@ -7,6 +7,7 @@ void palette_draw();
 void palette_returnscreencode();
 void palette();
 void resizewidth();
+void resizeheight();
 
 #pragma compile("overlay1.c")
 

@@ -723,6 +723,88 @@ void resizewidth()
     }
 }
 
+
+void resizeheight()
+{
+    // Function to resize screen camvas height
+
+    unsigned newheight = 0;
+    unsigned maxsize = MEMORYLIMIT - SCREENMAPBASE;
+    char areyousure = 0;
+    char sizechanged = 0;
+    char y;
+    char *ptrend;
+
+    vdc_state.text_attr = mc_menupopup;
+    vdcwin_win_new(VDC_POPUP_BORDER, 20, 5, 40, 12);
+
+    vdc_underline(1);
+    vdc_prints(21, 6, "Resize canvas height");
+    vdc_underline(0);
+    vdc_prints(21, 8, "Enter new height:");
+
+    sprintf(buffer, "%u", canvas.sourceheight);
+    if (textInput(21, 9, buffer, 4, 1) > 0)
+    {
+        newheight = (unsigned)strtol(buffer, &ptrend, 10);
+    }
+
+    if ((newheight * canvas.sourcewidth * 2) + 48 > maxsize || !newheight)
+    {
+        vdc_prints(21, 11, "New size unsupported. Press key.");
+        getch();
+    }
+    else
+    {
+        if (newheight < canvas.sourceheight)
+        {
+
+            vdc_prints(21, 11, "Shrinking might delete data.");
+            vdc_prints(21, 12, "Are you sure?");
+            areyousure = menu_pulldown(25, 13, VDC_MENU_YESNO, 0);
+            if (areyousure == 1)
+            {
+                bnk_memcpy(BNK_1_FULL, screenmap_attraddr(0, 0, canvas.sourcewidth, newheight), BNK_1_FULL, screenmap_attraddr(0, 0, canvas.sourcewidth, canvas.sourceheight), canvas.sourcewidth * canvas.sourceheight);
+                if (screen_row > newheight - 1)
+                {
+                    screen_row = newheight - 1;
+                }
+                sizechanged = 1;
+            }
+        }
+        if (newheight > canvas.sourceheight)
+        {
+            for (y = 0; y < canvas.sourceheight; y++)
+            {
+                bnk_memcpy(BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, 0, canvas.sourcewidth, newheight), BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, 0, canvas.sourcewidth, canvas.sourceheight), canvas.sourcewidth);
+            }
+            bnk_memset(BNK_1_FULL, screenmap_attraddr(canvas.sourceheight, 0, canvas.sourcewidth, newheight), VDC_WHITE, (newheight - canvas.sourceheight) * canvas.sourcewidth);
+            bnk_memset(BNK_1_FULL, screenmap_screenaddr(canvas.sourceheight, 0, canvas.sourcewidth), CH_SPACE, (newheight - canvas.sourceheight) * canvas.sourcewidth);
+            sizechanged = 1;
+        }
+    }
+
+    vdcwin_win_free();
+
+    if (sizechanged == 1)
+    {
+        canvas.sourceheight = newheight;
+        canvas.sourceyoffset = 0;
+        updatecanvas();
+        placesignature();
+        vdc_state.text_attr = VDC_WHITE;
+        vdc_cls();
+        vdcwin_cpy_viewport(&canvas);
+        menu_placebar(0);
+        if (showbar)
+        {
+            initstatusbar();
+        }
+        undo_undopossible = 0;
+        undo_redopossible = 0;
+    }
+}
+
 #pragma code(code)
 #pragma data(data)
 #pragma bss(bss)

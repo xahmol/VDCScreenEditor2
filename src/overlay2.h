@@ -5,7 +5,9 @@ void plotvisible(unsigned char row, unsigned char col, unsigned char setorrestor
 void lineandbox(unsigned char draworselect);
 void movemode();
 void selectmode();
-void resizeheight();
+void plot_try();
+void changebackgroundcolor();
+void selectscreenmode();
 
 #pragma compile("overlay2.c")
 

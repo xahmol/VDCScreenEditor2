@@ -483,84 +483,167 @@ void selectmode()
     strcpy(programmode, "Main");
 }
 
-void resizeheight()
+void plot_try()
 {
-    // Function to resize screen camvas height
+    unsigned char key;
+    hidecursor();
+    strcpy(programmode,"Try");
+    if(showbar) { printstatusbar(); }
+    
+    key = vdcwin_getch();
+    if(key==CH_SPACE)
+    {
+        if(undoenabled==1) { undo_new(screen_row+canvas.sourceyoffset,screen_col+canvas.sourcexoffset,1,1); }
+        screenmapplot(screen_row+canvas.sourceyoffset,screen_col+canvas.sourcexoffset,plotscreencode,VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
+    }
+    strcpy(programmode,"Main");
+    resetcursor();
+}
 
-    unsigned newheight = 0;
-    unsigned maxsize = MEMORYLIMIT - SCREENMAPBASE;
-    char areyousure = 0;
-    char sizechanged = 0;
-    char y;
-    char *ptrend;
+void changebackgroundcolor()
+{
+    // Function to change background color
+
+    char key;
+    char newcolor = screenbackground;
+    char changed = 0;
 
     vdc_state.text_attr = mc_menupopup;
     vdcwin_win_new(VDC_POPUP_BORDER, 20, 5, 40, 12);
 
     vdc_underline(1);
-    vdc_prints(21, 6, "Resize canvas height");
+    vdc_prints(21, 6, "Change background color");
     vdc_underline(0);
-    vdc_prints(21, 8, "Enter new height:");
+    sprintf(buffer, "Color: %2u", newcolor);
+    vdc_prints(21, 8, buffer);
+    vdc_prints(21, 10, "Press:");
+    vdc_prints(21, 11, "+:     Increase color number");
+    vdc_prints(21, 12, "-:     Decrease color number");
+    vdc_prints(21, 13, "ENTER: Accept color");
+    vdc_prints(21, 14, "ESC:   Cancel");
 
-    sprintf(buffer, "%u", canvas.sourceheight);
-    if (textInput(21, 9, buffer, 4, 1) > 0)
+    do
     {
-        newheight = (unsigned)strtol(buffer, &ptrend, 10);
-    }
-
-    if ((newheight * canvas.sourcewidth * 2) + 48 > maxsize || !newheight)
-    {
-        vdc_prints(21, 11, "New size unsupported. Press key.");
-        getch();
-    }
-    else
-    {
-        if (newheight < canvas.sourceheight)
+        do
         {
+            key = vdcwin_getch();
+        } while (key != CH_ENTER && key != CH_ESC && key != CH_STOP && key != '+' && key != '-');
 
-            vdc_prints(21, 11, "Shrinking might delete data.");
-            vdc_prints(21, 12, "Are you sure?");
-            areyousure = menu_pulldown(25, 13, VDC_MENU_YESNO, 0);
-            if (areyousure == 1)
+        switch (key)
+        {
+        case '+':
+            newcolor++;
+            if (newcolor > 15)
             {
-                bnk_memcpy(BNK_1_FULL, screenmap_attraddr(0, 0, canvas.sourcewidth, newheight), BNK_1_FULL, screenmap_attraddr(0, 0, canvas.sourcewidth, canvas.sourceheight), canvas.sourcewidth * canvas.sourceheight);
-                if (screen_row > newheight - 1)
-                {
-                    screen_row = newheight - 1;
-                }
-                sizechanged = 1;
+                newcolor = 0;
+            }
+            changed = 1;
+            break;
+
+        case '-':
+            if (newcolor == 0)
+            {
+                newcolor = 15;
+            }
+            else
+            {
+                newcolor--;
+            }
+            changed = 1;
+            break;
+
+        case CH_ESC:
+        case CH_STOP:
+            changed = 0;
+            vdc_bgcolor(screenbackground);
+            break;
+
+        default:
+            break;
+        }
+
+        if (changed == 1)
+        {
+            vdc_bgcolor(newcolor);
+            sprintf(buffer, "Color: %2u", newcolor);
+            vdc_prints(21, 8, buffer);
+        }
+    } while (key != CH_ENTER && key != CH_ESC && key != CH_STOP);
+
+    if (changed = 1)
+    {
+        screenbackground = newcolor;
+
+        // Change menu palette based on background color
+
+        // Default palette if black or dark grey background
+        if (screenbackground == VDC_BLACK || screenbackground == VDC_DGREY)
+        {
+            mc_mb_normal = VDC_LGREEN + VDC_A_REVERSE + VDC_A_ALTCHAR;
+            mc_mb_select = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+            mc_pd_normal = VDC_DCYAN + VDC_A_REVERSE + VDC_A_ALTCHAR;
+            mc_pd_select = VDC_LYELLOW + VDC_A_REVERSE + VDC_A_ALTCHAR;
+            mc_menupopup = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+        }
+        else
+        {
+            // Palette for background colors with intensity bit enabled
+            if (screenbackground & 0x01)
+            {
+                mc_mb_normal = VDC_BLACK + VDC_A_REVERSE + VDC_A_ALTCHAR;
+                mc_mb_select = VDC_BLACK + VDC_A_ALTCHAR;
+                mc_pd_normal = VDC_BLACK + VDC_A_REVERSE + VDC_A_ALTCHAR;
+                mc_pd_select = VDC_BLACK + VDC_A_ALTCHAR;
+                mc_menupopup = VDC_BLACK + VDC_A_REVERSE + VDC_A_ALTCHAR;
+            }
+            // Palette for background color with intensity bit disabled if not black/dgrey
+            else
+            {
+                mc_mb_normal = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+                mc_mb_select = VDC_WHITE + VDC_A_ALTCHAR;
+                mc_pd_normal = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
+                mc_pd_select = VDC_WHITE + VDC_A_ALTCHAR;
+                mc_menupopup = VDC_WHITE + VDC_A_REVERSE + VDC_A_ALTCHAR;
             }
         }
-        if (newheight > canvas.sourceheight)
-        {
-            for (y = 0; y < canvas.sourceheight; y++)
-            {
-                bnk_memcpy(BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, 0, canvas.sourcewidth, newheight), BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, 0, canvas.sourcewidth, canvas.sourceheight), canvas.sourcewidth);
-            }
-            bnk_memset(BNK_1_FULL, screenmap_attraddr(canvas.sourceheight, 0, canvas.sourcewidth, newheight), VDC_WHITE, (newheight - canvas.sourceheight) * canvas.sourcewidth);
-            bnk_memset(BNK_1_FULL, screenmap_screenaddr(canvas.sourceheight, 0, canvas.sourcewidth), CH_SPACE, (newheight - canvas.sourceheight) * canvas.sourcewidth);
-            sizechanged = 1;
-        }
+        vdc_state.text_attr = mc_menupopup;
+        updatecanvas();
     }
 
     vdcwin_win_free();
+}
 
-    if (sizechanged == 1)
+void selectscreenmode()
+// Select the screen mode from the menu
+{
+    char menuchoice;
+
+    vdc_state.text_attr = mc_menupopup;
+    vdcwin_win_new(VDC_POPUP_BORDER, 20, 5, 40, 12);
+
+    vdc_underline(1);
+    vdc_prints(21, 6, "Select screen mode");
+    vdc_underline(0);
+    vdc_prints(21, 8, "Choose desired mode:");
+
+    menuchoice = menu_pulldown(25, 9, VDC_MENU_YESNO + 1, 1);
+
+    vdcwin_win_free();
+
+    vdc_state.text_attr = VDC_WHITE;
+    if (menuchoice)
     {
-        canvas.sourceheight = newheight;
-        canvas.sourceyoffset = 0;
-        updatecanvas();
-        placesignature();
-        vdc_state.text_attr = VDC_WHITE;
-        vdc_cls();
-        vdcwin_cpy_viewport(&canvas);
-        menu_placebar(0);
-        if (showbar)
+        if ((menuchoice - 1) != vdc_state.mode)
         {
-            initstatusbar();
+            vdc_set_mode(menuchoice - 1);
+            updatecanvas();
+            vdcwin_cpy_viewport(&canvas);
+            menu_placebar(0);
+            if (showbar)
+            {
+                initstatusbar();
+            }
         }
-        undo_undopossible = 0;
-        undo_redopossible = 0;
     }
 }
 
