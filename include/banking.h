@@ -83,6 +83,12 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #define SCROLL_DOWN 0x04
 #define SCROLL_UP 0x08
 
+// Kernal defines for IEC statis detection
+#define STATUS 0x90          // Kernal I/O completion status
+#define SECOND 0xFF93
+#define UNLSN  0xFFAE
+#define LISTEN 0xFFB1
+
 // Function Prototypes
 
 // Not in overlay
@@ -105,6 +111,7 @@ __noinline void bnk_cpyfromvdc(char dcr, volatile char *dp, unsigned vdcsrc, uns
 __noinline void bnk_redef_charset(unsigned vdcdest, char scr, volatile char *sp, unsigned size);
 __noinline bool bnk_load(char device, char bank, const char *start, const char *fname);
 __noinline bool bnk_save(char device, char bank, const char *start, const char *end, const char *fname);
+__noinline bool bnk_iec_active(char device);
 __noinline void sid_startmusic();
 __noinline void sid_stopmusic();
 __noinline void sid_resetsid();

@@ -412,6 +412,7 @@ void sid_pausemusic()
 }
 
 bool bnk_load(char device, char bank, const char *start, const char *fname)
+// Load to the specified bank
 {
 	krnio_setbnk(bank, 0);
 	krnio_setnam(fname);
@@ -436,11 +437,37 @@ bool bnk_load(char device, char bank, const char *start, const char *fname)
 #pragma native(bnk_load)
 
 bool bnk_save(char device, char bank, const char *start, const char *end, const char *fname)
+// Save from the specified bank
 {
 	krnio_setbnk(bank, 0);
 	krnio_setnam(fname);
 	return krnio_save(device, start, end);
 }
+
+bool bnk_iec_active(char device)
+// Return if device is active at specified IEC ID
+{
+	__asm
+	{
+		lda device
+		ldy #0
+		sty STATUS
+		jsr LISTEN
+		lda #$ff
+		jsr SECOND
+		lda STATUS
+		bpl iec_pres_active
+		jsr UNLSN
+		lda #0
+		sta accu
+		rts
+iec_pres_active:
+		jsr UNLSN
+    	lda #1
+		sta accu
+	}
+}
+#pragma native(bnk_iec_active)
 
 #pragma code(code)
 #pragma data(data)

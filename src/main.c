@@ -1390,7 +1390,7 @@ int main(void)
 
         // Try
         case 't':
-            loadoverlay(3);
+            loadoverlay(2);
             plot_try();
             break;
 
