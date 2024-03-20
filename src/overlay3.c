@@ -392,6 +392,116 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
 	return 0;
 }
 
+char readDir(char device, char filter)
+// Read the directory
+{
+    char cnt = 0xff;
+    char ret, i;
+
+    previous = (struct DirElement *)0;
+
+    vdc_state.text_attr = mc_menupopup;
+
+    if (cwd.name[0])
+    {
+        freeDir();
+    }
+
+    memset(&cwd, 0, sizeof(cwd));
+    memset(disk_id_buf, 0, DISK_ID_LEN);
+
+    vdc_prints(0,24,"Press to open dir");
+    getch();
+
+    if (!dir_open(15, device))
+    {
+        return 0;
+    }
+
+    while (1)
+    {
+        current = calloc(1, sizeof(direlement_size));
+        sprintf(linebuffer,"Calloc: %4x",current);
+        vdc_prints(0,24,linebuffer);
+        
+        if (!current)
+        {
+            break;
+        }
+
+        if (dir_readentry(15, &(current->dirent)))
+        {
+            free(current);
+            break;
+        }
+
+//        // print progress bar
+//        if ((cnt >> 2) >= 36)
+//        {
+//            cnt = 0;
+//            vdc_clear(20, 5, CH_SPACE, 40, 1);
+//            sprintf(linebuffer, "[%02u]", device);
+//            vdc_prints(20, 3, linebuffer);
+//        }
+//        else
+//        {
+//            vdcwin_cursor_move(&canvas.view, 23 + (cnt >> 2), 3);
+//            vdc_reverse(progressRev[cnt & 3]);
+//            vdcwin_put_char(&canvas.view, progressBar[cnt & 3]);
+//            ++cnt;
+//        }
+
+        if (!cwd.name[0])
+        {
+            // initialize directory
+            if (current->dirent.type == CBM_T_HEADER)
+            {
+                for (i = 0; current->dirent.name[i]; ++i)
+                {
+                    cwd.name[i] = current->dirent.name[i];
+                }
+                cwd.name[i++] = ',';
+                memcpy(&cwd.name[i], disk_id_buf, DISK_ID_LEN);
+            }
+            else
+            {
+                strcpy(cwd.name, "Unknown type");
+            }
+        }
+        else
+        {
+            if (current->dirent.type == CBM_T_FREE)
+            {
+                // blocks free entry
+                cwd.free = current->dirent.size;
+                break;
+            }
+            else if (cwd.firstelement == 0)
+            {
+                // first element
+                cwd.firstelement = current;
+                previous = current;
+            }
+            else
+            {
+                // all other elements
+                current->prev = previous;
+                previous->next = current;
+                previous = current;
+            }
+        }
+    }
+    dir_close(15);
+    vdc_reverse(0);
+
+    if (cwd.firstelement)
+    {
+        cwd.selected = cwd.firstelement;
+        cwd.firstprinted = cwd.firstelement;
+    }
+    return 1;
+}
+
 const char *fileTypeToStr(char ft)
 // Convert file type from value to string
 {
