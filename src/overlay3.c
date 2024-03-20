@@ -78,7 +78,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #pragma section(codeovl3, 0)
 #pragma section(dataovl3, 0)
 #pragma section(bssovl3, 0)
-#pragma region(ovl3, OVERLAYLOAD, 0xC000, , 4, { codeovl3, dataovl3, bssovl3  } )
+#pragma region(ovl3, OVERLAYLOAD, 0xC000, , 4, { codeovl3, dataovl3,bssovl3 } )
 
 #pragma code(codeovl3)
 #pragma data(dataovl3)
@@ -103,6 +103,12 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #define CBM_A_RO 1 /* Read only   */
 #define CBM_A_WO 2 /* Write only  */
 #define CBM_A_RW 3 /* Read, Write */
+
+// File picker defines
+#define DIRH 14
+#define DIRY 2
+#define DIRX 10
+#define DIRW 60
 
 static const char progressBar[4] = {0xA5, 0xA1, 0xA7, ' '};
 static const char progressRev[4] = {0, 0, 1, 1};
@@ -148,7 +154,6 @@ const char *reg_types[] = {"SEQ", "PRG", "URS", "REL", "VRP"};
 const char *oth_types[] = {"DEL", "CBM", "DIR", "LNK", "OTH", "HDR"};
 char bad_type[4];
 char linebuffer2[81];
-char DIRH = 19;
 
 void freeDir()
 {
@@ -180,216 +185,211 @@ char dir_open(char lfn, unsigned char device)
 // Open a directory for reading
 {
 
-    vdc_prints(0,23,"Set bank and name.");
-	// Set name for directory
-	krnio_setbnk(0, 0);
-	krnio_setnam("$");
+    // Set name for directory
+    krnio_setbnk(0, 0);
+    krnio_setnam("$");
 
-    vdc_prints(0,22,"Open dir.");
-	// Open the directory
-	if (krnio_open(lfn, device, 0))
-	{
-        vdc_prints(0,21,"Switch inout.");
-		// Switch input to file
-		if (krnio_chkin(lfn))
-		{
-            vdc_prints(0,21,"Skip BASIC load.");
-			// Skip BASIC load address
-			krnio_chrin();
-			krnio_chrin();
+    // Open the directory
+    if (krnio_open(lfn, device, 0))
+    {
+        // Switch input to file
+        if (krnio_chkin(lfn))
+        {
+            // Skip BASIC load address
+            krnio_chrin();
+            krnio_chrin();
 
-            sprintf(linebuffer,"Status: %u",krnio_pstatus[lfn] );
-            vdc_prints(0,20,linebuffer);
+            if (krnio_pstatus[lfn])
+            {
+                dir_close(lfn);
+            }
+        }
+        else
+        {
+            dir_close(lfn);
+        }
+    }
 
-			if (krnio_pstatus[lfn])
-			{
-				dir_close(lfn);
-			}
-		}
-		else
-		{
-			dir_close(lfn);
-		}
-	}
-
-	// Return error code or 0 on succcess
-	return krnio_pstatus[lfn];
+    // Return error code or 0 on succcess
+    return krnio_pstatus[lfn];
 }
 
 char dir_readentry(const char lfn, struct DirEntry *l_dirent)
 // Read the next directory entry
 {
-	char b, len;
-	char i = 0;
+    char b, len;
+    char i = 0;
 
-	// check that device is ready
-	b = krnio_chrin();
-	if (!b)
-	{
-		// No entry found
-		return 1;
-	}
-	if (krnio_pstatus[lfn])
-	{
-		return 7;
-	}
+    // check that device is ready
+    b = krnio_chrin();
+    if (!b)
+    {
+        // No entry found
+        return 1;
+    }
+    if (krnio_pstatus[lfn])
+    {
+        return 7;
+    }
 
-	// Skip second basic link byte
-	krnio_chrin();
+    // Skip second basic link byte
+    krnio_chrin();
 
-	// read file size
-	l_dirent->size = krnio_chrin();
-	l_dirent->size |= (krnio_chrin()) << 8;
+    // read file size
+    l_dirent->size = krnio_chrin();
+    l_dirent->size |= (krnio_chrin()) << 8;
 
-	// read line into linebuffer
-	memset(linebuffer, 0, sizeof(linebuffer));
-	while (1)
-	{
-		// read byte
-		b = krnio_chrin();
-		// EOL?
-		if (b == 0)
-		{
-			break;
-		}
-		// append to linebuffer
-		if (i < sizeof(linebuffer))
-		{
-			linebuffer[i++] = b;
-		}
-		// return if reading had error
-		if (krnio_pstatus[lfn])
-		{
-			krnio_clrchn();
-			return 2;
-		}
-	}
+    // read line into linebuffer
+    memset(linebuffer, 0, sizeof(linebuffer));
+    while (1)
+    {
+        // read byte
+        b = krnio_chrin();
+        // EOL?
+        if (b == 0)
+        {
+            break;
+        }
+        // append to linebuffer
+        if (i < sizeof(linebuffer))
+        {
+            linebuffer[i++] = b;
+        }
+        // return if reading had error
+        if (krnio_pstatus[lfn])
+        {
+            krnio_clrchn();
+            return 2;
+        }
+    }
 
-	// handle "B" BLOCKS FREE
-	if (linebuffer[0] == 'b')
-	{
-		l_dirent->type = CBM_T_FREE;
-		return 0;
-	}
+    // handle "B" BLOCKS FREE
+    if (linebuffer[0] == 'b')
+    {
+        l_dirent->type = CBM_T_FREE;
+        return 0;
+    }
 
-	// check that we have a minimum amount of characters to work with
-	if (i < 5)
-	{
-		return 3;
-	}
+    // check that we have a minimum amount of characters to work with
+    if (i < 5)
+    {
+        return 3;
+    }
 
-	// strip whitespace from right part of line
-	for (len = i; len > 0; --len)
-	{
-		b = linebuffer[len];
-		if (b == 0 ||
-			b == ' ' ||
-			b == 0xA0)
-		{
-			linebuffer[len] = 0;
-			continue;
-		}
-		++len;
-		break;
-	}
+    // strip whitespace from right part of line
+    for (len = i; len > 0; --len)
+    {
+        b = linebuffer[len];
+        if (b == 0 ||
+            b == ' ' ||
+            b == 0xA0)
+        {
+            linebuffer[len] = 0;
+            continue;
+        }
+        ++len;
+        break;
+    }
 
-	// parse file name
+    // parse file name
 
-	// skip until first "
-	for (i = 0; i < sizeof(linebuffer) && linebuffer[i] != '"'; ++i)
-	{
-		// do nothing
-	}
+    // skip until first "
+    for (i = 0; i < sizeof(linebuffer) && linebuffer[i] != '"'; ++i)
+    {
+        // do nothing
+    }
 
-	// copy filename, until " or max size
-	b = 0;
-	for (++i; i < sizeof(linebuffer) && linebuffer[i] != '"' && b < 16; ++i)
-	{
-		l_dirent->name[b++] = linebuffer[i];
-	}
+    // copy filename, until " or max size
+    b = 0;
+    for (++i; i < sizeof(linebuffer) && linebuffer[i] != '"' && b < 16; ++i)
+    {
+        l_dirent->name[b++] = linebuffer[i];
+    }
 
-	// check file type
-	if (X('p', 'r', 'g'))
-	{
-		l_dirent->type = CBM_T_PRG;
-	}
-	else if (X('s', 'e', 'q'))
-	{
-		l_dirent->type = CBM_T_SEQ;
-	}
-	else if (X('u', 's', 'r'))
-	{
-		l_dirent->type = CBM_T_USR;
-	}
-	else if (X('d', 'e', 'l'))
-	{
-		l_dirent->type = CBM_T_DEL;
-	}
-	else if (X('r', 'e', 'l'))
-	{
-		l_dirent->type = CBM_T_REL;
-	}
-	else if (X('c', 'b', 'm'))
-	{
-		l_dirent->type = CBM_T_CBM;
-	}
-	else if (X('d', 'i', 'r'))
-	{
-		l_dirent->type = CBM_T_DIR;
-	}
-	else if (X('v', 'r', 'p'))
-	{
-		l_dirent->type = CBM_T_VRP;
-	}
-	else if (X('l', 'n', 'k'))
-	{
-		l_dirent->type = CBM_T_LNK;
-	}
-	else
-	{
-		// parse header
-		l_dirent->type = CBM_T_HEADER;
+    // check file type
+    if (X('p', 'r', 'g'))
+    {
+        l_dirent->type = CBM_T_PRG;
+    }
+    else if (X('s', 'e', 'q'))
+    {
+        l_dirent->type = CBM_T_SEQ;
+    }
+    else if (X('u', 's', 'r'))
+    {
+        l_dirent->type = CBM_T_USR;
+    }
+    else if (X('d', 'e', 'l'))
+    {
+        l_dirent->type = CBM_T_DEL;
+    }
+    else if (X('r', 'e', 'l'))
+    {
+        l_dirent->type = CBM_T_REL;
+    }
+    else if (X('c', 'b', 'm'))
+    {
+        l_dirent->type = CBM_T_CBM;
+    }
+    else if (X('d', 'i', 'r'))
+    {
+        l_dirent->type = CBM_T_DIR;
+    }
+    else if (X('v', 'r', 'p'))
+    {
+        l_dirent->type = CBM_T_VRP;
+    }
+    else if (X('l', 'n', 'k'))
+    {
+        l_dirent->type = CBM_T_LNK;
+    }
+    else
+    {
+        // parse header
+        l_dirent->type = CBM_T_HEADER;
 
-		// skip one character which should be "
-		if (linebuffer[i] == '"')
-		{
-			++i;
-		}
-		// skip one character which should be space
-		if (linebuffer[i] == ' ')
-		{
-			++i;
-		}
+        // skip one character which should be "
+        if (linebuffer[i] == '"')
+        {
+            ++i;
+        }
+        // skip one character which should be space
+        if (linebuffer[i] == ' ')
+        {
+            ++i;
+        }
 
-		// copy disk ID
-		for (i = 0; i < DISK_ID_LEN; ++i)
-		{
-			if (linebuffer[i])
-			{
-				disk_id_buf[i] = linebuffer[i];
-			}
-		}
+        // copy disk ID
+        for (b = 0; b < DISK_ID_LEN; ++b)
+        {
+            if (linebuffer[i])
+            {
+                disk_id_buf[b] = linebuffer[i];
+            }
+            i++;
+        }
+        disk_id_buf[b] = 0;
 
-		// strip disk name
-		for (b = 15; b > 0; --b)
-		{
-			if (l_dirent->name[b] == 0 ||
-				l_dirent->name[b] == ' ' ||
-				l_dirent->name[b] == 0xA0)
-			{
-				l_dirent->name[b] = 0;
-				continue;
-			}
-			break;
-		}
+        // strip disk name
+        for (b = 15; b > 0; --b)
+        {
+            if (l_dirent->name[b] == 0 ||
+                l_dirent->name[b] == ' ' ||
+                l_dirent->name[b] == 0xA0)
+            {
+                l_dirent->name[b] = 0;
+                continue;
+            }
+            break;
+        }
 
-		return 0;
-	}
+        return 0;
+    }
 
-	// parse read-only
-	l_dirent->access = (linebuffer[i - 4] == 0x3C) ? CBM_A_RO : CBM_A_RW;
+    // parse read-only
+    l_dirent->access = (linebuffer[i - 4] == 0x3C) ? CBM_A_RO : CBM_A_RW;
 
-	return 0;
+    return 0;
 }
 
 char readDir(char device, char filter)
@@ -410,10 +410,7 @@ char readDir(char device, char filter)
     memset(&cwd, 0, sizeof(cwd));
     memset(disk_id_buf, 0, DISK_ID_LEN);
 
-    vdc_prints(0,24,"Press to open dir");
-    getch();
-
-    if (!dir_open(15, device))
+    if (dir_open(15, device))
     {
         return 0;
     }
@@ -421,9 +418,7 @@ char readDir(char device, char filter)
     while (1)
     {
         current = calloc(1, sizeof(direlement_size));
-        sprintf(linebuffer,"Calloc: %4x",current);
-        vdc_prints(0,24,linebuffer);
-        
+
         if (!current)
         {
             break;
@@ -435,21 +430,21 @@ char readDir(char device, char filter)
             break;
         }
 
-//        // print progress bar
-//        if ((cnt >> 2) >= 36)
-//        {
-//            cnt = 0;
-//            vdc_clear(20, 5, CH_SPACE, 40, 1);
-//            sprintf(linebuffer, "[%02u]", device);
-//            vdc_prints(20, 3, linebuffer);
-//        }
-//        else
-//        {
-//            vdcwin_cursor_move(&canvas.view, 23 + (cnt >> 2), 3);
-//            vdc_reverse(progressRev[cnt & 3]);
-//            vdcwin_put_char(&canvas.view, progressBar[cnt & 3]);
-//            ++cnt;
-//        }
+        // print progress bar
+        if ((cnt >> 2) >= 36)
+        {
+            cnt = 0;
+            vdc_clear(DIRX, DIRY + 3, CH_SPACE, DIRW, 1);
+            sprintf(linebuffer, "[%02u]", device);
+            vdc_prints(DIRX + 1, DIRY + 3, linebuffer);
+        }
+        else
+        {
+            vdcwin_cursor_move(&canvas.view, DIRX + 4 + (cnt >> 2), DIRY + 3);
+            vdc_reverse(!progressRev[cnt & 3]);
+            vdcwin_put_char(&canvas.view, progressBar[cnt & 3]);
+            ++cnt;
+        }
 
         if (!cwd.name[0])
         {
@@ -492,7 +487,7 @@ char readDir(char device, char filter)
         }
     }
     dir_close(15);
-    vdc_reverse(0);
+    vdc_reverse(1);
 
     if (cwd.firstelement)
     {
@@ -505,10 +500,6 @@ char readDir(char device, char filter)
 const char *fileTypeToStr(char ft)
 // Convert file type from value to string
 {
-    if (ft != CBM_T_DIR)
-    {
-        return "   ";
-    }
     if (ft & CBM_T_REG)
     {
         ft &= ~CBM_T_REG;
@@ -529,11 +520,11 @@ const char *fileTypeToStr(char ft)
 
 void drawDirFrame(char device)
 {
-    vdcwin_clear(&canvas.view);
-    sprintf(linebuffer, "[%02i] %.20s", device, cwd.name);
-    vdc_prints(20, 3, linebuffer);
+    vdc_clear(DIRX, DIRY + 3, CH_SPACE, 40, DIRH + 2);
+    sprintf(linebuffer, "[%02u] %.20s", device, cwd.name);
+    vdc_prints(DIRX + 1, DIRY + 3, linebuffer);
     sprintf(linebuffer, "%u bl. free", cwd.free);
-    vdc_prints(20, 22, linebuffer);
+    vdc_prints(DIRX + 1, DIRY + DIRH + 4, linebuffer);
 }
 
 void printElementPriv(const char ypos)
@@ -544,7 +535,7 @@ void printElementPriv(const char ypos)
         vdc_state.text_attr = mc_pd_select;
     }
 
-    vdcwin_cursor_move(&canvas.view, 21, ypos);
+    vdcwin_cursor_move(&canvas.view, DIRX + 2, ypos);
     strcpy(linebuffer, current->dirent.name);
     sprintf(linebuffer2, (current->dirent.size < 10000) ? "%4u %-16s " : "%u %-15s ", current->dirent.size, linebuffer);
     vdcwin_put_string(&canvas.view, linebuffer2);
@@ -577,14 +568,14 @@ void printDir(char device)
 
     for (idx = 0; (current != 0) && (idx < DIRH); ++idx)
     {
-        printElementPriv(idx + 4);
+        printElementPriv(idx + DIRY + 4);
         current = current->next;
     }
 
     // clear empty lines
     for (; idx < DIRH; ++idx)
     {
-        vdc_clear(20, idx + 4, CH_SPACE, 25, 1);
+        vdc_clear(DIRX, idx + DIRY + 4, CH_SPACE, 40, 1);
     }
 }
 
@@ -592,24 +583,24 @@ void refreshDir(char device, char filter)
 {
     readDir(device, filter);
     cwd.selected = cwd.firstelement;
-    //printDir(device);
+    printDir(device);
 }
 
 void updateMenu(void)
 {
-    char menuy = 3;
+    char menuy = DIRY + 2;
 
     vdc_state.text_attr = mc_menupopup;
-    vdc_clear(26, 3, CH_SPACE, 14, 21);
+    vdc_clear(DIRX + DIRW - 15, DIRY + 2, CH_SPACE, 14, 10);
 
-    vdc_prints(26, ++menuy, " F1 Dir refr.");
-    vdc_prints(26, ++menuy, "+/- Device");
-    vdc_prints(26, ++menuy, "RET Select");
-    vdc_prints(26, ++menuy, "  T Top");
-    vdc_prints(26, ++menuy, "  E End");
-    vdc_prints(26, ++menuy, "P/U Page up/do");
-    vdc_prints(26, ++menuy, "Cur Navigate");
-    vdc_prints(26, ++menuy, "ESC Candel");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, " F1 Dir refr.");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "+/- Device");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "RET Select");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "  T Top");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "  E End");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "P/U Page up/do");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "Cur Navigate");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "ESC Cancel");
 }
 
 char *filepicker(char filter)
@@ -626,12 +617,15 @@ char *filepicker(char filter)
     memset(disk_id_buf, 0, DISK_ID_LEN);
 
     vdc_state.text_attr = mc_menupopup;
-    vdcwin_win_new(VDC_POPUP_BORDER, 20, 0, 40, 24);
+    vdcwin_win_new(VDC_POPUP_BORDER, DIRX, DIRY, DIRW, DIRH + 6);
 
     vdc_underline(1);
-    vdc_prints(20, 0, "Select the file to load");
+    vdc_prints(DIRX + 1, DIRY + 1, "Select the file to load");
+    vdc_underline(0);
 
     refreshDir(device, filter);
+    updateMenu();
+    getch();
 
     vdcwin_win_free();
 }

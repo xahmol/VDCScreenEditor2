@@ -274,13 +274,15 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
 		}
 
 		// copy disk ID
-		for (i = 0; i < DISK_ID_LEN; ++i)
+		for (b = 0; b < DISK_ID_LEN; ++b)
 		{
 			if (linebuffer[i])
 			{
-				disk_id_buf[i] = linebuffer[i];
+				disk_id_buf[b] = linebuffer[i];
 			}
+			i++;
 		}
+		disk_id_buf[b]=0;
 
 		// strip disk name
 		for (b = 15; b > 0; --b)
@@ -494,17 +496,17 @@ int main(void)
 		//		}
 
 		printf("dir opened.\n");
-		do
-		{
+//		do
+//		{
 			diritem = calloc(1, sizeof(direlement_size));
 			error = dir_readentry(15, diritem);
 			//printf("%u\n", error);
-			if (error)
-			{
-				break;
-			}
-			printf("%u %s %2x (%4x)\n", diritem->size, diritem->name, diritem->type, diritem);
-		} while (1);
+//			if (error)
+//			{
+//				break;
+//			}
+			printf("%u %s %2x %s (%4x)\n", diritem->size, diritem->name, diritem->type, disk_id_buf, diritem);
+//		} while (1);
 
 		// Reset channels
 		dir_close(15);
