@@ -90,6 +90,19 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #pragma bss(bss)
 
 char bootdevice;
+const char progressBar[4] = {0xA5, 0xA1, 0xA7, ' '};
+const char progressRev[4] = {0, 0, 1, 1};
+char disk_id_buf[5];
+struct DirElement direlement_size;
+struct DirElement *previous;
+struct DirElement *current;
+struct DirElement *next;
+struct Directory cwd;
+const char *value2hex = "0123456789abcdef";
+const char *reg_types[] = {"SEQ", "PRG", "URS", "REL", "VRP"};
+const char *oth_types[] = {"DEL", "CBM", "DIR", "LNK", "OTH", "HDR"};
+char bad_type[4];
+char linebuffer2[81];
 
 char getcurrentdevice()
 // Return last used device number for IO operations. Default on 8 if still zero.
@@ -289,6 +302,243 @@ void bnk_redef_charset(unsigned vdcdest, char scr, volatile char *sp, unsigned s
 	mmu.cr = old;
 }
 
+void freeDir()
+{
+    if (!cwd.name[0])
+        return;
+
+    current = cwd.firstelement;
+    while (current)
+    {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+
+    cwd.name[0] = 0;
+}
+
+void dir_close(char lfn)
+// Closse a directory opened for reading
+{
+    // Reset channels
+    krnio_clrchn();
+
+    // Close file
+    krnio_close(lfn);
+}
+
+char dir_open(char lfn, unsigned char device)
+// Open a directory for reading
+{
+
+    // Set name for directory
+    krnio_setbnk(0, 0);
+    krnio_setnam("$");
+
+    // Open the directory
+    if (krnio_open(lfn, device, 0))
+    {
+        // Switch input to file
+        if (krnio_chkin(lfn))
+        {
+            // Skip BASIC load address
+            krnio_chrin();
+            krnio_chrin();
+
+            if (krnio_pstatus[lfn])
+            {
+                dir_close(lfn);
+            }
+        }
+        else
+        {
+            dir_close(lfn);
+        }
+    }
+
+    // Return error code or 0 on succcess
+    return krnio_pstatus[lfn];
+}
+
+char dir_readentry(const char lfn, struct DirEntry *l_dirent)
+// Read the next directory entry
+{
+    char b, len;
+    char i = 0;
+
+    // check that device is ready
+    b = krnio_chrin();
+    if (!b)
+    {
+        // No entry found
+        return 1;
+    }
+    if (krnio_pstatus[lfn])
+    {
+        return 7;
+    }
+
+    // Skip second basic link byte
+    krnio_chrin();
+
+    // read file size
+    l_dirent->size = krnio_chrin();
+    l_dirent->size |= (krnio_chrin()) << 8;
+
+    // read line into linebuffer
+    memset(linebuffer, 0, sizeof(linebuffer));
+    while (1)
+    {
+        // read byte
+        b = krnio_chrin();
+        // EOL?
+        if (b == 0)
+        {
+            break;
+        }
+        // append to linebuffer
+        if (i < sizeof(linebuffer))
+        {
+            linebuffer[i++] = b;
+        }
+        // return if reading had error
+        if (krnio_pstatus[lfn])
+        {
+            krnio_clrchn();
+            return 2;
+        }
+    }
+
+    // handle "B" BLOCKS FREE
+    if (linebuffer[0] == 'b')
+    {
+        l_dirent->type = CBM_T_FREE;
+        return 0;
+    }
+
+    // check that we have a minimum amount of characters to work with
+    if (i < 5)
+    {
+        return 3;
+    }
+
+    // strip whitespace from right part of line
+    for (len = i; len > 0; --len)
+    {
+        b = linebuffer[len];
+        if (b == 0 ||
+            b == ' ' ||
+            b == 0xA0)
+        {
+            linebuffer[len] = 0;
+            continue;
+        }
+        ++len;
+        break;
+    }
+
+    // parse file name
+
+    // skip until first "
+    for (i = 0; i < sizeof(linebuffer) && linebuffer[i] != '"'; ++i)
+    {
+        // do nothing
+    }
+
+    // copy filename, until " or max size
+    b = 0;
+    for (++i; i < sizeof(linebuffer) && linebuffer[i] != '"' && b < 16; ++i)
+    {
+        l_dirent->name[b++] = linebuffer[i];
+    }
+
+    // check file type
+    if (X('p', 'r', 'g'))
+    {
+        l_dirent->type = CBM_T_PRG;
+    }
+    else if (X('s', 'e', 'q'))
+    {
+        l_dirent->type = CBM_T_SEQ;
+    }
+    else if (X('u', 's', 'r'))
+    {
+        l_dirent->type = CBM_T_USR;
+    }
+    else if (X('d', 'e', 'l'))
+    {
+        l_dirent->type = CBM_T_DEL;
+    }
+    else if (X('r', 'e', 'l'))
+    {
+        l_dirent->type = CBM_T_REL;
+    }
+    else if (X('c', 'b', 'm'))
+    {
+        l_dirent->type = CBM_T_CBM;
+    }
+    else if (X('d', 'i', 'r'))
+    {
+        l_dirent->type = CBM_T_DIR;
+    }
+    else if (X('v', 'r', 'p'))
+    {
+        l_dirent->type = CBM_T_VRP;
+    }
+    else if (X('l', 'n', 'k'))
+    {
+        l_dirent->type = CBM_T_LNK;
+    }
+    else
+    {
+        // parse header
+        l_dirent->type = CBM_T_HEADER;
+
+        // skip one character which should be "
+        if (linebuffer[i] == '"')
+        {
+            ++i;
+        }
+        // skip one character which should be space
+        if (linebuffer[i] == ' ')
+        {
+            ++i;
+        }
+
+        // copy disk ID
+        for (b = 0; b < DISK_ID_LEN; ++b)
+        {
+            if (linebuffer[i])
+            {
+                disk_id_buf[b] = linebuffer[i];
+            }
+            i++;
+        }
+        disk_id_buf[b] = 0;
+
+        // strip disk name
+        for (b = 15; b > 0; --b)
+        {
+            if (l_dirent->name[b] == 0 ||
+                l_dirent->name[b] == ' ' ||
+                l_dirent->name[b] == 0xA0)
+            {
+                l_dirent->name[b] = 0;
+                continue;
+            }
+            break;
+        }
+
+        return 0;
+    }
+
+    // parse read-only
+    l_dirent->access = (linebuffer[i - 4] == 0x3C) ? CBM_A_RO : CBM_A_RW;
+
+    return 0;
+}
+
 __asm sid_interrupt
 // SID play IRQ routine
 {
@@ -433,15 +683,19 @@ bool bnk_load(char device, char bank, const char *start, const char *fname)
 		lda #1
 	W1: sta accu
 	}
+	krnio_setbnk(0, 0);
 }
 #pragma native(bnk_load)
 
 bool bnk_save(char device, char bank, const char *start, const char *end, const char *fname)
 // Save from the specified bank
 {
+	char succes;
 	krnio_setbnk(bank, 0);
 	krnio_setnam(fname);
-	return krnio_save(device, start, end);
+	succes = krnio_save(device, start, end);
+	krnio_setbnk(0, 0);
+	return succes;
 }
 
 bool bnk_iec_active(char device)

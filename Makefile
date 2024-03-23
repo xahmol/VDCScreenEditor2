@@ -53,7 +53,7 @@ all: $(MAIN).prg bootsect.bin d64 d71 d81 $(ZIP)
 
 $(MAIN).prg: $(MAINSRC)
 	$(CC) $(CFLAGS) -n -o=build/$(MAIN).prg $<
-	$(CC) $(CFLAGS) -n -o=build/diskdir.prg src/diskdir.c
+#	$(CC) $(CFLAGS) -n -o=build/diskdir.prg src/diskdir.c
 
 bootsect.bin: $(MAIN).prg
 	$(CC) -tf=bin -rt=src/bootsect.c -o=build/bootsect.bin

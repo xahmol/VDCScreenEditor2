@@ -61,6 +61,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include <stdio.h>
 #include <conio.h>
 #include <petscii.h>
+#include <ctype.h>
 #include <c64/kernalio.h>
 #include <c64/cia.h>
 #include <c128/vdc.h>
@@ -126,8 +127,9 @@ char dosCommand(const char lfn, const char drive, const char sec_addr, const cha
     // Created 2009 by Sascha Bader.
 
     int res;
+    krnio_setbnk(0, 0);
     krnio_setnam(cmd);
-    if (krnio_open(lfn, drive, sec_addr) != 0)
+    if (!krnio_open(lfn, drive, sec_addr))
     {
         krnio_close(lfn);
         return krnio_pstatus[lfn];
@@ -136,7 +138,7 @@ char dosCommand(const char lfn, const char drive, const char sec_addr, const cha
     if (lfn != 15)
     {
         krnio_setnam("");
-        if (krnio_open(15, drive, 15) != 0)
+        if (!krnio_open(15, drive, 15))
         {
             krnio_close(lfn);
             krnio_close(15);
@@ -153,7 +155,7 @@ char dosCommand(const char lfn, const char drive, const char sec_addr, const cha
     }
     krnio_close(lfn);
 
-    if (res < 1)
+    if (!res)
     {
         return krnio_pstatus[lfn];
     }
@@ -171,24 +173,127 @@ unsigned cmd(const char device, const char *cmd)
     return dosCommand(15, device, 15, cmd);
 }
 
-signed int textInput(char xpos, char ypos, char *str, char width, char lines)
-// Textinput from window. Returns length of input, or -1 on ESC or STOP
+signed textInput(char xpos, char ypos, char *str, unsigned char size)
+/**
+ * input/modify a string.
+ * based on version DraCopy 1.0e, then modified.
+ * Created 2009 by Sascha Bader.
+ * @param[in] xpos screen x where input starts.
+ * @param[in] ypos screen y where input starts.
+ * @param[in,out] str string that is edited, it can have content and must have at least @p size + 1 bytes. Maximum size     if 255 bytes.
+ * @param[in] size maximum length of @p str in bytes.
+ * @return -1 if input was aborted.
+ * @return >= 0 length of edited string @p str.
+ */
 {
-    struct VDCWin inputwin;
-    char returncode;
 
-    vdcwin_init(&inputwin, xpos, ypos, width+1, lines);
-    vdcwin_put_string(&inputwin, str);
-    returncode = vdcwin_edit(&inputwin);
-    if (returncode == CH_ENTER)
+    char c;
+    char idx = strlen(str);
+
+    vdc_prints(xpos, ypos, str);
+    vdcwin_cursor_move(&canvas.view, xpos + idx, ypos);
+    vdcwin_cursor_toggle(&canvas.view);
+
+    while (1)
     {
-        vdcwin_get_rect(&inputwin, 0, 0, width, lines, BNK_DEFAULT, str);
-        return strlen(str);
+        c = vdcwin_getch();
+        switch (c)
+        {
+        case CH_ESC:
+        case CH_STOP:
+            vdcwin_cursor_toggle(&canvas.view);
+            return -1;
+
+        case CH_ENTER:
+            idx = strlen(str);
+            str[idx] = 0;
+            vdcwin_cursor_toggle(&canvas.view);
+            return idx;
+
+        case CH_DEL:
+            if (idx)
+            {
+                vdcwin_cursor_toggle(&canvas.view);
+                --idx;
+                vdc_printc(xpos + idx, ypos, CH_SPACE, mc_menupopup);
+                for (c = idx; 1; ++c)
+                {
+                    char b = str[c + 1];
+                    str[c] = b;
+
+                    vdc_printc(xpos + c, ypos, b ? pet2screen(b) : CH_SPACE, mc_menupopup);
+                    if (b == 0)
+                    {
+                        break;
+                    }
+                }
+                vdcwin_cursor_move(&canvas.view, xpos + idx, ypos);
+                vdcwin_cursor_toggle(&canvas.view);
+            }
+            break;
+
+        case CH_INS:
+            c = strlen(str);
+            if (c < size && c > 0 && idx < c)
+            {
+                vdcwin_cursor_toggle(&canvas.view);
+                ++c;
+                while (c >= idx)
+                {
+                    str[c + 1] = str[c];
+                    if (c == 0)
+                    {
+                        break;
+                    }
+                    --c;
+                }
+                str[idx] = ' ';
+                vdc_prints(xpos, ypos, str);
+                vdcwin_cursor_move(&canvas.view, xpos + idx, ypos);
+                vdcwin_cursor_toggle(&canvas.view);
+            }
+            break;
+
+        case CH_CURS_LEFT:
+            if (idx)
+            {
+                vdcwin_cursor_toggle(&canvas.view);
+                --idx;
+                vdcwin_cursor_move(&canvas.view, xpos + idx, ypos);
+                vdcwin_cursor_toggle(&canvas.view);
+            }
+            break;
+
+        case CH_CURS_RIGHT:
+            if (idx < strlen(str) && idx < size)
+            {
+                vdcwin_cursor_toggle(&canvas.view);
+                ++idx;
+                vdcwin_cursor_move(&canvas.view, xpos + idx, ypos);
+                vdcwin_cursor_toggle(&canvas.view);
+            }
+            break;
+
+        default:
+            if (isprint(c) && idx < size)
+            {
+                char flag = (str[idx] == 0);
+                str[idx] = c;
+                vdcwin_cursor_toggle(&canvas.view);
+                vdc_printc(xpos + idx, ypos, pet2screen(c), mc_menupopup);
+                ++idx;
+                vdcwin_cursor_move(&canvas.view, xpos + idx, ypos);
+                vdcwin_cursor_toggle(&canvas.view);
+                if (flag)
+                {
+                    str[idx + 1] = 0;
+                }
+                break;
+            }
+            break;
+        }
     }
-    else
-    {
-        return -1;
-    }
+    return 0;
 }
 
 /* General screen functions */
@@ -561,7 +666,7 @@ void plotcursor()
 // Plot cursor at present position
 {
     vdc_printc(screen_col, screen_row, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
-    vdcwin_cursor_show(&canvas.view);
+    vdcwin_cursor_toggle(&canvas.view);
 }
 
 void hidecursor()
@@ -1010,8 +1115,8 @@ void mainmenuloop()
             break;
 
         case 21:
-            // loadoverlay(3);
-            // savescreenmap();
+            loadoverlay(3);
+            savescreenmap();
             break;
 
         case 22:
@@ -1020,13 +1125,13 @@ void mainmenuloop()
             break;
 
         case 23:
-            // loadoverlay(3);
-            // saveproject();
+            loadoverlay(3);
+            saveproject();
             break;
 
         case 24:
-            // loadoverlay(3);
-            // loadproject();
+            loadoverlay(3);
+            loadproject();
             break;
 
         case 25:
@@ -1435,7 +1540,7 @@ int main(void)
 
         // Go to menu
         case CH_F1:
-            vdcwin_cursor_show(&canvas.view);
+            vdcwin_cursor_toggle(&canvas.view);
             mainmenuloop();
             plotcursor();
             vdc_state.text_attr = plotcolor;

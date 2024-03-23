@@ -89,6 +89,33 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #define UNLSN  0xFFAE
 #define LISTEN 0xFFB1
 
+#define X(a, b, c) linebuffer[len - 3] == a &&linebuffer[len - 2] == b &&linebuffer[len - 1] == c
+
+#define CBM_T_REG 0x10 /* Bit set for regular files */
+#define CBM_T_SEQ 0x10
+#define CBM_T_PRG 0x11
+#define CBM_T_USR 0x12
+#define CBM_T_REL 0x13
+#define CBM_T_VRP 0x14 /* Vorpal fast-loadable format */
+#define CBM_T_DEL 0x00
+#define CBM_T_CBM 0x01    /* 1581 sub-partition */
+#define CBM_T_DIR 0x02    /* IDE64 and CMD sub-directory */
+#define CBM_T_LNK 0x03    /* IDE64 soft-link */
+#define CBM_T_OTHER 0x04  /* File-type not recognized */
+#define CBM_T_HEADER 0x05 /* Disk header / title */
+#define CBM_T_FREE 100
+#define DISK_ID_LEN 5
+#define CBM_A_RO 1 /* Read only   */
+#define CBM_A_WO 2 /* Write only  */
+#define CBM_A_RW 3 /* Read, Write */
+
+// File picker defines
+#define DIRH 14
+#define DIRY 2
+#define DIRX 10
+#define DIRW 60
+#define MAXDEVID 30
+
 // Function Prototypes
 
 // Not in overlay
@@ -109,6 +136,10 @@ __noinline void bnk_memset(char cr, volatile char *p, char val, unsigned size);
 __noinline void bnk_cpytovdc(unsigned vdcdest, char scr, volatile char *sp, unsigned size);
 __noinline void bnk_cpyfromvdc(char dcr, volatile char *dp, unsigned vdcsrc, unsigned size);
 __noinline void bnk_redef_charset(unsigned vdcdest, char scr, volatile char *sp, unsigned size);
+__noinline void freeDir();
+__noinline void dir_close(char lfn);
+__noinline char dir_open(char lfn, unsigned char device);
+__noinline char dir_readentry(const char lfn, struct DirEntry *l_dirent);
 __noinline bool bnk_load(char device, char bank, const char *start, const char *fname);
 __noinline bool bnk_save(char device, char bank, const char *start, const char *end, const char *fname);
 __noinline bool bnk_iec_active(char device);
@@ -119,6 +150,53 @@ __noinline void sid_pausemusic();
 
 // Global variables
 extern char bootdevice;
+
+struct DirEntry
+{
+    char name[17]; /* File name in PetSCII, limited to 16 chars */
+    unsigned size; /* Size, in 254-/256-byte blocks */
+    char type;
+    char access;
+};
+struct DirElement
+{
+    struct DirEntry dirent;
+    struct DirElement *next;
+    struct DirElement *prev;
+};
+struct Directory
+{
+    /// 16 characters name
+    /// 1 comma
+    /// 5 characters ID
+    /// NUL
+    char name[16 + 1 + 5 + 1];
+    struct DirElement *firstelement;
+    struct DirElement *selected;
+    struct DirElement *firstprinted;
+    /// current cursor position
+    unsigned int pos;
+    /// number of free blocks
+    unsigned int free;
+};
+extern struct Directory cwd;
+extern struct DirElement direlement_size;
+extern struct DirElement *previous;
+extern struct DirElement *current;
+extern struct DirElement *next;
+extern const char progressBar[4];
+extern const char progressRev[4];
+extern char disk_id_buf[5];
+extern struct DirElement direlement_size;
+extern struct DirElement *previous;
+extern struct DirElement *current;
+extern struct DirElement *next;
+extern struct Directory cwd;
+extern const char *value2hex;
+extern const char *reg_types[];
+extern const char *oth_types[];
+extern char bad_type[4];
+extern char linebuffer2[81];
 
 #pragma compile("banking.c")
 

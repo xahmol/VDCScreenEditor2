@@ -3,7 +3,7 @@
 
 char dosCommand(const char lfn, const char drive, const char sec_addr, const char *cmd);
 unsigned cmd(const char device, const char *cmd);
-signed int textInput(char xpos, char ypos, char *str, char width, char lines);
+signed textInput(unsigned char xpos, unsigned char ypos, char *str, unsigned char size);
 void printcentered(const char *text, char xpos, char ypos, char width);
 char VDC_Attribute(char textcolor, char blink, char underline, char reverse, char alternate);
 void initoverlay();

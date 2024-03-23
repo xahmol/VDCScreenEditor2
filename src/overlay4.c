@@ -383,7 +383,7 @@ void chareditor()
         // Hex edit
         case 'h':
             sprintf(buffer, "%2X", char_present[ypos]);
-            textInput(68, ypos + 3, buffer, 2, 1);
+            textInput(68, ypos + 3, buffer, 2);
             char_present[ypos] = (unsigned char)strtol(buffer, &ptrend, 16);
             vdc_mem_write_at(char_address + ypos, char_present[ypos]);
             bnk_writeb(BNK_1_FULL, (char*) charaddress(char_screencode, char_altorstd, 1) + ypos, char_present[ypos]);

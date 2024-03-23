@@ -141,7 +141,7 @@ void vdcwin_fill(struct VDCWin *win, char ch)
 	vdc_clear(win->sx, win->sy, ch, win->wx, win->wy);
 }
 
-void vdcwin_cursor_show(struct VDCWin *win)
+void vdcwin_cursor_toggle(struct VDCWin *win)
 // Show or hide the cursor by setting or clearing the reverse attribute
 {
 	unsigned cp = vdc_state.base_attr + vdc_coords(win->sx + win->cx, win->sy + win->cy);
@@ -762,9 +762,9 @@ char vdcwin_edit(struct VDCWin *win)
 {
 	for (;;)
 	{
-		vdcwin_cursor_show(win);
+		vdcwin_cursor_toggle(win);
 		char ch = vdcwin_getch();
-		vdcwin_cursor_show(win);
+		vdcwin_cursor_toggle(win);
 
 		if (vdcwin_edit_char(win, ch))
 			return ch;

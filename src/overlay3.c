@@ -84,312 +84,28 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #pragma data(dataovl3)
 #pragma bss(bssovl3)
 
-#define X(a, b, c) linebuffer[len - 3] == a &&linebuffer[len - 2] == b &&linebuffer[len - 1] == c
-
-#define CBM_T_REG 0x10 /* Bit set for regular files */
-#define CBM_T_SEQ 0x10
-#define CBM_T_PRG 0x11
-#define CBM_T_USR 0x12
-#define CBM_T_REL 0x13
-#define CBM_T_VRP 0x14 /* Vorpal fast-loadable format */
-#define CBM_T_DEL 0x00
-#define CBM_T_CBM 0x01    /* 1581 sub-partition */
-#define CBM_T_DIR 0x02    /* IDE64 and CMD sub-directory */
-#define CBM_T_LNK 0x03    /* IDE64 soft-link */
-#define CBM_T_OTHER 0x04  /* File-type not recognized */
-#define CBM_T_HEADER 0x05 /* Disk header / title */
-#define CBM_T_FREE 100
-#define DISK_ID_LEN 5
-#define CBM_A_RO 1 /* Read only   */
-#define CBM_A_WO 2 /* Write only  */
-#define CBM_A_RW 3 /* Read, Write */
-
-// File picker defines
-#define DIRH 14
-#define DIRY 2
-#define DIRX 10
-#define DIRW 60
-
-static const char progressBar[4] = {0xA5, 0xA1, 0xA7, ' '};
-static const char progressRev[4] = {0, 0, 1, 1};
-char disk_id_buf[5];
-
-struct DirEntry
+char dir_validentry(char filter)
+// Is current dir entry a valid entry to show given filetype and filter
 {
-    char name[17]; /* File name in PetSCII, limited to 16 chars */
-    unsigned size; /* Size, in 254-/256-byte blocks */
-    char type;
-    char access;
-};
-struct DirElement
-{
-    struct DirEntry dirent;
-    struct DirElement *next;
-    struct DirElement *prev;
-};
-struct DirElement direlement_size;
-struct DirElement *previous;
-struct DirElement *current;
-struct DirElement *next;
+    char len = strlen(current->dirent.name);
+    char extension[6];
 
-struct Directory
-{
-    /// 16 characters name
-    /// 1 comma
-    /// 5 characters ID
-    /// NUL
-    char name[16 + 1 + 5 + 1];
-    struct DirElement *firstelement;
-    struct DirElement *selected;
-    struct DirElement *firstprinted;
-    /// current cursor position
-    unsigned int pos;
-    /// number of free blocks
-    unsigned int free;
-};
-struct Directory cwd;
-
-const char *value2hex = "0123456789abcdef";
-const char *reg_types[] = {"SEQ", "PRG", "URS", "REL", "VRP"};
-const char *oth_types[] = {"DEL", "CBM", "DIR", "LNK", "OTH", "HDR"};
-char bad_type[4];
-char linebuffer2[81];
-
-void freeDir()
-{
-    if (!cwd.name[0])
-        return;
-
-    current = cwd.firstelement;
-    while (current)
+    // If it is not a PRG file, return with zero value
+    if (current->dirent.type != CBM_T_PRG)
     {
-        next = current->next;
-        free(current);
-        current = next;
-    }
-
-    cwd.name[0] = 0;
-}
-
-void dir_close(char lfn)
-// Closse a directory opened for reading
-{
-    // Reset channels
-    krnio_clrchn();
-
-    // Close file
-    krnio_close(lfn);
-}
-
-char dir_open(char lfn, unsigned char device)
-// Open a directory for reading
-{
-
-    // Set name for directory
-    krnio_setbnk(0, 0);
-    krnio_setnam("$");
-
-    // Open the directory
-    if (krnio_open(lfn, device, 0))
-    {
-        // Switch input to file
-        if (krnio_chkin(lfn))
-        {
-            // Skip BASIC load address
-            krnio_chrin();
-            krnio_chrin();
-
-            if (krnio_pstatus[lfn])
-            {
-                dir_close(lfn);
-            }
-        }
-        else
-        {
-            dir_close(lfn);
-        }
-    }
-
-    // Return error code or 0 on succcess
-    return krnio_pstatus[lfn];
-}
-
-char dir_readentry(const char lfn, struct DirEntry *l_dirent)
-// Read the next directory entry
-{
-    char b, len;
-    char i = 0;
-
-    // check that device is ready
-    b = krnio_chrin();
-    if (!b)
-    {
-        // No entry found
-        return 1;
-    }
-    if (krnio_pstatus[lfn])
-    {
-        return 7;
-    }
-
-    // Skip second basic link byte
-    krnio_chrin();
-
-    // read file size
-    l_dirent->size = krnio_chrin();
-    l_dirent->size |= (krnio_chrin()) << 8;
-
-    // read line into linebuffer
-    memset(linebuffer, 0, sizeof(linebuffer));
-    while (1)
-    {
-        // read byte
-        b = krnio_chrin();
-        // EOL?
-        if (b == 0)
-        {
-            break;
-        }
-        // append to linebuffer
-        if (i < sizeof(linebuffer))
-        {
-            linebuffer[i++] = b;
-        }
-        // return if reading had error
-        if (krnio_pstatus[lfn])
-        {
-            krnio_clrchn();
-            return 2;
-        }
-    }
-
-    // handle "B" BLOCKS FREE
-    if (linebuffer[0] == 'b')
-    {
-        l_dirent->type = CBM_T_FREE;
         return 0;
     }
 
-    // check that we have a minimum amount of characters to work with
-    if (i < 5)
+    // Filter and filename long enough? Then check for extension
+    if (filter && len > 5)
     {
-        return 3;
-    }
-
-    // strip whitespace from right part of line
-    for (len = i; len > 0; --len)
-    {
-        b = linebuffer[len];
-        if (b == 0 ||
-            b == ' ' ||
-            b == 0xA0)
+        strcpy(extension, (char *)current->dirent.name[len - 5]);
+        if (strcmp(extension, ".proj"))
         {
-            linebuffer[len] = 0;
-            continue;
+            return 0;
         }
-        ++len;
-        break;
     }
-
-    // parse file name
-
-    // skip until first "
-    for (i = 0; i < sizeof(linebuffer) && linebuffer[i] != '"'; ++i)
-    {
-        // do nothing
-    }
-
-    // copy filename, until " or max size
-    b = 0;
-    for (++i; i < sizeof(linebuffer) && linebuffer[i] != '"' && b < 16; ++i)
-    {
-        l_dirent->name[b++] = linebuffer[i];
-    }
-
-    // check file type
-    if (X('p', 'r', 'g'))
-    {
-        l_dirent->type = CBM_T_PRG;
-    }
-    else if (X('s', 'e', 'q'))
-    {
-        l_dirent->type = CBM_T_SEQ;
-    }
-    else if (X('u', 's', 'r'))
-    {
-        l_dirent->type = CBM_T_USR;
-    }
-    else if (X('d', 'e', 'l'))
-    {
-        l_dirent->type = CBM_T_DEL;
-    }
-    else if (X('r', 'e', 'l'))
-    {
-        l_dirent->type = CBM_T_REL;
-    }
-    else if (X('c', 'b', 'm'))
-    {
-        l_dirent->type = CBM_T_CBM;
-    }
-    else if (X('d', 'i', 'r'))
-    {
-        l_dirent->type = CBM_T_DIR;
-    }
-    else if (X('v', 'r', 'p'))
-    {
-        l_dirent->type = CBM_T_VRP;
-    }
-    else if (X('l', 'n', 'k'))
-    {
-        l_dirent->type = CBM_T_LNK;
-    }
-    else
-    {
-        // parse header
-        l_dirent->type = CBM_T_HEADER;
-
-        // skip one character which should be "
-        if (linebuffer[i] == '"')
-        {
-            ++i;
-        }
-        // skip one character which should be space
-        if (linebuffer[i] == ' ')
-        {
-            ++i;
-        }
-
-        // copy disk ID
-        for (b = 0; b < DISK_ID_LEN; ++b)
-        {
-            if (linebuffer[i])
-            {
-                disk_id_buf[b] = linebuffer[i];
-            }
-            i++;
-        }
-        disk_id_buf[b] = 0;
-
-        // strip disk name
-        for (b = 15; b > 0; --b)
-        {
-            if (l_dirent->name[b] == 0 ||
-                l_dirent->name[b] == ' ' ||
-                l_dirent->name[b] == 0xA0)
-            {
-                l_dirent->name[b] = 0;
-                continue;
-            }
-            break;
-        }
-
-        return 0;
-    }
-
-    // parse read-only
-    l_dirent->access = (linebuffer[i - 4] == 0x3C) ? CBM_A_RO : CBM_A_RW;
-
-    return 0;
+    return 1;
 }
 
 char readDir(char device, char filter)
@@ -471,30 +187,43 @@ char readDir(char device, char filter)
                 cwd.free = current->dirent.size;
                 break;
             }
-            else if (cwd.firstelement == 0)
+            else if (dir_validentry(filter))
             {
-                // first element
-                cwd.firstelement = current;
-                previous = current;
+                if (cwd.firstelement == 0)
+                {
+                    // first element
+                    cwd.firstelement = current;
+                    previous = current;
+                }
+                else
+                {
+                    // all other elements
+                    current->prev = previous;
+                    previous->next = current;
+                    previous = current;
+                }
             }
             else
             {
-                // all other elements
-                current->prev = previous;
-                previous->next = current;
-                previous = current;
+                free(current);
             }
         }
     }
     dir_close(15);
     vdc_reverse(1);
 
+    // Are there valid entries read?
     if (cwd.firstelement)
     {
         cwd.selected = cwd.firstelement;
         cwd.firstprinted = cwd.firstelement;
+        return 1;
     }
-    return 1;
+    // No valid entries
+    else
+    {
+        return 0;
+    }
 }
 
 const char *fileTypeToStr(char ft)
@@ -523,7 +252,7 @@ void drawDirFrame(char device)
     vdc_clear(DIRX, DIRY + 3, CH_SPACE, 40, DIRH + 2);
     sprintf(linebuffer, "[%02u] %.20s", device, cwd.name);
     vdc_prints(DIRX + 1, DIRY + 3, linebuffer);
-    sprintf(linebuffer, "%u bl. free", cwd.free);
+    sprintf(linebuffer, "%u blocks free", cwd.free);
     vdc_prints(DIRX + 1, DIRY + DIRH + 4, linebuffer);
 }
 
@@ -603,7 +332,7 @@ void updateMenu(void)
     vdc_prints(DIRX + DIRW - 15, ++menuy, "ESC Cancel");
 }
 
-char *filepicker(char filter)
+char filepicker(char filter)
 // Function to select a file from the directory list
 {
     unsigned pos = 0;
@@ -611,10 +340,11 @@ char *filepicker(char filter)
     char nextpage = 0;
     unsigned ypos, yoff;
     char count;
-    char device = bootdevice;
+    char selected = 0;
 
     memset(&cwd, 0, sizeof(cwd));
     memset(disk_id_buf, 0, DISK_ID_LEN);
+    memset(&filename, 0, sizeof(filename));
 
     vdc_state.text_attr = mc_menupopup;
     vdcwin_win_new(VDC_POPUP_BORDER, DIRX, DIRY, DIRW, DIRH + 6);
@@ -623,16 +353,616 @@ char *filepicker(char filter)
     vdc_prints(DIRX + 1, DIRY + 1, "Select the file to load");
     vdc_underline(0);
 
-    refreshDir(device, filter);
+    refreshDir(targetdevice, filter);
+
+    if (cwd.firstelement == 0)
+    {
+        vdc_prints(DIRX + 1, DIRY + 3, "No valid directory entries found.");
+    }
+
     updateMenu();
-    getch();
+
+    do
+    {
+        current = cwd.selected;
+        pos = cwd.pos;
+        lastpage = pos / DIRH;
+        yoff = pos - (lastpage * DIRH);
+        ypos = yoff + 6;
+
+        switch (vdcwin_getch())
+        {
+        case CH_F1:
+            refreshDir(targetdevice, filter);
+            break;
+
+        case '2':
+        case CH_F2:
+        case '+':
+            if (targetdevice)
+            {
+                if (++targetdevice > MAXDEVID)
+                {
+                    targetdevice = 8;
+                }
+                while (!bnk_iec_active(targetdevice))
+                {
+                    if (++targetdevice > MAXDEVID)
+                    {
+                        targetdevice = 8;
+                    }
+                }
+                memset(&cwd, 0, sizeof(cwd));
+                refreshDir(targetdevice, filter);
+            }
+            break;
+
+        case '-':
+            if (targetdevice)
+            {
+                if (--targetdevice < 8)
+                {
+                    targetdevice = MAXDEVID;
+                }
+                while (!bnk_iec_active(targetdevice))
+                {
+                    if (--targetdevice < 8)
+                    {
+                        targetdevice = MAXDEVID;
+                    }
+                }
+                memset(&cwd, 0, sizeof(cwd));
+                refreshDir(targetdevice, filter);
+            }
+            break;
+
+        case 't':
+        case CH_HOME:
+            cwd.selected = cwd.firstelement;
+            cwd.pos = 0;
+            printDir(filter);
+            break;
+
+        case 'e':
+            current = cwd.firstelement;
+            pos = 0;
+            while (1)
+            {
+                if (current->next != 0)
+                {
+                    current = current->next;
+                    pos++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            cwd.selected = current;
+            cwd.pos = pos;
+            printDir(filter);
+            break;
+
+        case CH_ESC:
+        case CH_STOP:
+            selected = 2;
+            break;
+
+        case CH_CURS_DOWN:
+            if (cwd.selected != 0 && current->next != 0)
+            {
+                current = current->next;
+                cwd.selected = current;
+                nextpage = (pos + 1) / DIRH;
+                cwd.pos++;
+                if (lastpage != nextpage)
+                {
+                    cwd.firstprinted = current;
+                    printDir(filter);
+                }
+                else
+                {
+                    current = current->prev;
+                    printElementPriv(ypos);
+                    yoff++;
+                    ypos = yoff + 6;
+                    current = current->next;
+                    printElementPriv(ypos);
+                }
+            }
+            break;
+
+        case CH_CURS_UP:
+            if (cwd.selected != 0 && current->prev != 0)
+            {
+                current = current->prev;
+                cwd.selected = current;
+                nextpage = (pos - 1) / DIRH;
+                cwd.pos--;
+                if (lastpage != nextpage)
+                {
+                    for (count = 0; count < DIRH - 1; count++)
+                    {
+                        if (current->prev != 0)
+                        {
+                            current = current->prev;
+                        }
+                    }
+                    cwd.firstprinted = current;
+                    printDir(filter);
+                }
+                else
+                {
+                    current = current->next;
+                    printElementPriv(ypos);
+                    yoff--;
+                    ypos = yoff + 6;
+                    current = current->prev;
+                    printElementPriv(ypos);
+                }
+            }
+            break;
+
+        // Select file
+        case CH_ENTER:
+            selected = 1;
+            strcpy(filename, current->dirent.name);
+            break;
+
+        // Page down
+        case 'p':
+            // Check if not already last item? If no, page down
+            if (current->next != 0)
+            {
+                cwd.selected = (struct DirElement *)0;
+                printElementPriv(ypos);
+                for (count = 0; count < DIRH; count++)
+                {
+                    if (current->next)
+                    {
+                        current = current->next;
+                        cwd.pos++;
+                        cwd.selected = current;
+                        cwd.firstprinted = current;
+                    }
+                }
+                pos = cwd.pos;
+                yoff = pos - (lastpage * DIRH);
+                ypos = yoff + 6;
+                printDir(filter);
+            }
+            break;
+
+        // Page up
+        case 'u':
+            // Check if not already first item? If no, page up
+            if (current->prev != 0)
+            {
+                cwd.selected = (struct DirElement *)0;
+                printElementPriv(ypos);
+                for (count = 0; count < DIRH; count++)
+                {
+                    if (current->prev)
+                    {
+                        current = current->prev;
+                        cwd.pos--;
+                        cwd.selected = current;
+                        cwd.firstprinted = current;
+                    }
+                }
+                pos = cwd.pos;
+                yoff = pos - (lastpage * DIRH);
+                ypos = yoff + 6;
+                printDir(filter);
+            }
+            break;
+        }
+    } while (!selected);
 
     vdcwin_win_free();
+    if (selected == 1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+char choosedeviceid(char ypos)
+// Choose device ID dialogue
+{
+    char key;
+
+    vdc_prints(21, ypos, "Choose drive ID:");
+    vdc_prints(21, ypos + 2, "Change with + / - key, RET to select.");
+    vdc_state.text_attr = mc_pd_select;
+
+    do
+    {
+        sprintf(linebuffer, "%2u", targetdevice);
+        vdc_prints(21, ypos + 1, linebuffer);
+
+        key = vdcwin_getch();
+
+        switch (key)
+        {
+        case '+':
+            if (++targetdevice > MAXDEVID)
+            {
+                targetdevice = 8;
+            }
+            while (!bnk_iec_active(targetdevice))
+            {
+                if (++targetdevice > MAXDEVID)
+                {
+                    targetdevice = 8;
+                }
+            }
+            break;
+
+        case '-':
+            if (--targetdevice < 8)
+            {
+                targetdevice = MAXDEVID;
+            }
+            while (!bnk_iec_active(targetdevice))
+            {
+                if (--targetdevice < 8)
+                {
+                    targetdevice = MAXDEVID;
+                }
+            }
+            break;
+
+        default:
+            break;
+        }
+
+    } while (key != CH_ENTER && key != CH_STOP && key != CH_ESC);
+
+    vdc_state.text_attr = mc_menupopup;
+    vdc_prints(21, ypos + 1, linebuffer);
+    vdc_clear(20, ypos + 2, CH_SPACE, 40, 1);
+    if (key == CH_ESC || key == CH_STOP)
+    {
+        return 0;
+    }
+    return 1;
+}
+
+signed chooseidandfilename(const char *headertext, char maxlen)
+// Function to present dialogue to enter device id and filename
+// Input: Headertext to print, maximum length of filename input string
+{
+    int valid = 0;
+    char *ptrend;
+
+    vdc_state.text_attr = mc_menupopup;
+    vdcwin_win_new(VDC_POPUP_BORDER, 20, 5, 40, 12);
+
+    vdc_underline(1);
+    vdc_prints(21, 6, headertext);
+    vdc_underline(0);
+
+    if (!choosedeviceid(8))
+    {
+        return -1;
+    }
+
+    vdc_prints(21, 10, "Choose filename:");
+    return textInput(21, 11, filename, maxlen);
+}
+
+char checkiffileexists(char *filetocheck, unsigned char id)
+{
+    // Check if file exists and, if yes, ask confirmation of overwrite
+
+    unsigned char proceed = 1;
+    unsigned char yesno;
+    unsigned char error;
+
+    sprintf(buffer, "r0:%s=%s", filetocheck, filetocheck);
+    error = cmd(id, buffer);
+
+    if (error == 63)
+    {
+        yesno = menu_areyousure("File exists.");
+        if (yesno == 2)
+        {
+            proceed = 0;
+        }
+        else
+        {
+            proceed = 2;
+        }
+    }
+    else
+    {
+        if (error && error != 62)
+        {
+            menu_fileerrormessage();
+            proceed = 0;
+        }
+    }
+
+    return proceed;
 }
 
 void loadscreenmap()
 {
-    filepicker(0);
+    // Function to load screenmap
+
+    unsigned lastreadaddress, newwidth, newheight;
+    unsigned maxsize = MEMORYLIMIT - SCREENMAPBASE;
+    char *ptrend;
+
+    if (!filepicker(0))
+    {
+        vdcwin_win_free();
+        return;
+    }
+
+    vdc_state.text_attr = mc_menupopup;
+    vdcwin_win_new(VDC_POPUP_BORDER, 20, 5, 40, 12);
+
+    vdc_underline(1);
+    vdc_prints(21, 6, "Load screen");
+    vdc_underline(0);
+
+    vdc_prints(21, 8, "Enter screen width:");
+    sprintf(buffer, "%u", canvas.sourcewidth);
+    textInput(21, 9, buffer, 3);
+    newwidth = (unsigned)strtol(buffer, &ptrend, 10);
+
+    vdc_prints(21, 10, "Enter screen height:");
+    sprintf(buffer, "%u", canvas.sourceheight);
+    textInput(21, 11, buffer, 3);
+    newheight = (unsigned)strtol(buffer, &ptrend, 10);
+
+    if ((newwidth * newheight * 2) + 48 > maxsize)
+    {
+        vdc_prints(21, 12, "New size unsupported. Press key.");
+        getch();
+        vdcwin_win_free();
+    }
+    else
+    {
+        vdcwin_win_free();
+
+        if (bnk_load(targetdevice, 1, (char *)SCREENMAPBASE, filename))
+        {
+            vdcwin_win_free();
+            updatecanvas();
+            placesignature();
+
+            vdcwin_cpy_viewport(&canvas);
+            vdcwin_win_new(0, 0, 0, vdc_state.width, 1);
+            menu_placebar(0);
+            if (showbar)
+            {
+                initstatusbar();
+            }
+            undo_undopossible = 0;
+            undo_redopossible = 0;
+        }
+    }
+}
+
+void savescreenmap()
+{
+    // Function to save screenmap
+
+    char overwrite;
+    unsigned escapeflag;
+
+    escapeflag = chooseidandfilename("Save screen", 15);
+
+    vdcwin_win_free();
+
+    if (escapeflag == -1)
+    {
+        return;
+    }
+
+    overwrite = checkiffileexists(filename, targetdevice);
+
+    if (overwrite)
+    {
+        // Scratch old file
+        if (overwrite == 2)
+        {
+            sprintf(buffer, "s:%s", filename);
+            cmd(targetdevice, buffer);
+        }
+
+        if (!bnk_save(targetdevice, 1, (char *)SCREENMAPBASE, (char *)SCREENMAPBASE + (screentotal * 2) + 48, filename))
+        {
+            menu_fileerrormessage();
+        }
+    }
+}
+
+void saveproject()
+{
+    // Function to save project (screen, charsets and metadata)
+
+    unsigned char overwrite;
+    char projbuffer[23];
+    char tempfilename[21];
+    int escapeflag;
+
+    escapeflag = chooseidandfilename("Save project", 10);
+
+    vdcwin_win_free();
+    memset(projbuffer,0,23);
+
+    if (escapeflag == -1)
+    {
+        return;
+    }
+
+    sprintf(tempfilename, "%s.proj", filename);
+
+    overwrite = checkiffileexists(tempfilename, targetdevice);
+
+    if (overwrite)
+    {
+        // Scratch old files
+        if (overwrite == 2)
+        {
+            sprintf(buffer, "s:%s.proj", filename);
+            cmd(targetdevice, buffer);
+            sprintf(buffer, "s:%s.scrn", filename);
+            cmd(targetdevice, buffer);
+            sprintf(buffer, "s:%s.chrs", filename);
+            cmd(targetdevice, buffer);
+            sprintf(buffer, "s:%s.chra", filename);
+            cmd(targetdevice, buffer);
+        }
+
+        // Store project data to buffer variable
+        projbuffer[0] = charsetchanged[0];
+        projbuffer[1] = charsetchanged[1];
+        projbuffer[2] = screen_col;
+        projbuffer[3] = screen_row;
+        projbuffer[4] = (canvas.sourcewidth >> 8) & 0xff;
+        projbuffer[5] = canvas.sourcewidth & 0xff;
+        projbuffer[6] = (canvas.sourceheight >> 8) & 0xff;
+        projbuffer[7] = canvas.sourceheight & 0xff;
+        projbuffer[8] = (screentotal >> 8) & 0xff;
+        projbuffer[9] = screentotal & 0xff;
+        projbuffer[10] = screenbackground;
+        projbuffer[11] = mc_mb_normal;
+        projbuffer[12] = mc_mb_select;
+        projbuffer[13] = mc_pd_normal;
+        projbuffer[14] = mc_pd_select;
+        projbuffer[15] = mc_menupopup;
+        projbuffer[16] = plotscreencode;
+        projbuffer[17] = plotcolor;
+        projbuffer[18] = plotreverse;
+        projbuffer[19] = plotunderline;
+        projbuffer[20] = plotblink;
+        projbuffer[21] = plotaltchar;
+        projbuffer[22] = vdc_state.mode;
+
+        // Store project file
+        sprintf(buffer, "%s.proj", filename);
+        if (!bnk_save(targetdevice, 0, projbuffer, projbuffer + 23, buffer))
+        {
+            menu_fileerrormessage();
+        }
+
+        // Store screen data
+        sprintf(buffer, "%s.scrn", filename);
+        if (!bnk_save(targetdevice, 1, (char *)SCREENMAPBASE, (char *)SCREENMAPBASE + (screentotal * 2) + 48, buffer))
+        {
+            menu_fileerrormessage();
+        }
+
+        // Store standard charset
+        if (charsetchanged[0] == 1)
+        {
+            sprintf(buffer, "%s.chrs", filename);
+            if (!bnk_save(targetdevice, 1, (char *)CHARSETNORMAL, (char *)CHARSETNORMAL + 2048, buffer))
+            {
+                menu_fileerrormessage();
+            }
+        }
+
+        // Store alternate charset
+        if (charsetchanged[1] == 1)
+        {
+            sprintf(buffer, "%s.chra", filename);
+            if (!bnk_save(targetdevice, 1, (char *)CHARSETALTERNATE, (char *)CHARSETALTERNATE + 2048, buffer))
+            {
+                menu_fileerrormessage();
+            }
+        }
+    }
+}
+
+void loadproject()
+{
+    // Function to load project (screen, charsets and metadata)
+    unsigned char projbuffer[23];
+    memset(projbuffer,0,23);
+
+    if (!filepicker(1))
+    {
+        vdcwin_win_free();
+        return;
+    }
+
+    // Strip .proj extension
+    filename[strlen(filename - 5)] = 0;
+
+    // Load project variables
+    sprintf(buffer, "%s.proj", filename);
+    if (!bnk_load(targetdevice, 0, projbuffer, buffer))
+    {
+        return;
+    }
+
+    charsetchanged[0] = projbuffer[0];
+    charsetchanged[1] = projbuffer[1];
+    screen_col = projbuffer[2];
+    screen_row = projbuffer[3];
+    canvas.sourcewidth = projbuffer[4] * 256 + projbuffer[5];
+    canvas.sourceheight = projbuffer[6] * 256 + projbuffer[7];
+    screentotal = projbuffer[8] * 256 + projbuffer[9];
+    screenbackground = projbuffer[10];
+    vdc_bgcolor(screenbackground);
+    mc_mb_normal = projbuffer[11];
+    mc_mb_select = projbuffer[12];
+    mc_pd_normal = projbuffer[13];
+    mc_pd_select = projbuffer[14];
+    mc_menupopup = projbuffer[15];
+    plotscreencode = projbuffer[16];
+    plotcolor = projbuffer[17];
+    plotreverse = projbuffer[18];
+    plotunderline = projbuffer[19];
+    plotblink = projbuffer[20];
+    plotaltchar = projbuffer[21];
+    if (projbuffer[22] != vdc_state.mode)
+    {
+        vdc_set_mode(projbuffer[22]);
+    }
+    updatecanvas();
+
+    // Load screen
+    sprintf(buffer, "%s.scrn", filename);
+    if (bnk_load(targetdevice, 1, (char *)SCREENMAPBASE, buffer))
+    {
+        vdcwin_win_free();
+        placesignature();
+        vdcwin_cpy_viewport(&canvas);
+        vdcwin_win_new(0, 0, 0, vdc_state.width, 1);
+        menu_placebar(0);
+        if (showbar)
+        {
+            initstatusbar();
+        }
+        undo_undopossible = 0;
+        undo_redopossible = 0;
+    }
+
+    // Load standard charset
+    if (charsetchanged[0] == 1)
+    {
+        sprintf(buffer, "%s.chrs", filename);
+        bnk_load(targetdevice, 1, (char *)CHARSETNORMAL, buffer);
+        bnk_redef_charset(vdc_state.char_std,BNK_1_FULL,(char *)CHARSETNORMAL,256);
+    }
+
+    // Load standard charset
+    if (charsetchanged[1] == 1)
+    {
+        sprintf(buffer, "%s.chra", filename);
+        bnk_load(targetdevice, 1, (char *)CHARSETALTERNATE, buffer);
+        bnk_redef_charset(vdc_state.char_alt,BNK_1_FULL,(char *)CHARSETALTERNATE,256);
+    }
 }
 
 #pragma code(code)

@@ -128,7 +128,7 @@ void lineandbox(unsigned char draworselect)
             printstatusbar();
         }
         key = vdcwin_getch();
-        vdcwin_cursor_show(&canvas.view);
+        vdcwin_cursor_toggle(&canvas.view);
 
         switch (key)
         {
@@ -234,7 +234,7 @@ void movemode()
 
     strcpy(programmode, "Move");
 
-    vdcwin_cursor_show(&canvas.view);
+    vdcwin_cursor_toggle(&canvas.view);
 
     if (undoenabled == 1)
     {

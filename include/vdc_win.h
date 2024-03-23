@@ -141,7 +141,7 @@ void vdcwin_clear(struct VDCWin *win);
 void vdcwin_fill(struct VDCWin *win, char ch);
 
 // Show or hide the cursor by setting or clearing the reverse attribute
-void vdcwin_cursor_show(struct VDCWin *win);
+void vdcwin_cursor_toggle(struct VDCWin *win);
 
 // Move the cursor to the given location
 void vdcwin_cursor_move(struct VDCWin *win, char cx, char cy);

@@ -479,7 +479,7 @@ void palette()
     hidecursor();
     palette_draw();
     vdcwin_cursor_move(&canvas.view, 45 + colsel, 2 + rowsel);
-    vdcwin_cursor_show(&canvas.view);
+    vdcwin_cursor_toggle(&canvas.view);
 
     // Get key loop
     do
@@ -565,9 +565,9 @@ void palette()
             {
                 rowsel++;
             }
-            vdcwin_cursor_show(&canvas.view);
+            vdcwin_cursor_toggle(&canvas.view);
             vdcwin_cursor_move(&canvas.view, 45 + colsel, 2 + rowsel);
-            vdcwin_cursor_show(&canvas.view);
+            vdcwin_cursor_toggle(&canvas.view);
             break;
 
         // Select character
@@ -585,7 +585,7 @@ void palette()
             visualmap = (visualmap) ? 0 : 1;
             palette_draw();
             vdcwin_cursor_move(&canvas.view, 45 + colsel, 2 + rowsel);
-            vdcwin_cursor_show(&canvas.view);
+            vdcwin_cursor_toggle(&canvas.view);
             break;
 
         // Toggle statusbar
@@ -595,12 +595,12 @@ void palette()
 
         // Help screen
         case CH_F8:
-            vdcwin_cursor_show(&canvas.view);
+            vdcwin_cursor_toggle(&canvas.view);
             vdcwin_win_free();
             helpscreen_load(2);
             palette_draw();
             vdcwin_cursor_move(&canvas.view, 45 + colsel, 2 + rowsel);
-            vdcwin_cursor_show(&canvas.view);
+            vdcwin_cursor_toggle(&canvas.view);
             break;
 
         default:
@@ -648,7 +648,7 @@ void resizewidth()
     vdc_prints(21, 8, "Enter new width:");
 
     sprintf(buffer, "%u", canvas.sourcewidth);
-    if (textInput(21, 9, buffer, 4, 1) > 0)
+    if (textInput(21, 9, buffer, 3) > 0)
     {
         newwidth = (unsigned)strtol(buffer, &ptrend, 10);
     }
@@ -744,7 +744,7 @@ void resizeheight()
     vdc_prints(21, 8, "Enter new height:");
 
     sprintf(buffer, "%u", canvas.sourceheight);
-    if (textInput(21, 9, buffer, 4, 1) > 0)
+    if (textInput(21, 9, buffer, 3) > 0)
     {
         newheight = (unsigned)strtol(buffer, &ptrend, 10);
     }
