@@ -84,30 +84,6 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #pragma data(dataovl3)
 #pragma bss(bssovl3)
 
-char dir_validentry(char filter)
-// Is current dir entry a valid entry to show given filetype and filter
-{
-    char len = strlen(current->dirent.name);
-    char extension[6];
-
-    // If it is not a PRG file, return with zero value
-    if (current->dirent.type != CBM_T_PRG)
-    {
-        return 0;
-    }
-
-    // Filter and filename long enough? Then check for extension
-    if (filter && len > 5)
-    {
-        strcpy(extension, (char *)current->dirent.name[len - 5]);
-        if (strcmp(extension, ".proj"))
-        {
-            return 0;
-        }
-    }
-    return 1;
-}
-
 char readDir(char device, char filter)
 // Read the directory
 {
@@ -224,27 +200,6 @@ char readDir(char device, char filter)
     {
         return 0;
     }
-}
-
-const char *fileTypeToStr(char ft)
-// Convert file type from value to string
-{
-    if (ft & CBM_T_REG)
-    {
-        ft &= ~CBM_T_REG;
-        if (ft <= 4)
-            return reg_types[ft];
-    }
-    else
-    {
-        if (ft <= 5)
-            return oth_types[ft];
-    }
-    bad_type[0] = '?';
-    bad_type[1] = value2hex[ft >> 4];
-    bad_type[2] = value2hex[ft & 15];
-    bad_type[3] = 0;
-    return bad_type;
 }
 
 void drawDirFrame(char device)
@@ -788,7 +743,7 @@ void saveproject()
 {
     // Function to save project (screen, charsets and metadata)
 
-    unsigned char overwrite;
+    char overwrite;
     char projbuffer[23];
     char tempfilename[21];
     int escapeflag;
@@ -886,7 +841,7 @@ void saveproject()
 void loadproject()
 {
     // Function to load project (screen, charsets and metadata)
-    unsigned char projbuffer[23];
+    char projbuffer[23];
     memset(projbuffer,0,23);
 
     if (!filepicker(1))
