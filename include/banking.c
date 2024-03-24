@@ -531,30 +531,6 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
     return 0;
 }
 
-char dir_validentry(char filter)
-// Is current dir entry a valid entry to show given filetype and filter
-{
-    char len = strlen(current->dirent.name);
-    char extension[6];
-
-    // If it is not a PRG file, return with zero value
-    if (current->dirent.type != CBM_T_PRG)
-    {
-        return 0;
-    }
-
-    // Filter and filename long enough? Then check for extension
-    if (filter && len > 5)
-    {
-        strcpy(extension, (char *)current->dirent.name[len - 5]);
-        if (strcmp(extension, ".proj"))
-        {
-            return 0;
-        }
-    }
-    return 1;
-}
-
 const char *fileTypeToStr(char ft)
 // Convert file type from value to string
 {

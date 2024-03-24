@@ -992,6 +992,30 @@ void updatecanvas()
     screentotal = canvas.sourcewidth * canvas.sourceheight;
 }
 
+char dir_validentry(const char *filename, char filter)
+// Is current dir entry a valid entry to show given filetype and filter
+{
+    char len = strlen(filename);
+    char extension[6];
+
+    // If it is not a PRG file, return with zero value
+    if (current->dirent.type != CBM_T_PRG)
+    {
+        return 0;
+    }
+
+    // Filter and filename long enough? Then check for extension
+    if (filter && len > 5)
+    {
+        strcpy(extension, (char *)current->dirent.name[len - 5]);
+        if (strcmp(extension, ".proj"))
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 char readDir(char device, char filter)
 // Read the directory
 {
@@ -1069,9 +1093,8 @@ char readDir(char device, char filter)
             {
                 // blocks free entry
                 cwd.free = current->dirent.size;
-                break;
             }
-            else if (dir_validentry(filter))
+            else
             {
                 if (cwd.firstelement == 0)
                 {
@@ -1086,10 +1109,6 @@ char readDir(char device, char filter)
                     previous->next = current;
                     previous = current;
                 }
-            }
-            else
-            {
-                free(current);
             }
         }
     }
@@ -1173,9 +1192,16 @@ void printDir(char device)
 
 void refreshDir(char device, char filter)
 {
-    readDir(device, filter);
-    cwd.selected = cwd.firstelement;
-    printDir(device);
+    if (readDir(device, filter))
+    {
+        cwd.selected = cwd.firstelement;
+        printDir(device);
+    }
+    else
+    {
+        drawDirFrame(device);
+        vdc_prints(DIRX + 1, DIRY + 3, "No valid directory entries found.");
+    }
 }
 
 void updateMenu(void)
@@ -1217,12 +1243,6 @@ char filepicker(char filter)
     vdc_underline(0);
 
     refreshDir(targetdevice, filter);
-
-    if (cwd.firstelement == 0)
-    {
-        vdc_prints(DIRX + 1, DIRY + 3, "No valid directory entries found.");
-    }
-
     updateMenu();
 
     do
@@ -1281,29 +1301,35 @@ char filepicker(char filter)
 
         case 't':
         case CH_HOME:
-            cwd.selected = cwd.firstelement;
-            cwd.pos = 0;
-            printDir(targetdevice);
+            if (cwd.firstelement)
+            {
+                cwd.selected = cwd.firstelement;
+                cwd.pos = 0;
+                printDir(targetdevice);
+            }
             break;
 
         case 'e':
-            current = cwd.firstelement;
-            pos = 0;
-            while (1)
+            if (cwd.firstelement)
             {
-                if (current->next != 0)
+                current = cwd.firstelement;
+                pos = 0;
+                while (1)
                 {
-                    current = current->next;
-                    pos++;
+                    if (current->next != 0)
+                    {
+                        current = current->next;
+                        pos++;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                else
-                {
-                    break;
-                }
+                cwd.selected = current;
+                cwd.pos = pos;
+                printDir(targetdevice);
             }
-            cwd.selected = current;
-            cwd.pos = pos;
-            printDir(targetdevice);
             break;
 
         case CH_ESC:
@@ -1312,7 +1338,7 @@ char filepicker(char filter)
             break;
 
         case CH_CURS_DOWN:
-            if (cwd.selected != 0 && current->next != 0)
+            if (cwd.firstelement && cwd.selected && current->next)
             {
                 current = current->next;
                 cwd.selected = current;
@@ -1336,7 +1362,7 @@ char filepicker(char filter)
             break;
 
         case CH_CURS_UP:
-            if (cwd.selected != 0 && current->prev != 0)
+            if (cwd.firstelement && cwd.selected && current->prev)
             {
                 current = current->prev;
                 cwd.selected = current;
@@ -1368,14 +1394,17 @@ char filepicker(char filter)
 
         // Select file
         case CH_ENTER:
-            selected = 1;
-            strcpy(filename, current->dirent.name);
+            if (cwd.firstelement && cwd.selected)
+            {
+                selected = 1;
+                strcpy(filename, current->dirent.name);
+            }
             break;
 
         // Page down
         case 'p':
             // Check if not already last item? If no, page down
-            if (current->next != 0)
+            if (cwd.firstelement && current->next)
             {
                 cwd.selected = (struct DirElement *)0;
                 printElementPriv(ypos);
@@ -1399,7 +1428,7 @@ char filepicker(char filter)
         // Page up
         case 'u':
             // Check if not already first item? If no, page up
-            if (current->prev != 0)
+            if (cwd.firstelement && current->prev)
             {
                 cwd.selected = (struct DirElement *)0;
                 printElementPriv(ypos);
