@@ -84,6 +84,69 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #pragma data(dataovl4)
 #pragma bss(bssovl4)
 
+void showchareditfield(char stdoralt)
+// Function to draw char editor background field
+// Input: Flag for which charset is edited, standard (0) or alternate (1)
+{
+    vdc_state.text_attr = mc_menupopup - (VDC_A_ALTCHAR * stdoralt);
+    vdcwin_win_new(0, 67, 0, 13, 12);
+}
+
+unsigned charaddress(char screencode, char stdoralt, char vdcormem)
+// Function to calculate address of character to edit
+// Input:   screencode to edit, flag for standard (0) or alternate (1) charset,
+//          flag for VDC (0) or bank 1 (1) memory address
+{
+    unsigned address;
+
+    if (vdcormem == 0)
+    {
+        address = (stdoralt == 0) ? vdc_state.char_std : vdc_state.char_alt;
+        address += screencode * 16;
+    }
+    else
+    {
+        address = (stdoralt == 0) ? CHARSETNORMAL : CHARSETALTERNATE;
+        address += screencode * 8;
+    }
+    return address;
+}
+
+void showchareditgrid(unsigned screencode, char stdoralt)
+// Function to draw grid with present char to edit
+{
+    char x, y, char_byte, colorbase, colorbit;
+    unsigned address;
+
+    address = charaddress(screencode, stdoralt, 0);
+
+    colorbase = mc_menupopup - (VDC_A_ALTCHAR * stdoralt);
+    vdc_state.text_attr = colorbase;
+
+    sprintf(buffer, "Char %2X %s", screencode, (stdoralt == 0) ? "Std" : "Alt");
+
+    vdc_prints(68, 1, buffer);
+
+    for (y = 0; y < 8; y++)
+    {
+        char_byte = vdc_mem_read_at(address + y);
+        sprintf(buffer, "%2X", char_byte);
+        vdc_prints(68, y + 3, buffer);
+        for (x = 0; x < 8; x++)
+        {
+            if (char_byte & (1 << (7 - x)))
+            {
+                colorbit = colorbase;
+            }
+            else
+            {
+                colorbit = colorbase - VDC_A_REVERSE;
+            }
+            vdc_printc(x + 71, y + 3, CH_SPACE, colorbit);
+        }
+    }
+}
+
 void chareditor()
 {
     unsigned char x, y, char_altorstd, char_screencode, key;

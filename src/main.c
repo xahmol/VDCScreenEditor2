@@ -115,6 +115,15 @@ char palettechar;
 char visualmap = 0;
 char favourites[10][2];
 
+const char progressBar[4] = {0xA5, 0xA1, 0xA7, ' '};
+const char progressRev[4] = {0, 0, 1, 1};
+char disk_id_buf[5];
+struct DirElement direlement_size;
+struct DirElement *previous;
+struct DirElement *current;
+struct DirElement *next;
+struct Directory cwd;
+
 char buffer[81];
 char version[22];
 
@@ -972,69 +981,6 @@ void change_plotcolor(char newval)
     plotcursor();
 }
 
-void showchareditfield(char stdoralt)
-// Function to draw char editor background field
-// Input: Flag for which charset is edited, standard (0) or alternate (1)
-{
-    vdc_state.text_attr = mc_menupopup - (VDC_A_ALTCHAR * stdoralt);
-    vdcwin_win_new(0, 67, 0, 13, 12);
-}
-
-unsigned charaddress(char screencode, char stdoralt, char vdcormem)
-// Function to calculate address of character to edit
-// Input:   screencode to edit, flag for standard (0) or alternate (1) charset,
-//          flag for VDC (0) or bank 1 (1) memory address
-{
-    unsigned address;
-
-    if (vdcormem == 0)
-    {
-        address = (stdoralt == 0) ? vdc_state.char_std : vdc_state.char_alt;
-        address += screencode * 16;
-    }
-    else
-    {
-        address = (stdoralt == 0) ? CHARSETNORMAL : CHARSETALTERNATE;
-        address += screencode * 8;
-    }
-    return address;
-}
-
-void showchareditgrid(unsigned screencode, char stdoralt)
-// Function to draw grid with present char to edit
-{
-    char x, y, char_byte, colorbase, colorbit;
-    unsigned address;
-
-    address = charaddress(screencode, stdoralt, 0);
-
-    colorbase = mc_menupopup - (VDC_A_ALTCHAR * stdoralt);
-    vdc_state.text_attr = colorbase;
-
-    sprintf(buffer, "Char %2X %s", screencode, (stdoralt == 0) ? "Std" : "Alt");
-
-    vdc_prints(68, 1, buffer);
-
-    for (y = 0; y < 8; y++)
-    {
-        char_byte = vdc_mem_read_at(address + y);
-        sprintf(buffer, "%2X", char_byte);
-        vdc_prints(68, y + 3, buffer);
-        for (x = 0; x < 8; x++)
-        {
-            if (char_byte & (1 << (7 - x)))
-            {
-                colorbit = colorbase;
-            }
-            else
-            {
-                colorbit = colorbase - VDC_A_REVERSE;
-            }
-            vdc_printc(x + 71, y + 3, CH_SPACE, colorbit);
-        }
-    }
-}
-
 void updatecanvas()
 // Update the menu with the proper screen setting values
 {
@@ -1044,6 +990,447 @@ void updatecanvas()
     sprintf(pulldown_titles[0][3], "Screenmode: %2u ", vdc_state.mode);
     vdcwin_viewport_init(&canvas, BNK_1_FULL, (char *)SCREENMAPBASE, canvas.sourcewidth, canvas.sourceheight, getmaxx() + 1, getmaxy() + 1, 0, 0);
     screentotal = canvas.sourcewidth * canvas.sourceheight;
+}
+
+char readDir(char device, char filter)
+// Read the directory
+{
+    char cnt = 0xff;
+    char ret, i;
+
+    previous = (struct DirElement *)0;
+
+    vdc_state.text_attr = mc_menupopup;
+
+    if (cwd.name[0])
+    {
+        freeDir();
+    }
+
+    memset(&cwd, 0, sizeof(cwd));
+    memset(disk_id_buf, 0, DISK_ID_LEN);
+
+    if (dir_open(15, device))
+    {
+        return 0;
+    }
+
+    while (1)
+    {
+        current = calloc(1, sizeof(direlement_size));
+
+        if (!current)
+        {
+            break;
+        }
+
+        if (dir_readentry(15, &(current->dirent)))
+        {
+            free(current);
+            break;
+        }
+
+        // print progress bar
+        if ((cnt >> 2) >= 36)
+        {
+            cnt = 0;
+            vdc_clear(DIRX, DIRY + 3, CH_SPACE, DIRW, 1);
+            sprintf(linebuffer, "[%02u]", device);
+            vdc_prints(DIRX + 1, DIRY + 3, linebuffer);
+        }
+        else
+        {
+            vdcwin_cursor_move(&canvas.view, DIRX + 4 + (cnt >> 2), DIRY + 3);
+            vdc_reverse(!progressRev[cnt & 3]);
+            vdcwin_put_char(&canvas.view, progressBar[cnt & 3]);
+            ++cnt;
+        }
+
+        if (!cwd.name[0])
+        {
+            // initialize directory
+            if (current->dirent.type == CBM_T_HEADER)
+            {
+                for (i = 0; current->dirent.name[i]; ++i)
+                {
+                    cwd.name[i] = current->dirent.name[i];
+                }
+                cwd.name[i++] = ',';
+                memcpy(&cwd.name[i], disk_id_buf, DISK_ID_LEN);
+            }
+            else
+            {
+                strcpy(cwd.name, "Unknown type");
+            }
+        }
+        else
+        {
+            if (current->dirent.type == CBM_T_FREE)
+            {
+                // blocks free entry
+                cwd.free = current->dirent.size;
+                break;
+            }
+            else if (dir_validentry(filter))
+            {
+                if (cwd.firstelement == 0)
+                {
+                    // first element
+                    cwd.firstelement = current;
+                    previous = current;
+                }
+                else
+                {
+                    // all other elements
+                    current->prev = previous;
+                    previous->next = current;
+                    previous = current;
+                }
+            }
+            else
+            {
+                free(current);
+            }
+        }
+    }
+    dir_close(15);
+    vdc_reverse(1);
+
+    // Are there valid entries read?
+    if (cwd.firstelement)
+    {
+        cwd.selected = cwd.firstelement;
+        cwd.firstprinted = cwd.firstelement;
+        return 1;
+    }
+    // No valid entries
+    else
+    {
+        return 0;
+    }
+}
+
+void drawDirFrame(char device)
+{
+    vdc_clear(DIRX, DIRY + 3, CH_SPACE, 40, DIRH + 2);
+    sprintf(linebuffer, "[%02u] %.20s", device, cwd.name);
+    vdc_prints(DIRX + 1, DIRY + 3, linebuffer);
+    sprintf(linebuffer, "%u blocks free", cwd.free);
+    vdc_prints(DIRX + 1, DIRY + DIRH + 4, linebuffer);
+}
+
+void printElementPriv(const char ypos)
+{
+    vdc_state.text_attr = mc_pd_normal;
+    if ((current == cwd.selected))
+    {
+        vdc_state.text_attr = mc_pd_select;
+    }
+
+    vdcwin_cursor_move(&canvas.view, DIRX + 2, ypos);
+    strcpy(linebuffer, current->dirent.name);
+    sprintf(linebuffer2, (current->dirent.size < 10000) ? "%4u %-16s " : "%u %-15s ", current->dirent.size, linebuffer);
+    vdcwin_put_string(&canvas.view, linebuffer2);
+
+    // if blocks are >= 10000 shorten the file type to 2 characters
+    strcpy(linebuffer2, fileTypeToStr(current->dirent.type));
+    if (current->dirent.size >= 10000 && strlen(current->dirent.name) == 16)
+    {
+        linebuffer2[0] = linebuffer2[1];
+        linebuffer2[1] = linebuffer2[2];
+        linebuffer2[2] = 0;
+    }
+    vdcwin_put_string(&canvas.view, linebuffer2);
+    vdc_state.text_attr = mc_menupopup;
+}
+
+void printDir(char device)
+{
+    unsigned idx = 0;
+
+    if (!cwd.firstelement)
+    {
+        vdcwin_clear(&canvas.view);
+        return;
+    }
+
+    drawDirFrame(device);
+
+    current = cwd.firstprinted;
+
+    for (idx = 0; (current != 0) && (idx < DIRH); ++idx)
+    {
+        printElementPriv(idx + DIRY + 4);
+        current = current->next;
+    }
+
+    // clear empty lines
+    for (; idx < DIRH; ++idx)
+    {
+        vdc_clear(DIRX, idx + DIRY + 4, CH_SPACE, 40, 1);
+    }
+}
+
+void refreshDir(char device, char filter)
+{
+    readDir(device, filter);
+    cwd.selected = cwd.firstelement;
+    printDir(device);
+}
+
+void updateMenu(void)
+{
+    char menuy = DIRY + 2;
+
+    vdc_state.text_attr = mc_menupopup;
+    vdc_clear(DIRX + DIRW - 15, DIRY + 2, CH_SPACE, 14, 10);
+
+    vdc_prints(DIRX + DIRW - 15, ++menuy, " F1 Dir refr.");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "+/- Device");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "RET Select");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "  T Top");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "  E End");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "P/U Page up/do");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "Cur Navigate");
+    vdc_prints(DIRX + DIRW - 15, ++menuy, "ESC Cancel");
+}
+
+char filepicker(char filter)
+// Function to select a file from the directory list
+{
+    unsigned pos = 0;
+    char lastpage = 0;
+    char nextpage = 0;
+    unsigned ypos, yoff;
+    char count;
+    char selected = 0;
+
+    memset(&cwd, 0, sizeof(cwd));
+    memset(disk_id_buf, 0, DISK_ID_LEN);
+    memset(&filename, 0, sizeof(filename));
+
+    vdc_state.text_attr = mc_menupopup;
+    vdcwin_win_new(VDC_POPUP_BORDER, DIRX, DIRY, DIRW, DIRH + 6);
+
+    vdc_underline(1);
+    vdc_prints(DIRX + 1, DIRY + 1, "Select the file to load");
+    vdc_underline(0);
+
+    refreshDir(targetdevice, filter);
+
+    if (cwd.firstelement == 0)
+    {
+        vdc_prints(DIRX + 1, DIRY + 3, "No valid directory entries found.");
+    }
+
+    updateMenu();
+
+    do
+    {
+        current = cwd.selected;
+        pos = cwd.pos;
+        lastpage = pos / DIRH;
+        yoff = pos - (lastpage * DIRH);
+        ypos = yoff + 6;
+
+        switch (vdcwin_getch())
+        {
+        case CH_F1:
+            refreshDir(targetdevice, filter);
+            break;
+
+        case '2':
+        case CH_F2:
+        case '+':
+            if (targetdevice)
+            {
+                if (++targetdevice > MAXDEVID)
+                {
+                    targetdevice = 8;
+                }
+                while (!bnk_iec_active(targetdevice))
+                {
+                    if (++targetdevice > MAXDEVID)
+                    {
+                        targetdevice = 8;
+                    }
+                }
+                memset(&cwd, 0, sizeof(cwd));
+                refreshDir(targetdevice, filter);
+            }
+            break;
+
+        case '-':
+            if (targetdevice)
+            {
+                if (--targetdevice < 8)
+                {
+                    targetdevice = MAXDEVID;
+                }
+                while (!bnk_iec_active(targetdevice))
+                {
+                    if (--targetdevice < 8)
+                    {
+                        targetdevice = MAXDEVID;
+                    }
+                }
+                memset(&cwd, 0, sizeof(cwd));
+                refreshDir(targetdevice, filter);
+            }
+            break;
+
+        case 't':
+        case CH_HOME:
+            cwd.selected = cwd.firstelement;
+            cwd.pos = 0;
+            printDir(targetdevice);
+            break;
+
+        case 'e':
+            current = cwd.firstelement;
+            pos = 0;
+            while (1)
+            {
+                if (current->next != 0)
+                {
+                    current = current->next;
+                    pos++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            cwd.selected = current;
+            cwd.pos = pos;
+            printDir(targetdevice);
+            break;
+
+        case CH_ESC:
+        case CH_STOP:
+            selected = 2;
+            break;
+
+        case CH_CURS_DOWN:
+            if (cwd.selected != 0 && current->next != 0)
+            {
+                current = current->next;
+                cwd.selected = current;
+                nextpage = (pos + 1) / DIRH;
+                cwd.pos++;
+                if (lastpage != nextpage)
+                {
+                    cwd.firstprinted = current;
+                    printDir(targetdevice);
+                }
+                else
+                {
+                    current = current->prev;
+                    printElementPriv(ypos);
+                    yoff++;
+                    ypos = yoff + 6;
+                    current = current->next;
+                    printElementPriv(ypos);
+                }
+            }
+            break;
+
+        case CH_CURS_UP:
+            if (cwd.selected != 0 && current->prev != 0)
+            {
+                current = current->prev;
+                cwd.selected = current;
+                nextpage = (pos - 1) / DIRH;
+                cwd.pos--;
+                if (lastpage != nextpage)
+                {
+                    for (count = 0; count < DIRH - 1; count++)
+                    {
+                        if (current->prev != 0)
+                        {
+                            current = current->prev;
+                        }
+                    }
+                    cwd.firstprinted = current;
+                    printDir(targetdevice);
+                }
+                else
+                {
+                    current = current->next;
+                    printElementPriv(ypos);
+                    yoff--;
+                    ypos = yoff + 6;
+                    current = current->prev;
+                    printElementPriv(ypos);
+                }
+            }
+            break;
+
+        // Select file
+        case CH_ENTER:
+            selected = 1;
+            strcpy(filename, current->dirent.name);
+            break;
+
+        // Page down
+        case 'p':
+            // Check if not already last item? If no, page down
+            if (current->next != 0)
+            {
+                cwd.selected = (struct DirElement *)0;
+                printElementPriv(ypos);
+                for (count = 0; count < DIRH; count++)
+                {
+                    if (current->next)
+                    {
+                        current = current->next;
+                        cwd.pos++;
+                        cwd.selected = current;
+                        cwd.firstprinted = current;
+                    }
+                }
+                pos = cwd.pos;
+                yoff = pos - (lastpage * DIRH);
+                ypos = yoff + 6;
+                printDir(targetdevice);
+            }
+            break;
+
+        // Page up
+        case 'u':
+            // Check if not already first item? If no, page up
+            if (current->prev != 0)
+            {
+                cwd.selected = (struct DirElement *)0;
+                printElementPriv(ypos);
+                for (count = 0; count < DIRH; count++)
+                {
+                    if (current->prev)
+                    {
+                        current = current->prev;
+                        cwd.pos--;
+                        cwd.selected = current;
+                        cwd.firstprinted = current;
+                    }
+                }
+                pos = cwd.pos;
+                yoff = pos - (lastpage * DIRH);
+                ypos = yoff + 6;
+                printDir(targetdevice);
+            }
+            break;
+        }
+    } while (!selected);
+
+    vdcwin_win_free();
+    if (selected == 1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 void mainmenuloop()

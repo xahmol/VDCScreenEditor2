@@ -1,6 +1,7 @@
 #ifndef __MAIN_H_
 #define __MAIN_H_
 
+// Function prototypes
 char dosCommand(const char lfn, const char drive, const char sec_addr, const char *cmd);
 unsigned cmd(const char device, const char *cmd);
 signed textInput(unsigned char xpos, unsigned char ypos, char *str, unsigned char size);
@@ -34,7 +35,22 @@ void hidestatusbar();
 void togglestatusbar();
 void showchareditfield(char stdoralt);
 void updatecanvas();
-unsigned charaddress(char screencode, char stdoralt, char vdcormem);
-void showchareditgrid(unsigned screencode, char stdoralt);
+char readDir(char device, char filter);
+void drawDirFrame(char device);
+void printElementPriv(const char ypos);
+void printDir(char device);
+void refreshDir(char device, char filter);
+void updateMenu(void);
+char filepicker(char filter);
+
+// Global variables
+extern const char progressBar[4];
+extern const char progressRev[4];
+extern char disk_id_buf[5];
+extern struct DirElement direlement_size;
+extern struct DirElement *previous;
+extern struct DirElement *current;
+extern struct DirElement *next;
+extern struct Directory cwd;
 
 #endif // __MAIN_H_

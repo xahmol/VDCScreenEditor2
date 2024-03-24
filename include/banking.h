@@ -182,19 +182,6 @@ struct Directory
     /// number of free blocks
     unsigned int free;
 };
-extern struct Directory cwd;
-extern struct DirElement direlement_size;
-extern struct DirElement *previous;
-extern struct DirElement *current;
-extern struct DirElement *next;
-extern const char progressBar[4];
-extern const char progressRev[4];
-extern char disk_id_buf[5];
-extern struct DirElement direlement_size;
-extern struct DirElement *previous;
-extern struct DirElement *current;
-extern struct DirElement *next;
-extern struct Directory cwd;
 extern const char *value2hex;
 extern const char *reg_types[];
 extern const char *oth_types[];

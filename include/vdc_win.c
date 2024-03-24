@@ -1072,6 +1072,10 @@ bool vdcwin_win_new(char border, char xpos, char ypos, char width, char height)
 	// Clear window and draw desired borders
 	vdcwin_border_clear(&windows[winCfg.active - 1].win, border);
 
+//	// Debug
+//	sprintf(linebuffer,"Active: %2u Base: %4X Size: %4X New: %4X",winCfg.active,winCfg.membase,winCfg.memsize,winCfg.memactive);
+//	vdc_prints(0,23,linebuffer);
+
 	return true;
 }
 
@@ -1128,6 +1132,10 @@ void vdcwin_win_free()
 	// Make previous window if any active
 	winCfg.memactive = windows[winCfg.active - 1].memaddress;
 	winCfg.active--;
+
+//	// Debug
+//	sprintf(linebuffer,"Active: %2u Base: %4X Size: %4X New: %4X",winCfg.active,winCfg.membase,winCfg.memsize,winCfg.memactive);
+//	vdc_prints(0,23,linebuffer);
 }
 
 void vdcwin_viewport_init(struct VDCViewport *vp, char sourcebank, char *sourcebase, unsigned sourcewidth, unsigned sourceheight, unsigned viewwidth, unsigned viewheight, char viewsx, char viewsy)

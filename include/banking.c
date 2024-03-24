@@ -90,14 +90,6 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #pragma bss(bss)
 
 char bootdevice;
-const char progressBar[4] = {0xA5, 0xA1, 0xA7, ' '};
-const char progressRev[4] = {0, 0, 1, 1};
-char disk_id_buf[5];
-struct DirElement direlement_size;
-struct DirElement *previous;
-struct DirElement *current;
-struct DirElement *next;
-struct Directory cwd;
 const char *value2hex = "0123456789abcdef";
 const char *reg_types[] = {"SEQ", "PRG", "URS", "REL", "VRP"};
 const char *oth_types[] = {"DEL", "CBM", "DIR", "LNK", "OTH", "HDR"};
