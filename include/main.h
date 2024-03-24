@@ -43,14 +43,4 @@ void refreshDir(char device, char filter);
 void updateMenu(void);
 char filepicker(char filter);
 
-// Global variables
-extern const char progressBar[4];
-extern const char progressRev[4];
-extern char disk_id_buf[5];
-extern struct DirElement direlement_size;
-extern struct DirElement *previous;
-extern struct DirElement *current;
-extern struct DirElement *next;
-extern struct Directory cwd;
-
 #endif // __MAIN_H_

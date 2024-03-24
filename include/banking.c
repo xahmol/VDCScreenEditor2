@@ -95,6 +95,14 @@ const char *reg_types[] = {"SEQ", "PRG", "URS", "REL", "VRP"};
 const char *oth_types[] = {"DEL", "CBM", "DIR", "LNK", "OTH", "HDR"};
 char bad_type[4];
 char linebuffer2[81];
+const char progressBar[4] = {0xA5, 0xA1, 0xA7, ' '};
+const char progressRev[4] = {0, 0, 1, 1};
+char disk_id_buf[5];
+struct DirElement direlement_size;
+struct DirElement *previous;
+struct DirElement *current;
+struct DirElement *next;
+struct Directory cwd;
 
 char getcurrentdevice()
 // Return last used device number for IO operations. Default on 8 if still zero.
@@ -338,7 +346,7 @@ char dir_open(char lfn, unsigned char device)
             krnio_chrin();
             krnio_chrin();
 
-            if (krnio_pstatus[lfn])
+            if (krnio_status())
             {
                 dir_close(lfn);
             }
@@ -350,7 +358,7 @@ char dir_open(char lfn, unsigned char device)
     }
 
     // Return error code or 0 on succcess
-    return krnio_pstatus[lfn];
+    return krnio_status();
 }
 
 char dir_readentry(const char lfn, struct DirEntry *l_dirent)
@@ -366,7 +374,7 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
         // No entry found
         return 1;
     }
-    if (krnio_pstatus[lfn])
+    if (krnio_status())
     {
         return 7;
     }
@@ -395,7 +403,7 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
             linebuffer[i++] = b;
         }
         // return if reading had error
-        if (krnio_pstatus[lfn])
+        if (krnio_status())
         {
             krnio_clrchn();
             return 2;

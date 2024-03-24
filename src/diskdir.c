@@ -112,7 +112,7 @@ char dir_open(char lfn, unsigned char device)
 			krnio_chrin();
 			krnio_chrin();
 
-			if (krnio_pstatus[lfn])
+			if (krnio_status())
 			{
 				dir_close(lfn);
 			}
@@ -124,7 +124,7 @@ char dir_open(char lfn, unsigned char device)
 	}
 
 	// No success
-	return krnio_pstatus[lfn];
+	return krnio_status();
 }
 
 char dir_readentry(const char lfn, struct DirEntry *l_dirent)
@@ -140,7 +140,7 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
 		// No entry found
 		return 1;
 	}
-	if (krnio_pstatus[lfn])
+	if (krnio_status())
 	{
 		return 7;
 	}
@@ -169,7 +169,7 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
 			linebuffer[i++] = b;
 		}
 		// return if reading had error
-		if (krnio_pstatus[lfn])
+		if (krnio_status())
 		{
 			krnio_clrchn();
 			return 2;

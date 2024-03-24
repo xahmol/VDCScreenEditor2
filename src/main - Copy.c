@@ -1035,7 +1035,6 @@ char readDir(char device, char filter)
 
     if (dir_open(15, device))
     {
-        dir_close(15);
         return 0;
     }
 
@@ -1239,7 +1238,10 @@ char filepicker(char filter)
     unsigned ypos, yoff;
     char count;
     char selected = 0;
+    char notready;
+    
 
+    
     memset(&cwd, 0, sizeof(cwd));
     memset(disk_id_buf, 0, DISK_ID_LEN);
     memset(&filename, 0, sizeof(filename));
@@ -1271,19 +1273,31 @@ char filepicker(char filter)
         case '2':
         case CH_F2:
         case '+':
-            if (++targetdevice > MAXDEVID)
+            do
             {
-                targetdevice = 8;
-            }
+                if (++targetdevice > MAXDEVID)
+                {
+                    targetdevice = 8;
+                }
+                sprintf(linebuffer, "%02u", targetdevice);
+                vdc_prints(DIRX + 2, DIRY + 3, linebuffer);
+                notready = cmd(targetdevice,"i");
+            } while (notready);
             memset(&cwd, 0, sizeof(cwd));
             refreshDir(targetdevice, filter);
             break;
 
         case '-':
-            if (--targetdevice < 8)
+            do
             {
-                targetdevice = MAXDEVID;
-            }
+                if (--targetdevice < 8)
+                {
+                    targetdevice = MAXDEVID;
+                }
+                sprintf(linebuffer, "%02u", targetdevice);
+                vdc_prints(DIRX + 2, DIRY + 3, linebuffer);
+                notready = cmd(targetdevice,"i");
+            } while (notready);
             memset(&cwd, 0, sizeof(cwd));
             refreshDir(targetdevice, filter);
             break;
