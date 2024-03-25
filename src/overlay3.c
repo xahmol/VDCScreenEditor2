@@ -309,7 +309,7 @@ void saveproject()
     escapeflag = chooseidandfilename("Save project", 10);
 
     vdcwin_win_free();
-    memset(projbuffer,0,23);
+    memset(projbuffer, 0, 23);
 
     if (escapeflag == -1)
     {
@@ -400,7 +400,7 @@ void loadproject()
 {
     // Function to load project (screen, charsets and metadata)
     char projbuffer[23];
-    memset(projbuffer,0,23);
+    memset(projbuffer, 0, 23);
 
     if (!filepicker(1))
     {
@@ -408,7 +408,7 @@ void loadproject()
     }
 
     // Strip .proj extension
-    filename[strlen(filename)-5] = 0;
+    filename[strlen(filename) - 5] = 0;
 
     // Load project variables
     sprintf(buffer, "%s.proj", filename);
@@ -465,7 +465,7 @@ void loadproject()
     {
         sprintf(buffer, "%s.chrs", filename);
         bnk_load(targetdevice, 1, (char *)CHARSETNORMAL, buffer);
-        bnk_redef_charset(vdc_state.char_std,BNK_1_FULL,(char *)CHARSETNORMAL,256);
+        bnk_redef_charset(vdc_state.char_std, BNK_1_FULL, (char *)CHARSETNORMAL, 256);
     }
 
     // Load standard charset
@@ -473,7 +473,69 @@ void loadproject()
     {
         sprintf(buffer, "%s.chra", filename);
         bnk_load(targetdevice, 1, (char *)CHARSETALTERNATE, buffer);
-        bnk_redef_charset(vdc_state.char_alt,BNK_1_FULL,(char *)CHARSETALTERNATE,256);
+        bnk_redef_charset(vdc_state.char_alt, BNK_1_FULL, (char *)CHARSETALTERNATE, 256);
+    }
+}
+
+void loadcharset(char stdoralt)
+{
+    // Function to load charset
+    // Input: stdoralt: standard charset (0) or alternate charset (1)
+
+    char *charsetaddress;
+
+    if (!filepicker(0))
+    {
+        return;
+    }
+
+    charsetaddress = (stdoralt == 0) ? (char *)CHARSETNORMAL : (char *)CHARSETALTERNATE;
+
+    if (bnk_load(targetdevice, 1, charsetaddress, filename))
+    {
+        if (stdoralt == 0)
+        {
+            bnk_redef_charset(vdc_state.char_std, BNK_1_FULL, (char *)charsetaddress, 256);
+        }
+        charsetchanged[stdoralt] = 1;
+    }
+}
+
+void savecharset(char stdoralt)
+{
+    // Function to save charset
+    // Input: stdoralt: standard charset (0) or alternate charset (1)
+
+    char overwrite;
+    char *charsetaddress;
+    int escapeflag;
+
+    escapeflag = chooseidandfilename("Save charset", 15);
+
+    vdcwin_win_free();
+
+    if (escapeflag == -1)
+    {
+        return;
+    }
+
+    charsetaddress = (stdoralt == 0) ? (char *)CHARSETNORMAL : (char *)CHARSETALTERNATE;
+
+    overwrite = checkiffileexists(filename, targetdevice);
+
+    if (overwrite)
+    {
+        // Scratch old file
+        if (overwrite == 2)
+        {
+            sprintf(buffer, "s:%s", filename);
+            cmd(targetdevice, buffer);
+        }
+
+        if (!bnk_save(targetdevice, 1, charsetaddress, charsetaddress + 2048, filename))
+        {
+            menu_fileerrormessage();
+        }
     }
 }
 

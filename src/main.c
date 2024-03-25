@@ -189,7 +189,10 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
     char c;
     char idx = strlen(str);
 
-    vdc_prints(xpos, ypos, str);
+    if(idx)
+    {
+        vdc_prints(xpos, ypos, str);
+    }
     vdcwin_cursor_move(&canvas.view, xpos + idx, ypos);
     vdcwin_cursor_toggle(&canvas.view);
 
@@ -1542,23 +1545,23 @@ void mainmenuloop()
             break;
 
         case 31:
-            // loadoverlay(3);
-            // loadcharset(0);
+            loadoverlay(3);
+            loadcharset(0);
             break;
 
         case 32:
-            // loadoverlay(3);
-            // loadcharset(1);
+            loadoverlay(3);
+            loadcharset(1);
             break;
 
         case 33:
-            // loadoverlay(3);
-            // savecharset(0);
+            loadoverlay(3);
+            savecharset(0);
             break;
 
         case 34:
-            // loadoverlay(3);
-            // savecharset(1);
+            loadoverlay(3);
+            savecharset(1);
             break;
 
         case 41:
@@ -1617,6 +1620,7 @@ int main(void)
     plotunderline = 0;
     plotblink = 0;
     plotaltchar = 0;
+    memset(&filename, 0, sizeof(filename));
 
     // Obtain device number the application was started from
     bootdevice = getcurrentdevice();

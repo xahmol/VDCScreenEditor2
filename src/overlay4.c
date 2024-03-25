@@ -317,8 +317,9 @@ void chareditor()
 
         // Switch charset
         case 'a':
-            char_altorstd = (char_altorstd == 0) ? 1 : 0;
+            char_altorstd = !char_altorstd;
             altchanged = 1;
+            charchanged = 1;
             break;
 
         // Mirror y axis
