@@ -1033,9 +1033,8 @@ char readDir(char device, char filter)
     memset(&cwd, 0, sizeof(cwd));
     memset(disk_id_buf, 0, DISK_ID_LEN);
 
-    if (dir_open(15, device))
+    if (dir_open(2, device))
     {
-        dir_close(15);
         return 0;
     }
 
@@ -1048,7 +1047,7 @@ char readDir(char device, char filter)
             break;
         }
 
-        if (dir_readentry(15, &(current->dirent)))
+        if (dir_readentry(2, &(current->dirent)))
         {
             free(current);
             break;
@@ -1121,7 +1120,7 @@ char readDir(char device, char filter)
             }
         }
     }
-    dir_close(15);
+    dir_close(2);
     vdc_reverse(1);
 
     // Are there valid entries read?

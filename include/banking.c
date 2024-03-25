@@ -331,22 +331,37 @@ void dir_close(char lfn)
 char dir_open(char lfn, unsigned char device)
 // Open a directory for reading
 {
+    char status = 0;
+    char error = 0;
 
     // Set name for directory
     krnio_setbnk(0, 0);
     krnio_setnam("$");
 
+    status = krnio_open(lfn, device, 0);
+    error = krnio_status();
+    
+    if(status && error)
+    {
+        dir_close(lfn);
+    }
+
     // Open the directory
-    if (krnio_open(lfn, device, 0))
+    if (status && !error)
     {
         // Switch input to file
-        if (krnio_chkin(lfn))
+        status = krnio_chkin(lfn);
+        error =  krnio_status();
+
+        if (status && !error)
         {
             // Skip BASIC load address
             krnio_chrin();
             krnio_chrin();
 
-            if (krnio_status())
+            error = krnio_status();
+
+            if (error)
             {
                 dir_close(lfn);
             }
@@ -358,7 +373,7 @@ char dir_open(char lfn, unsigned char device)
     }
 
     // Return error code or 0 on succcess
-    return krnio_status();
+    return error;
 }
 
 char dir_readentry(const char lfn, struct DirEntry *l_dirent)
