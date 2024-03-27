@@ -75,9 +75,14 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "overlay2.h"
 #include "overlay3.h"
 #include "overlay4.h"
+#include "overlay5.h"
 
 // Memory region for code, data etc. from 0x1c80 to 0xbfff
 #pragma region( vdcse, 0x1c80, 0xc000 - OVERLAYSIZE, , , {code, data, bss, heap, stack} )
+
+// Overlay data
+struct OverlayStruct overlaydata[OVERLAYNUMBER];
+char overlay_active;
 
 // Undo data
 char undoenabled = 0;
@@ -96,7 +101,6 @@ char targetdevice;
 char filename[21];
 char programmode[11];
 char showbar;
-
 unsigned screen_col;
 unsigned screen_row;
 struct VDCViewport canvas;
@@ -189,7 +193,7 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
     char c;
     char idx = strlen(str);
 
-    if(idx)
+    if (idx)
     {
         vdc_prints(xpos, ypos, str);
     }
@@ -1542,6 +1546,8 @@ void mainmenuloop()
             break;
 
         case 25:
+            loadoverlay(5);
+            import();
             break;
 
         case 31:

@@ -170,9 +170,8 @@ signed chooseidandfilename(const char *headertext, char maxlen)
 }
 
 char checkiffileexists(char *filetocheck, unsigned char id)
+// Check if file exists and, if yes, ask confirmation of overwrite
 {
-    // Check if file exists and, if yes, ask confirmation of overwrite
-
     unsigned char proceed = 1;
     unsigned char yesno;
     unsigned char error;
@@ -205,10 +204,9 @@ char checkiffileexists(char *filetocheck, unsigned char id)
 }
 
 void loadscreenmap()
+// Function to load screenmap
 {
-    // Function to load screenmap
-
-    unsigned lastreadaddress, newwidth, newheight;
+    unsigned newwidth, newheight;
     unsigned maxsize = MEMORYLIMIT - SCREENMAPBASE;
     char *ptrend;
 
@@ -247,6 +245,8 @@ void loadscreenmap()
         if (bnk_load(targetdevice, 1, (char *)SCREENMAPBASE, filename))
         {
             vdcwin_win_free();
+            canvas.sourcewidth = newwidth;
+            canvas.sourceheight = newheight;
             updatecanvas();
             placesignature();
 
@@ -264,9 +264,8 @@ void loadscreenmap()
 }
 
 void savescreenmap()
+// Function to save screenmap
 {
-    // Function to save screenmap
-
     char overwrite;
     unsigned escapeflag;
 
@@ -298,9 +297,8 @@ void savescreenmap()
 }
 
 void saveproject()
+// Function to save project (screen, charsets and metadata)
 {
-    // Function to save project (screen, charsets and metadata)
-
     char overwrite;
     char projbuffer[23];
     char tempfilename[21];
@@ -397,8 +395,8 @@ void saveproject()
 }
 
 void loadproject()
+// Function to load project (screen, charsets and metadata)
 {
-    // Function to load project (screen, charsets and metadata)
     char projbuffer[23];
     memset(projbuffer, 0, 23);
 
@@ -478,10 +476,9 @@ void loadproject()
 }
 
 void loadcharset(char stdoralt)
+// Function to load charset
+// Input: stdoralt: standard charset (0) or alternate charset (1)
 {
-    // Function to load charset
-    // Input: stdoralt: standard charset (0) or alternate charset (1)
-
     char *charsetaddress;
 
     if (!filepicker(0))
@@ -502,10 +499,9 @@ void loadcharset(char stdoralt)
 }
 
 void savecharset(char stdoralt)
+// Function to save charset
+// Input: stdoralt: standard charset (0) or alternate charset (1)
 {
-    // Function to save charset
-    // Input: stdoralt: standard charset (0) or alternate charset (1)
-
     char overwrite;
     char *charsetaddress;
     int escapeflag;

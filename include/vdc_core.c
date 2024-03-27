@@ -496,6 +496,17 @@ void vdc_prints_attr(char x, char y, const char *string, char attr)
     unsigned address = vdc_coords(x, y);
     char len = strlen(string);
 
+    // Check for legth. Return if 0 and use printc in case of only one char
+    if(!len)
+    {
+        return;
+    }
+    if(len==1)
+    {
+        vdc_printc(x,y,string[0],attr);
+        return;
+    }
+
     // Print text
     vdc_mem_addr(address + vdc_state.base_text);
     for (char i = 0; i < len; i++)

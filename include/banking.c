@@ -340,7 +340,7 @@ char dir_open(char lfn, unsigned char device)
 
     status = krnio_open(lfn, device, 0);
     error = krnio_status();
-    
+
     if(status && error)
     {
         dir_close(lfn);
@@ -732,6 +732,39 @@ bool bnk_save(char device, char bank, const char *start, const char *end, const 
 	succes = krnio_save(device, start, end);
 	krnio_setbnk(0, 0);
 	return succes;
+}
+
+int bnk_io_read(char fnum, char cr, char * data, int num)
+{
+    char old = mmu.cr;
+
+	if (krnio_pstatus[fnum] == KRNIO_EOF)
+		return 0;
+
+	if (krnio_chkin(fnum))
+	{
+		int i = 0;
+		int ch;
+		while (i < num)
+		{
+			ch = krnio_chrin();
+			krnioerr err = krnio_status();
+			krnio_pstatus[fnum] = err;
+			if (err && err != KRNIO_EOF)
+				break;
+
+            mmu.cr = cr;
+			data[i++] = (char)ch;
+            mmu.cr = old;
+
+			if (err)
+				break;
+		}
+		krnio_clrchn();
+		return i;
+	}
+	else
+		return -1;	
 }
 
 bool bnk_iec_active(char device)

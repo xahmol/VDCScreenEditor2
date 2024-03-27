@@ -23,7 +23,7 @@
 /* Global variables */
 
 // Overlay data struct
-#define OVERLAYNUMBER 4    // Number of overlays
+#define OVERLAYNUMBER 5    // Number of overlays
 #define OVERLAYSIZE 0x1400 // Overlay size (align with config)
 #define OVERLAYLOAD 0xAC00 // Overlay load address (align with config=0xC000-OVERLAYSIZE)
 
@@ -32,7 +32,7 @@ struct OverlayStruct
     char bank;
     unsigned address;
 };
-extern struct OverlayStruct overlaydata[4];
+extern struct OverlayStruct overlaydata[OVERLAYNUMBER];
 extern char overlay_active;
 
 // Undo data

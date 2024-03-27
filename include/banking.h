@@ -143,6 +143,7 @@ __noinline char dir_readentry(const char lfn, struct DirEntry *l_dirent);
 __noinline const char *fileTypeToStr(char ft);
 __noinline bool bnk_load(char device, char bank, const char *start, const char *fname);
 __noinline bool bnk_save(char device, char bank, const char *start, const char *end, const char *fname);
+__noinline int bnk_io_read(char fnum, char cr, char * data, int num);
 __noinline bool bnk_iec_active(char device);
 __noinline void sid_startmusic();
 __noinline void sid_stopmusic();

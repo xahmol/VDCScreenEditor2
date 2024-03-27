@@ -80,7 +80,7 @@ struct VDCMenuBar menubar = {
     {0, 0, 0, 0},
     0};
 
-char pulldown_options[VDC_PULLDOWN_NUMBER] = {6, 5, 4, 2, 2, 6};
+char pulldown_options[VDC_PULLDOWN_NUMBER] = {6, 5, 4, 2, 2, 6, 3};
 char pulldown_titles[VDC_PULLDOWN_NUMBER][VDC_PULLDOWN_MAXOPTIONS][VDC_PULLDOWN_MAXLENGTH] = {
     {"Width:      80 ",
      "Height:     25 ",
@@ -106,7 +106,10 @@ char pulldown_titles[VDC_PULLDOWN_NUMBER][VDC_PULLDOWN_MAXOPTIONS][VDC_PULLDOWN_
      "PAL  80x70",
      "NTSC 80x25",
      "NTSC 80x50",
-     "NTSC 80x60"}};
+     "NTSC 80x60"},
+    {"Both      ",
+     "Only chars",
+     "Only color"}};
 
 // Menucolors
 char mc_mb_normal = VDC_LGREEN + VDC_A_REVERSE + VDC_A_ALTCHAR;
