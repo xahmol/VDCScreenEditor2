@@ -1,7 +1,7 @@
 #ifndef __OVERLAY5_H_
 #define __OVERLAY5_H_
 
-void import();
+void import_prg();
 
 #pragma compile("overlay5.c")
 

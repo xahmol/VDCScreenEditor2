@@ -76,11 +76,11 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #include "vdc_menu.h"
 
 struct VDCMenuBar menubar = {
-    {"Screen", "File", "Charset", "Information"},
-    {0, 0, 0, 0},
+    {"Screen", "File", "Charset", "Import", "Information"},
+    {0, 0, 0, 0, 0},
     0};
 
-char pulldown_options[VDC_PULLDOWN_NUMBER] = {6, 5, 4, 2, 2, 6, 3};
+char pulldown_options[VDC_PULLDOWN_NUMBER] = {6, 4, 4, 3, 2, 6, 3, 2};
 char pulldown_titles[VDC_PULLDOWN_NUMBER][VDC_PULLDOWN_MAXOPTIONS][VDC_PULLDOWN_MAXLENGTH] = {
     {"Width:      80 ",
      "Height:     25 ",
@@ -91,16 +91,16 @@ char pulldown_titles[VDC_PULLDOWN_NUMBER][VDC_PULLDOWN_MAXOPTIONS][VDC_PULLDOWN_
     {"Save screen    ",
      "Load screen    ",
      "Save project   ",
-     "Load project   ",
-     "Import         "},
+     "Load project   "},
     {"Load standard  ",
      "Load alternate ",
      "Save standard  ",
      "Save alternate "},
+    {"Import PRG     ",
+     "Import SEQ     ",
+     "Export SEQ     "},
     {"Version/credits",
      "Exit program   "},
-    {"Yes",
-     "No "},
     {"PAL  80x25",
      "PAL  80x50",
      "PAL  80x70",
@@ -109,7 +109,9 @@ char pulldown_titles[VDC_PULLDOWN_NUMBER][VDC_PULLDOWN_MAXOPTIONS][VDC_PULLDOWN_
      "NTSC 80x60"},
     {"Both      ",
      "Only chars",
-     "Only color"}};
+     "Only color"},
+    {"Yes",
+     "No "}};
 
 // Menucolors
 char mc_mb_normal = VDC_LGREEN + VDC_A_REVERSE + VDC_A_ALTCHAR;

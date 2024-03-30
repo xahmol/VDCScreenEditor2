@@ -84,7 +84,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #pragma data(dataovl5)
 #pragma bss(bssovl5)
 
-char importread(char device, const char *filename, unsigned xpos, unsigned ypos, unsigned width, unsigned height, unsigned offset, char content, char convert, char uppercase, char loadaddr)
+char importread(char device, const char *filename)
 // Import screen data into the screen map
 {
     char error = 0;
@@ -110,7 +110,7 @@ char importread(char device, const char *filename, unsigned xpos, unsigned ypos,
     if (status)
     {
         // Skip loadddress if asked
-        if (loadaddr == 1)
+        if (importvars.loadaddr == 1)
         {
             vdc_prints(21, yc++, "Skipping load address.");
             krnio_read(1, loadaddressbuf, 2);
@@ -123,20 +123,20 @@ char importread(char device, const char *filename, unsigned xpos, unsigned ypos,
         }
 
         // Read char data if selected
-        if (content < 3)
+        if (importvars.content < 3)
         {
-            address = screenmap_screenaddr(ypos, xpos, canvas.sourcewidth);
-            for (line = 0; line < height; line++)
+            address = screenmap_screenaddr(importvars.ypos, importvars.xpos, canvas.sourcewidth);
+            for (line = 0; line < importvars.height; line++)
             {
-                sprintf(linebuffer, "Char line %3u of %3u at address %4x", line + 1, height, address);
+                sprintf(linebuffer, "Char line %3u of %3u at address %4x", line + 1, importvars.height, address);
                 vdc_prints(21, yc, linebuffer);
-                bnk_io_read(1, BNK_1_FULL, address, width);
+                bnk_io_read(1, BNK_1_FULL, address, importvars.width);
                 error = krnio_status();
                 if (error == KRNIO_EOF)
                 {
                     error = 0;
-                    content = 2;
-                    line = height;
+                    importvars.content = 2;
+                    line = importvars.height;
                 }
                 if (error)
                 {
@@ -149,21 +149,21 @@ char importread(char device, const char *filename, unsigned xpos, unsigned ypos,
         }
 
         // Skip offset if needed
-        if (content == 1 && offset > 0)
+        if (importvars.content == 1 && importvars.offset > 0)
         {
             if (krnio_chkin(1))
             {
-                for (offbyte = 0; offbyte < offset; offbyte++)
+                for (offbyte = 0; offbyte < importvars.offset; offbyte++)
                 {
-                    sprintf(linebuffer, "Skipping offset byte %u of %u", offbyte + 1, offset);
+                    sprintf(linebuffer, "Skipping offset byte %u of %u", offbyte + 1, importvars.offset);
                     vdc_prints(21, yc, linebuffer);
                     krnio_chrin();
                     error = krnio_status();
                     if (error == KRNIO_EOF)
                     {
                         error = 0;
-                        content = 2;
-                        offbyte = offset;
+                        importvars.content = 2;
+                        offbyte = importvars.offset;
                     }
                     if (error)
                     {
@@ -182,19 +182,19 @@ char importread(char device, const char *filename, unsigned xpos, unsigned ypos,
         }
 
         // Read color data if selected
-        if (content == 1 || content == 3)
+        if (importvars.content == 1 || importvars.content == 3)
         {
-            address = screenmap_attraddr(ypos, xpos, canvas.sourcewidth, canvas.sourceheight);
-            for (line = 0; line < height; line++)
+            address = screenmap_attraddr(importvars.ypos, importvars.xpos, canvas.sourcewidth, canvas.sourceheight);
+            for (line = 0; line < importvars.height; line++)
             {
-                sprintf(linebuffer, "Color line %3u of %3u at address %4x", line + 1, height, address);
+                sprintf(linebuffer, "Color line %3u of %3u at address %4x", line + 1, importvars.height, address);
                 vdc_prints(21, yc, linebuffer);
-                bnk_io_read(1, BNK_1_FULL, address, width);
+                bnk_io_read(1, BNK_1_FULL, address, importvars.width);
                 error = krnio_status();
                 if (error == KRNIO_EOF)
                 {
                     error = 0;
-                    line = height;
+                    line = importvars.height;
                 }
                 if (error)
                 {
@@ -209,27 +209,27 @@ char importread(char device, const char *filename, unsigned xpos, unsigned ypos,
         yc++;
 
         // Convert VIC to VDC colours if selected
-        if (convert == 1 || uppercase == 2)
+        if (importvars.convert == 1 || importvars.uppercase == 2)
         {
 
-            for (y = 0; y < height; y++)
+            for (y = 0; y < importvars.height; y++)
             {
-                address = screenmap_attraddr(ypos + y, xpos, canvas.sourcewidth, canvas.sourceheight);
-                sprintf(linebuffer, "Convert VIC color line %3u of %3u", y + 1, height, address);
+                address = screenmap_attraddr(importvars.ypos + y, importvars.xpos, canvas.sourcewidth, canvas.sourceheight);
+                sprintf(linebuffer, "Convert VIC color line %3u of %3u", y + 1, importvars.height, address);
                 vdc_prints(21, yc, linebuffer);
-                for (x = 0; x < width; x++)
+                for (x = 0; x < importvars.width; x++)
                 {
                     attr = bnk_readb(BNK_1_FULL, address);
 
                     // Convert VIC to VDC color
-                    if (convert == 1)
+                    if (importvars.convert == 1)
                     {
                         attr &= 0x0f; // Wipe upper nibble to be sure in case incorrect data is fed
                         attr = victovdccol[attr];
                     }
 
                     // Convert to uppercase charset
-                    if (uppercase == 2)
+                    if (importvars.uppercase == 2)
                     {
                         attr |= VDC_A_ALTCHAR;
                     }
@@ -243,138 +243,14 @@ char importread(char device, const char *filename, unsigned xpos, unsigned ypos,
     return 0;
 }
 
-void import()
+void import_prg()
 // Function to import screen data
 {
-    unsigned importwidth, importheight;
-    unsigned newwidth, newheight, y;
-    unsigned xpos = screen_col + canvas.sourcexoffset;
-    unsigned ypos = screen_row + canvas.sourceyoffset;
-    unsigned maxsize = MEMORYLIMIT - SCREENMAPBASE;
-    char *ptrend;
-    char content = 0;
-    char convert = 0;
-    char loadaddr = 0;
-    char uppercase = 0;
-    unsigned offset = 48;
-
-    // Pick file to import
-    if (!filepicker(0))
+    if(import_dialogue(0,"Import PRG"))
     {
-        return;
-    }
-
-    // Create popup window
-    vdc_state.text_attr = mc_menupopup;
-    vdcwin_win_new(VDC_POPUP_BORDER, 20, 5, 40, 12);
-
-    vdc_underline(1);
-    vdc_prints(21, 6, "Import");
-    vdc_underline(0);
-
-    // Ask to inout import parameters
-    vdc_prints(21, 8, "Enter import width:");
-    sprintf(buffer, "%u", canvas.sourcewidth);
-    textInput(21, 9, buffer, 3);
-    importwidth = (unsigned)strtol(buffer, &ptrend, 10);
-
-    vdc_prints(21, 10, "Enter import height:");
-    sprintf(buffer, "%u", canvas.sourceheight);
-    textInput(21, 11, buffer, 3);
-    importheight = (unsigned)strtol(buffer, &ptrend, 10);
-
-    vdc_prints(21, 12, "Enter target X coord:");
-    sprintf(buffer, "%u", xpos);
-    textInput(21, 13, buffer, 3);
-    xpos = (unsigned)strtol(buffer, &ptrend, 10);
-
-    vdc_prints(21, 14, "Enter target Y coord:");
-    sprintf(buffer, "%u", ypos);
-    textInput(21, 15, buffer, 3);
-    ypos = (unsigned)strtol(buffer, &ptrend, 10);
-
-    // See if for import canvas dimensions should be enlarged and check if this fits
-    newwidth = xpos + importwidth;
-    newheight = ypos + importheight;
-
-    if ((newwidth * newheight * 2) + 48 > maxsize)
-    {
-        vdc_prints(21, 16, "New size unsupported. Press key.");
-        getch();
-        vdcwin_win_free();
-    }
-    else
-    {
-        // Enlarge canvas width if needed
-        if (newwidth > canvas.sourcewidth)
-        {
-            for (y = 0; y < canvas.sourceheight; y++)
-            {
-                bnk_cpytovdc(vdc_state.swap_text, BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, 0, canvas.sourcewidth, canvas.sourceheight), canvas.sourcewidth);
-                bnk_cpyfromvdc(BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, 0, newwidth, canvas.sourceheight), vdc_state.swap_text, canvas.sourcewidth);
-                bnk_memset(BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, canvas.sourcewidth, newwidth, canvas.sourceheight), VDC_WHITE, newwidth - canvas.sourcewidth);
-            }
-            for (y = 0; y < canvas.sourceheight; y++)
-            {
-                bnk_cpytovdc(vdc_state.swap_text, BNK_1_FULL, screenmap_screenaddr(canvas.sourceheight - y - 1, 0, canvas.sourcewidth), canvas.sourcewidth);
-                bnk_cpyfromvdc(BNK_1_FULL, screenmap_screenaddr(canvas.sourceheight - y - 1, 0, newwidth), vdc_state.swap_text, canvas.sourcewidth);
-                bnk_memset(BNK_1_FULL, screenmap_screenaddr(canvas.sourceheight - y - 1, canvas.sourcewidth, newwidth), CH_SPACE, newwidth - canvas.sourcewidth);
-            }
-            canvas.sourcewidth = newwidth;
-            canvas.sourcexoffset = 0;
-            updatecanvas();
-        }
-
-        // Enlarge canvas height if needed
-        if (newheight > canvas.sourceheight)
-        {
-            for (y = 0; y < canvas.sourceheight; y++)
-            {
-                bnk_memcpy(BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, 0, canvas.sourcewidth, newheight), BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, 0, canvas.sourcewidth, canvas.sourceheight), canvas.sourcewidth);
-            }
-            bnk_memset(BNK_1_FULL, screenmap_attraddr(canvas.sourceheight, 0, canvas.sourcewidth, newheight), VDC_WHITE, (newheight - canvas.sourceheight) * canvas.sourcewidth);
-            bnk_memset(BNK_1_FULL, screenmap_screenaddr(canvas.sourceheight, 0, canvas.sourcewidth), CH_SPACE, (newheight - canvas.sourceheight) * canvas.sourcewidth);
-            canvas.sourceheight = newheight;
-            canvas.sourceyoffset = 0;
-            updatecanvas();
-        }
-
-        // Ask for additional import parameters
-        vdc_clear(20, 8, CH_SPACE, 40, 8);
-
-        vdc_prints(21, 8, "Includes load addres at first 2 bytes?");
-        loadaddr = menu_pulldown(25, 9, VDC_MENU_YESNO, 0);
-        vdc_prints(21, 9, pulldown_titles[VDC_MENU_YESNO][loadaddr - 1]);
-
-        vdc_prints(21, 10, "Import chars, color or both?");
-        content = menu_pulldown(25, 11, 6, 0);
-        vdc_prints(21, 11, pulldown_titles[6][content - 1]);
-
-        if (content != 2)
-        {
-            vdc_prints(21, 12, "Convert VIC colours?");
-            convert = menu_pulldown(25, 13, VDC_MENU_YESNO, 0);
-            vdc_prints(21, 13, pulldown_titles[VDC_MENU_YESNO][convert - 1]);
-        }
-
-        if (content == 2 || convert == 1)
-        {
-            vdc_prints(21, 12, "Uppercase charset?   ");
-            uppercase = menu_pulldown(25, 13, VDC_MENU_YESNO, 0);
-            vdc_prints(25, 13, pulldown_titles[VDC_MENU_YESNO][uppercase - 1]);
-        }
-
-        if (content == 1)
-        {
-            vdc_prints(21, 14, "Enter offset char to color:");
-            sprintf(buffer, "%u", offset);
-            textInput(21, 15, buffer, 6);
-            offset = strtol(buffer, &ptrend, 10);
-        }
-
         // Load imprt data and check for errors
         vdc_clear(20, 8, CH_SPACE, 40, 8);
-        if (importread(targetdevice, filename, xpos, ypos, importwidth, importheight, offset, content, convert, uppercase, loadaddr))
+        if (importread(targetdevice, filename))
         {
             menu_fileerrormessage();
         }

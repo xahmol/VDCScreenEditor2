@@ -626,7 +626,7 @@ void selectscreenmode()
     vdc_underline(0);
     vdc_prints(21, 8, "Choose desired mode:");
 
-    menuchoice = menu_pulldown(25, 9, VDC_MENU_YESNO + 1, 1);
+    menuchoice = menu_pulldown(25, 9, 5, 1);
 
     vdcwin_win_free();
 

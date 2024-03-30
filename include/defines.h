@@ -23,7 +23,7 @@
 /* Global variables */
 
 // Overlay data struct
-#define OVERLAYNUMBER 5    // Number of overlays
+#define OVERLAYNUMBER 6    // Number of overlays
 #define OVERLAYSIZE 0x1400 // Overlay size (align with config)
 #define OVERLAYLOAD 0xAC00 // Overlay load address (align with config=0xC000-OVERLAYSIZE)
 
@@ -51,6 +51,23 @@ struct UndoStruct
     char redopresent;
 };
 extern struct UndoStruct Undo[41];
+
+// Importer data
+struct IMPORTVARS
+{
+    unsigned xpos;
+    unsigned ypos;
+    unsigned width;
+    unsigned height;
+    unsigned xc;
+    unsigned yc;
+    char content;
+    char convert;
+    char loadaddr;
+    char uppercase;
+    unsigned offset;
+};
+extern struct IMPORTVARS importvars;
 
 // Global variables
 extern char bootdevice;

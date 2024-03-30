@@ -76,6 +76,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "overlay3.h"
 #include "overlay4.h"
 #include "overlay5.h"
+#include "overlay6.h"
 
 // Memory region for code, data etc. from 0x1c80 to 0xbfff
 #pragma region( vdcse, 0x1c80, 0xc000 - OVERLAYSIZE, , , {code, data, bss, heap, stack} )
@@ -347,15 +348,13 @@ void initoverlay()
         // Compose filename
         sprintf(buffer, "vdcseovl%u", x + 1);
 
-        // Load overlay file, exit if not found
-        load_overlay(buffer);
-
         // Copy to overlay storage memory location
         overlaydata[x].bank = destbank;
 
         if (destbank)
         {
             // Load overlay file, exit if not found
+            load_overlay(buffer);
 
             // Copy to overlay storage memory location
             overlaydata[x].bank = destbank;
@@ -991,18 +990,25 @@ void updatecanvas()
 
 char dir_validentry(char filter)
 // Is current dir entry a valid entry to show given filetype and filter
+// Filter value is 0 for all PRG, 1 for project files, 2 for SEQ files
 {
     char len = strlen(current->dirent.name);
     char extension[6];
 
-    // If it is not a PRG file, return with zero value
-    if (current->dirent.type != CBM_T_PRG)
+    // If it is not a PRG file and filter is not 2, return with zero value
+    if (current->dirent.type != CBM_T_PRG && filter < 2)
     {
         return 0;
     }
 
-    // Filter? Then check for extension
-    if (filter)
+    // If it is not a SEQ file and filter is 2, return with zero value
+    if (current->dirent.type != CBM_T_SEQ && filter == 2)
+    {
+        return 0;
+    }
+
+    // Filter set at 1 for project files? Then check for extension
+    if (filter == 1)
     {
         // Is file name long enough to have an extension?
         if (len > 5)
@@ -1457,6 +1463,143 @@ char filepicker(char filter)
     }
 }
 
+char import_dialogue(char mode, const char *message)
+// Dialogue for import functions. Mode 0 = PRG, mode 2 = SEQ
+{
+    unsigned newwidth, newheight, y;
+    unsigned maxsize = MEMORYLIMIT - SCREENMAPBASE;
+    char *ptrend;
+
+    importvars.xpos = screen_col + canvas.sourcexoffset;
+    importvars.ypos = screen_row + canvas.sourceyoffset;
+
+    importvars.content = 0;
+    importvars.convert = 0;
+    importvars.loadaddr = 0;
+    importvars.uppercase = 0;
+    importvars.offset = 48;
+
+    // Pick file to import
+    if (!filepicker(mode))
+    {
+        return 0;
+    }
+
+    // Create popup window
+    vdc_state.text_attr = mc_menupopup;
+    vdcwin_win_new(VDC_POPUP_BORDER, 20, 5, 40, 12);
+
+    vdc_underline(1);
+    vdc_prints(21, 6, message);
+    vdc_underline(0);
+
+    // Ask to inout import parameters
+    vdc_prints(21, 8, "Enter import width:");
+    sprintf(buffer, "%u", canvas.sourcewidth);
+    textInput(21, 9, buffer, 3);
+    importvars.width = (unsigned)strtol(buffer, &ptrend, 10);
+
+    vdc_prints(21, 10, "Enter import height:");
+    sprintf(buffer, "%u", canvas.sourceheight);
+    textInput(21, 11, buffer, 3);
+    importvars.height = (unsigned)strtol(buffer, &ptrend, 10);
+
+    vdc_prints(21, 12, "Enter target X coord:");
+    sprintf(buffer, "%u", importvars.xpos);
+    textInput(21, 13, buffer, 3);
+    importvars.xpos = (unsigned)strtol(buffer, &ptrend, 10);
+
+    vdc_prints(21, 14, "Enter target Y coord:");
+    sprintf(buffer, "%u", importvars.ypos);
+    textInput(21, 15, buffer, 3);
+    importvars.ypos = (unsigned)strtol(buffer, &ptrend, 10);
+
+    // See if for import canvas dimensions should be enlarged and check if this fits
+    newwidth = importvars.xpos + importvars.width;
+    newheight = importvars.ypos + importvars.height;
+
+    if ((newwidth * newheight * 2) + 48 > maxsize)
+    {
+        vdc_prints(21, 16, "New size unsupported. Press key.");
+        getch();
+        vdcwin_win_free();
+        return 0;
+    }
+    else
+    {
+        // Enlarge canvas width if needed
+        if (newwidth > canvas.sourcewidth)
+        {
+            for (y = 0; y < canvas.sourceheight; y++)
+            {
+                bnk_cpytovdc(vdc_state.swap_text, BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, 0, canvas.sourcewidth, canvas.sourceheight), canvas.sourcewidth);
+                bnk_cpyfromvdc(BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, 0, newwidth, canvas.sourceheight), vdc_state.swap_text, canvas.sourcewidth);
+                bnk_memset(BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, canvas.sourcewidth, newwidth, canvas.sourceheight), VDC_WHITE, newwidth - canvas.sourcewidth);
+            }
+            for (y = 0; y < canvas.sourceheight; y++)
+            {
+                bnk_cpytovdc(vdc_state.swap_text, BNK_1_FULL, screenmap_screenaddr(canvas.sourceheight - y - 1, 0, canvas.sourcewidth), canvas.sourcewidth);
+                bnk_cpyfromvdc(BNK_1_FULL, screenmap_screenaddr(canvas.sourceheight - y - 1, 0, newwidth), vdc_state.swap_text, canvas.sourcewidth);
+                bnk_memset(BNK_1_FULL, screenmap_screenaddr(canvas.sourceheight - y - 1, canvas.sourcewidth, newwidth), CH_SPACE, newwidth - canvas.sourcewidth);
+            }
+            canvas.sourcewidth = newwidth;
+            canvas.sourcexoffset = 0;
+            updatecanvas();
+        }
+
+        // Enlarge canvas height if needed
+        if (newheight > canvas.sourceheight)
+        {
+            for (y = 0; y < canvas.sourceheight; y++)
+            {
+                bnk_memcpy(BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, 0, canvas.sourcewidth, newheight), BNK_1_FULL, screenmap_attraddr(canvas.sourceheight - y - 1, 0, canvas.sourcewidth, canvas.sourceheight), canvas.sourcewidth);
+            }
+            bnk_memset(BNK_1_FULL, screenmap_attraddr(canvas.sourceheight, 0, canvas.sourcewidth, newheight), VDC_WHITE, (newheight - canvas.sourceheight) * canvas.sourcewidth);
+            bnk_memset(BNK_1_FULL, screenmap_screenaddr(canvas.sourceheight, 0, canvas.sourcewidth), CH_SPACE, (newheight - canvas.sourceheight) * canvas.sourcewidth);
+            canvas.sourceheight = newheight;
+            canvas.sourceyoffset = 0;
+            updatecanvas();
+        }
+
+        // Ask for additional import parameters
+        vdc_clear(20, 8, CH_SPACE, 40, 8);
+
+        if (!mode)
+        {
+            vdc_prints(21, 8, "Includes load addres at first 2 bytes?");
+            importvars.loadaddr = menu_pulldown(25, 9, VDC_MENU_YESNO, 0);
+            vdc_prints(21, 9, pulldown_titles[VDC_MENU_YESNO][importvars.loadaddr - 1]);
+
+            vdc_prints(21, 10, "Import chars, color or both?");
+            importvars.content = menu_pulldown(25, 11, 6, 0);
+            vdc_prints(21, 11, pulldown_titles[6][importvars.content - 1]);
+        }
+
+        if (importvars.content != 2 || mode == 2)
+        {
+            vdc_prints(21, 12, "Convert VIC colours?");
+            importvars.convert = menu_pulldown(25, 13, VDC_MENU_YESNO, 0);
+            vdc_prints(21, 13, pulldown_titles[VDC_MENU_YESNO][importvars.convert - 1]);
+        }
+
+        if (importvars.content == 2 || importvars.convert == 1)
+        {
+            vdc_prints(21, 12, "Uppercase charset?   ");
+            importvars.uppercase = menu_pulldown(25, 13, VDC_MENU_YESNO, 0);
+            vdc_prints(25, 13, pulldown_titles[VDC_MENU_YESNO][importvars.uppercase - 1]);
+        }
+
+        if (importvars.content == 1)
+        {
+            vdc_prints(21, 14, "Enter offset char to color:");
+            sprintf(buffer, "%u", importvars.offset);
+            textInput(21, 15, buffer, 6);
+            importvars.offset = strtol(buffer, &ptrend, 10);
+        }
+    }
+    return 1;
+}
+
 void mainmenuloop()
 {
     // Function for main menu selection loop
@@ -1545,11 +1688,6 @@ void mainmenuloop()
             loadproject();
             break;
 
-        case 25:
-            loadoverlay(5);
-            import();
-            break;
-
         case 31:
             loadoverlay(3);
             loadcharset(0);
@@ -1571,18 +1709,33 @@ void mainmenuloop()
             break;
 
         case 41:
+            loadoverlay(5);
+            import_prg();
+            break;
+
+        case 42:
+            loadoverlay(6);
+            import_seq();
+            break;
+
+        case 43:
+            loadoverlay(6);
+            export_seq();
+            break;
+
+        case 51:
             loadoverlay(4);
             versioninfo();
             break;
 
-        case 42:
+        case 52:
             appexit = 1;
             menuchoice = 99;
             break;
 
-        case 43:
+        case 53:
             undoenabled = (undoenabled == 0) ? 1 : 0;
-            sprintf(pulldown_titles[3][2], "Undo: %s", (undoenabled == 1) ? "Enabled  " : "Disabled ");
+            sprintf(pulldown_titles[4][2], "Undo: %s", (undoenabled == 1) ? "Enabled  " : "Disabled ");
             undoaddress = vdc_state.extended; // Reset undo address
             undonumber = 0;                   // Reset undo number
             undo_undopossible = 0;            // Reset undo possible flag
@@ -1640,8 +1793,8 @@ int main(void)
     // Detect VDC memory size and set VDC memory config size to 64K if present
     if (vdc_state.memsize == 64)
     {
-        strcpy(pulldown_titles[3][2], "Undo: Enabled  "); // Enable undo menuoption
-        pulldown_options[3] = 3;                          // Enable undo menupotion
+        strcpy(pulldown_titles[4][2], "Undo: Enabled  "); // Enable undo menuoption
+        pulldown_options[4] = 3;                          // Enable undo menupotion
         undoenabled = 1;                                  // Set undo enabled flag
         undoaddress = vdc_state.extended;                 // Reset undo address
         undonumber = 0;                                   // Reset undo number

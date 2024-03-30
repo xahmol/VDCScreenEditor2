@@ -42,5 +42,6 @@ void printDir(char device);
 void refreshDir(char device, char filter);
 void updateMenu(void);
 char filepicker(char filter);
+char import_dialogue(char mode, const char *message);
 
 #endif // __MAIN_H_
