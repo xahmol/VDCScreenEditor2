@@ -1070,6 +1070,7 @@ char readDir(char device, char filter)
         if ((cnt >> 2) >= 36)
         {
             cnt = 0;
+            vdc_reverse(1);
             vdc_clear(DIRX, DIRY + 3, CH_SPACE, DIRW, 1);
             sprintf(linebuffer, "[%02u]", device);
             vdc_prints(DIRX + 1, DIRY + 3, linebuffer);
@@ -1452,6 +1453,11 @@ char filepicker(char filter)
         }
     } while (!selected);
 
+    if (cwd.name[0])
+    {
+        freeDir();
+    }
+
     vdcwin_win_free();
     if (selected == 1)
     {
@@ -1478,6 +1484,7 @@ char import_dialogue(char mode, const char *message)
     importvars.loadaddr = 0;
     importvars.uppercase = 0;
     importvars.offset = 48;
+    importvars.cls = 0;
 
     // Pick file to import
     if (!filepicker(mode))
@@ -1573,6 +1580,13 @@ char import_dialogue(char mode, const char *message)
             vdc_prints(21, 10, "Import chars, color or both?");
             importvars.content = menu_pulldown(25, 11, 6, 0);
             vdc_prints(21, 11, pulldown_titles[6][importvars.content - 1]);
+        }
+
+        if (mode == 2)
+        {
+            vdc_prints(21, 8, "Ignore CLS / Clear?");
+            importvars.cls = menu_pulldown(25, 9, VDC_MENU_YESNO, 0);
+            vdc_prints(21, 9, pulldown_titles[VDC_MENU_YESNO][importvars.cls - 1]);
         }
 
         if (importvars.content != 2 || mode == 2)

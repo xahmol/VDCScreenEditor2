@@ -65,6 +65,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include <conio.h>
 #include <petscii.h>
 #include <ctype.h>
+#include <conio.h>
 #include <c64/kernalio.h>
 #include <c64/cia.h>
 #include <c128/vdc.h>
@@ -91,6 +92,9 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 void rebase()
 // Rebase viewport pos based on import coords
 {
+    char oldxoff = canvas.sourcexoffset;
+    char oldyoff = canvas.sourceyoffset;
+
     screen_col = importvars.xpos + importvars.xc;
     canvas.sourcexoffset = 0;
     while (screen_col > (vdc_state.width - 1))
@@ -107,7 +111,10 @@ void rebase()
         screen_row--;
     }
 
-    vdcwin_cpy_viewport(&canvas);
+    if (oldxoff != canvas.sourcexoffset || oldyoff != canvas.sourceyoffset)
+    {
+        vdcwin_cpy_viewport(&canvas);
+    }
 }
 
 void seqimport_move(char left, char right, char up, char down)
@@ -144,7 +151,7 @@ void seqimport_move(char left, char right, char up, char down)
     }
     if (right == 1)
     {
-        if (importvars.xc < importvars.width)
+        if (importvars.xc < (importvars.width - 1))
         {
             importvars.xc++;
             if (screen_col == getmaxx())
@@ -161,7 +168,7 @@ void seqimport_move(char left, char right, char up, char down)
         }
         else
         {
-            if (importvars.yc < importvars.height)
+            if (importvars.yc < (importvars.height - 1))
             {
                 importvars.yc++;
                 importvars.xc = 0;
@@ -189,7 +196,7 @@ void seqimport_move(char left, char right, char up, char down)
     }
     if (down == 1)
     {
-        if (importvars.yc < importvars.height)
+        if (importvars.yc < (importvars.height - 1))
         {
             importvars.yc++;
             if (screen_row == getmaxy())
@@ -207,10 +214,9 @@ void seqimport_move(char left, char right, char up, char down)
     }
 }
 
-void decode_controlcode(char ch, char cls, unsigned xpos, unsigned ypos, unsigned width, unsigned height)
+void decode_controlcode(char ch)
 // Decode PETSCII chars and control codes and perform output based on code
 {
-
     switch (ch)
     {
     // 	Underline On
@@ -226,8 +232,9 @@ void decode_controlcode(char ch, char cls, unsigned xpos, unsigned ypos, unsigne
     // Line Feed / Return
     case 0x0a:
     case 0x0d:
+    case 0x8d:
         importvars.xc = 0;
-        if (importvars.yc < height)
+        if (importvars.yc < importvars.height)
         {
             importvars.yc++;
         }
@@ -287,9 +294,9 @@ void decode_controlcode(char ch, char cls, unsigned xpos, unsigned ypos, unsigne
         plotcolor = VDC_DBLUE;
         break;
 
-    // 	Set text color to Dark Purple
+    // 	Set text color to Dark Purple (or convert VIC Orange)
     case 0x81:
-        plotcolor = VDC_DPURPLE;
+        plotcolor = (importvars.convert != 1) ? VDC_DPURPLE : VDC_DYELLOW;
         break;
 
     // 	Underline Off
@@ -325,12 +332,12 @@ void decode_controlcode(char ch, char cls, unsigned xpos, unsigned ypos, unsigne
     // Clear
     case 0x93:
         // Should clear be ignored? If no perform clear
-        if (cls)
+        if (importvars.cls != 1)
         {
-            for (char y = 0; y < width; y++)
+            for (char y = 0; y < importvars.width; y++)
             {
-                bnk_memset(BNK_1_FULL, screenmap_screenaddr(ypos + y, xpos, canvas.sourcewidth), CH_SPACE, width);
-                bnk_memset(BNK_1_FULL, screenmap_attraddr(ypos + y, xpos, canvas.sourcewidth, canvas.sourceheight), CH_SPACE, width);
+                bnk_memset(BNK_1_FULL, screenmap_screenaddr(importvars.ypos + y, importvars.xpos, canvas.sourcewidth), CH_SPACE, importvars.width);
+                bnk_memset(BNK_1_FULL, screenmap_attraddr(importvars.ypos + y, importvars.xpos, canvas.sourcewidth, canvas.sourceheight), CH_SPACE, importvars.width);
             }
         }
         importvars.xc = 0;
@@ -348,14 +355,14 @@ void decode_controlcode(char ch, char cls, unsigned xpos, unsigned ypos, unsigne
         plotcolor = VDC_LRED;
         break;
 
-    // 	Set text color to Dark Cyan
+    // 	Set text color to Dark Cyan (or convert VIC Dark Grey)
     case 0x97:
-        plotcolor = VDC_DCYAN;
+        plotcolor = (importvars.convert != 1) ? VDC_DCYAN : VDC_DGREY;
         break;
 
-    // 	Set text color to Dark Grey
+    // 	Set text color to Dark Grey (or convert VIC Medium Grey)
     case 0x98:
-        plotcolor = VDC_DGREY;
+        plotcolor = (importvars.convert != 1) ? VDC_DGREY : VDC_LGREY;
         break;
 
     // 	Set text color to Light Green
@@ -373,9 +380,9 @@ void decode_controlcode(char ch, char cls, unsigned xpos, unsigned ypos, unsigne
         plotcolor = VDC_LGREY;
         break;
 
-    // 	Set text color to Light Purple
+    // 	Set text color to Light Purple ((or convert VIC Purple)
     case 0x9c:
-        plotcolor = VDC_LPURPLE;
+        plotcolor = (importvars.convert != 1) ? VDC_LPURPLE : VDC_DPURPLE;
         break;
 
     // Cursor Left
@@ -393,40 +400,147 @@ void decode_controlcode(char ch, char cls, unsigned xpos, unsigned ypos, unsigne
         plotcolor = VDC_LCYAN;
         break;
 
+    case 0xff:
+        plotscreencode = 94;
+        break;
+
     default:
-        if (isprint(ch))
+        if ((ch >= 0x20) && (ch < 0x40))
         {
-            screenmapplot(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
-            vdc_printc(screen_col, screen_row, bnk_readb(BNK_1_FULL, screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
-            seqimport_move(0, 1, 0, 0);
+            plotscreencode = ch;
         }
+        if ((ch >= 0x40) && (ch <= 0x5f))
+        {
+            plotscreencode = ch - 0x40;
+        }
+        if ((ch >= 0x60) && (ch <= 0x7f))
+        {
+            plotscreencode = ch - 0x20;
+        }
+        if ((ch >= 0xa0) && (ch <= 0xbf))
+        {
+            plotscreencode = ch - 0x40;
+        }
+        if ((ch >= 0xc0) && (ch <= 0xfe))
+        {
+            plotscreencode = ch - 0x80;
+        }
+        screenmapplot(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
+        vdc_printc(screen_col, screen_row, bnk_readb(BNK_1_FULL, screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
+        seqimport_move(0, 1, 0, 0);
         break;
     }
 }
 
 void import_seq()
 {
+    char error = 0;
+    char status = 0;
+    char ch;
+    char oldshowbar = showbar;
+    char oldplotscreencode = plotscreencode;
+    char oldplorcolor = plotcolor;
+    char oldplotblink = plotblink;
+    char oldplotunderline = plotunderline;
+    char oldplotreverse = plotreverse;
+    char oldplotaltchar = plotaltchar;
+    char oldscreencol = screen_col;
+    char oldscreenrow = screen_row;
+    char oldxoff = canvas.sourcexoffset;
+    char oldyoff = canvas.sourcexoffset;
+
+    showbar = 0;
+
     if (import_dialogue(2, "Import SEQ"))
     {
+        // Create undo option
+        if (undoenabled == 1)
+        {
+            undo_new(importvars.xpos, importvars.ypos, importvars.width, importvars.height);
+        }
+
         // Exit pop up window
         vdcwin_win_free();
 
         // Exit menu bar
         vdcwin_win_free();
 
+        // Hide status bar
+        hidestatusbar();
+
+        // Set default plot values
+        plotscreencode = CH_SPACE;
+        plotreverse = 0;
+        plotaltchar = (importvars.uppercase == 1) ? 0 : 1;
+        plotblink = 0;
+        plotcolor = VDC_WHITE;
+        plotunderline = 0;
+
+        // Set bank and name
+        sprintf(linebuffer, "%s,s,r", filename);
+        krnio_setbnk(0, 0);
+        krnio_setnam(linebuffer);
+
+        // Open file and return status
+        status = krnio_open(1, targetdevice, 2);
+
+        // If open is succesful, read contents
+        if (status)
+        {
+            // Open file for inout
+            if (krnio_chkin(1))
+            {
+                // Read chars until EOF or error
+                do
+                {
+                    ch = krnio_chrin();
+                    error = krnio_status();
+                    // If no error, decode read char
+                    if (!error)
+                    {
+                        decode_controlcode(ch);
+                    }
+                } while (!error);
+
+                // Close file
+                krnio_clrchn();
+                krnio_close(1);
+
+                // Show error message if error is not end of file
+                if (error != KRNIO_EOF)
+                {
+                    menu_fileerrormessage();
+                }
+            }
+            else
+            {
+                krnio_close(1);
+                menu_fileerrormessage();
+            }
+        }
+
+        // Restore menu and statusbbars
+        showbar = oldshowbar;
+        plotscreencode = oldplotscreencode;
+        plotcolor = oldplorcolor;
+        plotblink = oldplotblink;
+        plotunderline = oldplotunderline;
+        plotreverse = oldplotreverse;
+        screen_col = oldscreencol;
+        screen_row = oldscreenrow;
+        canvas.sourcexoffset = oldxoff;
+        canvas.sourcexoffset = oldyoff;
+
         // Show new viewport data
         placesignature();
         vdcwin_cpy_viewport(&canvas);
 
-        // Restore menu and statusbbars
         vdcwin_win_new(0, 0, 0, vdc_state.width, 1);
         menu_placebar(0);
         if (showbar)
         {
             initstatusbar();
         }
-        undo_undopossible = 0;
-        undo_redopossible = 0;
     }
 }
 

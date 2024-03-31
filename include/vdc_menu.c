@@ -76,7 +76,7 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #include "vdc_menu.h"
 
 struct VDCMenuBar menubar = {
-    {"Screen", "File", "Charset", "Import", "Information"},
+    {"Screen", "File", "Charset", "Imp/Export", "Information"},
     {0, 0, 0, 0, 0},
     0};
 

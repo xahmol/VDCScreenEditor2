@@ -246,8 +246,14 @@ char importread(char device, const char *filename)
 void import_prg()
 // Function to import screen data
 {
-    if(import_dialogue(0,"Import PRG"))
+    if (import_dialogue(0, "Import PRG"))
     {
+        // Create undo option
+        if (undoenabled == 1)
+        {
+            undo_new(importvars.xpos, importvars.ypos, importvars.width, importvars.height);
+        }
+
         // Load imprt data and check for errors
         vdc_clear(20, 8, CH_SPACE, 40, 8);
         if (importread(targetdevice, filename))
@@ -272,8 +278,6 @@ void import_prg()
         {
             initstatusbar();
         }
-        undo_undopossible = 0;
-        undo_redopossible = 0;
     }
 }
 

@@ -66,6 +66,7 @@ struct IMPORTVARS
     char loadaddr;
     char uppercase;
     unsigned offset;
+    char cls;
 };
 extern struct IMPORTVARS importvars;
 

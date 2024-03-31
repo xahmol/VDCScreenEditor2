@@ -305,7 +305,9 @@ void bnk_redef_charset(unsigned vdcdest, char scr, volatile char *sp, unsigned s
 void freeDir()
 {
     if (!cwd.name[0])
+    {
         return;
+    }
 
     current = cwd.firstelement;
     while (current)
