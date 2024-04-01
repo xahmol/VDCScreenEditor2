@@ -1,7 +1,6 @@
 #ifndef __OVERLAY3_H_
 #define __OVERLAY3_H_
 
-char filepicker(char filter);
 signed chooseidandfilename(const char *headertext, char maxlen);
 char checkiffileexists(char *filetocheck, unsigned char id);
 void loadscreenmap();

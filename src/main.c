@@ -988,46 +988,6 @@ void updatecanvas()
     screentotal = canvas.sourcewidth * canvas.sourceheight;
 }
 
-char dir_validentry(char filter)
-// Is current dir entry a valid entry to show given filetype and filter
-// Filter value is 0 for all PRG, 1 for project files, 2 for SEQ files
-{
-    char len = strlen(current->dirent.name);
-    char extension[6];
-
-    // If it is not a PRG file and filter is not 2, return with zero value
-    if (current->dirent.type != CBM_T_PRG && filter < 2)
-    {
-        return 0;
-    }
-
-    // If it is not a SEQ file and filter is 2, return with zero value
-    if (current->dirent.type != CBM_T_SEQ && filter == 2)
-    {
-        return 0;
-    }
-
-    // Filter set at 1 for project files? Then check for extension
-    if (filter == 1)
-    {
-        // Is file name long enough to have an extension?
-        if (len > 5)
-        {
-            memset(extension, 0, 6);
-            for (char i = 0; i < 5; i++)
-            {
-                extension[i] = current->dirent.name[len - 5 + i];
-            }
-            if (!strcmp(extension, ".proj"))
-            {
-                return 1;
-            }
-        }
-        return 0;
-    }
-    return 1;
-}
-
 char readDir(char device, char filter)
 // Read the directory
 {
@@ -1057,7 +1017,9 @@ char readDir(char device, char filter)
 
         if (!current)
         {
-            break;
+            dir_close(2);
+            vdc_reverse(1);
+            return 0;
         }
 
         if (dir_readentry(2, &(current->dirent)))
@@ -1306,6 +1268,7 @@ char filepicker(char filter)
             if (cwd.firstelement)
             {
                 cwd.selected = cwd.firstelement;
+                cwd.firstprinted = cwd.firstelement;
                 cwd.pos = 0;
                 printDir(targetdevice);
             }
@@ -1321,7 +1284,13 @@ char filepicker(char filter)
                     if (current->next != 0)
                     {
                         current = current->next;
+                        lastpage = pos / DIRH;
                         pos++;
+                        nextpage = pos/ DIRH;
+                        if(lastpage!=nextpage)
+                        {
+                            cwd.firstprinted = current;
+                        }
                     }
                     else
                     {
@@ -1476,15 +1445,10 @@ char import_dialogue(char mode, const char *message)
     unsigned maxsize = MEMORYLIMIT - SCREENMAPBASE;
     char *ptrend;
 
+    memset(&importvars,0,sizeof(importvars));
     importvars.xpos = screen_col + canvas.sourcexoffset;
     importvars.ypos = screen_row + canvas.sourceyoffset;
-
-    importvars.content = 0;
-    importvars.convert = 0;
-    importvars.loadaddr = 0;
-    importvars.uppercase = 0;
     importvars.offset = 48;
-    importvars.cls = 0;
 
     // Pick file to import
     if (!filepicker(mode))

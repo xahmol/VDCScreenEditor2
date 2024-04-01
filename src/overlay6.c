@@ -400,10 +400,6 @@ void decode_controlcode(char ch)
         plotcolor = VDC_LCYAN;
         break;
 
-    case 0xff:
-        plotscreencode = 94;
-        break;
-
     default:
         if ((ch >= 0x20) && (ch < 0x40))
         {
@@ -421,7 +417,7 @@ void decode_controlcode(char ch)
         {
             plotscreencode = ch - 0x40;
         }
-        if ((ch >= 0xc0) && (ch <= 0xfe))
+        if ((ch >= 0xc0) && (ch <= 0xff))
         {
             plotscreencode = ch - 0x80;
         }
@@ -475,6 +471,7 @@ void import_seq()
         plotblink = 0;
         plotcolor = VDC_WHITE;
         plotunderline = 0;
+        rebase();
 
         // Set bank and name
         sprintf(linebuffer, "%s,s,r", filename);
@@ -498,6 +495,11 @@ void import_seq()
                     // If no error, decode read char
                     if (!error)
                     {
+                        // Debug
+                        sprintf(linebuffer,"Char: %2x Xpos,Ypos: %3u,%3u Xc,Yc: %3u,%3u Error: %2x",ch,importvars.xpos,importvars.ypos,importvars.xc,importvars.yc,error);
+                        vdc_prints(0,vdc_state.height-1,linebuffer);
+
+                        // Print char
                         decode_controlcode(ch);
                     }
                 } while (!error);

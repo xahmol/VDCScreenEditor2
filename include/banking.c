@@ -577,6 +577,46 @@ const char *fileTypeToStr(char ft)
     return bad_type;
 }
 
+char dir_validentry(char filter)
+// Is current dir entry a valid entry to show given filetype and filter
+// Filter value is 0 for all PRG, 1 for project files, 2 for SEQ files
+{
+    char len = strlen(current->dirent.name);
+    char extension[6];
+
+    // If it is not a PRG file and filter is not 2, return with zero value
+    if (current->dirent.type != CBM_T_PRG && filter < 2)
+    {
+        return 0;
+    }
+
+    // If it is not a SEQ file and filter is 2, return with zero value
+    if (current->dirent.type != CBM_T_SEQ && filter == 2)
+    {
+        return 0;
+    }
+
+    // Filter set at 1 for project files? Then check for extension
+    if (filter == 1)
+    {
+        // Is file name long enough to have an extension?
+        if (len > 5)
+        {
+            memset(extension, 0, 6);
+            for (char i = 0; i < 5; i++)
+            {
+                extension[i] = current->dirent.name[len - 5 + i];
+            }
+            if (!strcmp(extension, ".proj"))
+            {
+                return 1;
+            }
+        }
+        return 0;
+    }
+    return 1;
+}
+
 __asm sid_interrupt
 // SID play IRQ routine
 {

@@ -141,6 +141,7 @@ __noinline void dir_close(char lfn);
 __noinline char dir_open(char lfn, unsigned char device);
 __noinline char dir_readentry(const char lfn, struct DirEntry *l_dirent);
 __noinline const char *fileTypeToStr(char ft);
+__noinline char dir_validentry(char filter);
 __noinline bool bnk_load(char device, char bank, const char *start, const char *fname);
 __noinline bool bnk_save(char device, char bank, const char *start, const char *end, const char *fname);
 __noinline int bnk_io_read(char fnum, char cr, char * data, int num);
