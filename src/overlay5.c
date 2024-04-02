@@ -162,8 +162,8 @@ char importread(char device, const char *filename)
                     if (error == KRNIO_EOF)
                     {
                         error = 0;
-                        importvars.content = 2;
-                        offbyte = importvars.offset;
+                        //importvars.content = 2;
+                        //offbyte = importvars.offset;
                     }
                     if (error)
                     {
@@ -248,14 +248,8 @@ void import_prg()
 {
     if (import_dialogue(0, "Import PRG"))
     {
-        // Create undo option
-        if (undoenabled == 1)
-        {
-            undo_new(importvars.xpos, importvars.ypos, importvars.width, importvars.height);
-        }
-
         // Load imprt data and check for errors
-        vdc_clear(20, 8, CH_SPACE, 40, 8);
+        vdc_clear(20, 8, CH_SPACE, 40, 10);
         if (importread(targetdevice, filename))
         {
             menu_fileerrormessage();

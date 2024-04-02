@@ -89,6 +89,15 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #pragma data(dataovl6)
 #pragma bss(bssovl6)
 
+struct ATTRVALS
+{
+    char color;
+    char underline;
+    char blink;
+    char reverse;
+    char alt;
+};
+
 void rebase()
 // Rebase viewport pos based on import coords
 {
@@ -417,9 +426,13 @@ void decode_controlcode(char ch)
         {
             plotscreencode = ch - 0x40;
         }
-        if ((ch >= 0xc0) && (ch <= 0xff))
+        if ((ch >= 0xc0) && (ch <= 0xfe))
         {
             plotscreencode = ch - 0x80;
+        }
+        if (ch == 0xff)
+        {
+            plotscreencode = 0x5e;
         }
         screenmapplot(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
         vdc_printc(screen_col, screen_row, bnk_readb(BNK_1_FULL, screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
@@ -492,17 +505,17 @@ void import_seq()
                 {
                     ch = krnio_chrin();
                     error = krnio_status();
-                    // If no error, decode read char
-                    if (!error)
+                    // If no error or error message is EOF for last char, decode read char
+                    if (error == KRNIO_OK || error == KRNIO_EOF)
                     {
                         // Debug
-                        sprintf(linebuffer,"Char: %2x Xpos,Ypos: %3u,%3u Xc,Yc: %3u,%3u Error: %2x",ch,importvars.xpos,importvars.ypos,importvars.xc,importvars.yc,error);
-                        vdc_prints(0,vdc_state.height-1,linebuffer);
+                        // sprintf(linebuffer,"Char: %2x Xpos,Ypos: %3u,%3u Xc,Yc: %3u,%3u Error: %2x",ch,importvars.xpos,importvars.ypos,importvars.xc,importvars.yc,error);
+                        // vdc_prints(0,vdc_state.height-1,linebuffer);
 
                         // Print char
                         decode_controlcode(ch);
                     }
-                } while (!error);
+                } while (error == KRNIO_OK);
 
                 // Close file
                 krnio_clrchn();
@@ -548,7 +561,181 @@ void import_seq()
 
 void export_seq()
 {
-    menu_messagepopup("Export SEQ placeholder");
+    static char seqcolor[16] = {0x90, 0x98, 0x1f, 0x9a, 0x1e, 0x99, 0x97, 0x9f, 0x1c, 0x96, 0x9c, 0x9c, 0x95, 0x9e, 0x9b, 0x05};
+    char error = 0;
+    char status = 0;
+    char overwrite, screencode, attr, ch;
+    unsigned escapeflag, x, y;
+    struct ATTRVALS attr_present;
+    struct ATTRVALS attr_new;
+
+    escapeflag = chooseidandfilename("Save screen", 15);
+
+    vdcwin_win_free();
+
+    if (escapeflag == -1)
+    {
+        return;
+    }
+
+    overwrite = checkiffileexists(filename, targetdevice);
+
+    if (overwrite)
+    {
+        // Scratch old file
+        if (overwrite == 2)
+        {
+            sprintf(buffer, "s:%s", filename);
+            cmd(targetdevice, buffer);
+        }
+
+        // Set bank and name
+        sprintf(linebuffer, "%s,s,w", filename);
+        krnio_setbnk(0, 0);
+        krnio_setnam(linebuffer);
+
+        // Open file and return status
+        status = krnio_open(1, targetdevice, 2);
+
+        // If open is succesful, read contents
+        if (status)
+        {
+            // Open file for inout
+            if (krnio_chkout(1))
+            {
+                // Read chars until EOF or error
+                for (y = 0; y < canvas.sourceheight; y++)
+                {
+                    for (x = 0; x < canvas.sourcewidth; x++)
+                    {
+                        // Obtain screen code and attribute for coordinate
+                        screencode = bnk_readb(BNK_1_FULL, screenmap_screenaddr(y, x, canvas.sourcewidth));
+                        attr = bnk_readb(BNK_1_FULL, screenmap_attraddr(y, x, canvas.sourcewidth, canvas.sourceheight));
+
+                        // Is it a reverse screen code bigger than 0xa0?
+                        if (screencode > 0x7f)
+                        {
+                            screencode -= 0x80;
+                            attr ^= VDC_A_REVERSE;
+                        }
+
+                        // Convert screencode to PETSCII
+                        ch = 0x20;
+                        if (screencode < 0x20)
+                        {
+                            ch = screencode + 0x40;
+                        }
+                        if (screencode > 0x1f && screencode < 0x40)
+                        {
+                            ch = screencode;
+                        }
+                        if (screencode > 0x3f && screencode < 0x5e)
+                        {
+                            ch = screencode + 0x80;
+                        }
+                        if (screencode == 0x5e)
+                        {
+                            ch = 0xff;
+                        }
+                        if (screencode == 0x5f)
+                        {
+                            ch = 0xdf;
+                        }
+                        if (screencode > 0x5f && screencode < 0x80)
+                        {
+                            ch = screencode + 0x40;
+                        }
+
+                        // Output control codes on attribute changes
+                        if (x == 0 && y == 0)
+                        {
+                            attr_present.color = attr & 0x0f;
+                            attr_present.alt = attr & VDC_A_ALTCHAR;
+                            attr_present.blink = attr & VDC_A_BLINK;
+                            attr_present.reverse = attr & VDC_A_REVERSE;
+                            attr_present.underline = attr & VDC_A_UNDERLINE;
+                            krnio_chrout(0x93);                                   // Clear
+                            krnio_chrout(seqcolor[attr_present.color]);           // Color
+                            krnio_chrout((attr_present.alt) ? 0x0e : 0x8e);       // Case
+                            krnio_chrout((attr_present.underline) ? 0x02 : 0x82); // Underline
+                            krnio_chrout((attr_present.reverse) ? 0x12 : 0x92);   // Reverse
+                            krnio_chrout((attr_present.blink) ? 0x0f : 0x8f);     // Flash
+                        }
+                        else
+                        {
+                            attr_new.color = attr & 0x0f;
+                            attr_new.alt = attr & VDC_A_ALTCHAR;
+                            attr_new.blink = attr & VDC_A_BLINK;
+                            attr_new.reverse = attr & VDC_A_REVERSE;
+                            attr_new.underline = attr & VDC_A_UNDERLINE;
+
+                            // Color change?
+                            if (attr_new.color != attr_present.color)
+                            {
+                                attr_present.color = attr_new.color;
+                                krnio_chrout(seqcolor[attr_present.color]);
+                            }
+
+                            // Case change?
+                            if (attr_new.alt != attr_present.alt)
+                            {
+                                attr_present.alt = attr_new.alt;
+                                krnio_chrout((attr_present.alt) ? 0x0e : 0x8e);
+                            }
+
+                            // Underline change?
+                            if (attr_new.underline != attr_present.underline)
+                            {
+                                attr_present.underline = attr_new.underline;
+                                krnio_chrout((attr_present.underline) ? 0x02 : 0x82);
+                            }
+
+                            // Reverse change?
+                            if (attr_new.reverse != attr_present.reverse)
+                            {
+                                attr_present.reverse = attr_new.reverse;
+                                krnio_chrout((attr_present.reverse) ? 0x12 : 0x92);
+                            }
+
+                            // Flash change?
+                            if (attr_new.blink != attr_present.blink)
+                            {
+                                attr_present.blink = attr_new.blink;
+                                krnio_chrout((attr_present.blink) ? 0x0f : 0x8f);
+                            }
+                        }
+
+                        krnio_chrout(ch);
+
+                        // Check for errors
+                        error = krnio_status();
+                        if (error)
+                        {
+                            krnio_clrchn();
+                            krnio_close(1);
+                            menu_fileerrormessage();
+                            return;
+                        }
+                    }
+                }
+
+                // Close file
+                krnio_clrchn();
+                krnio_close(1);
+
+                // Show error message if error is not end of file
+                if (error)
+                {
+                    menu_fileerrormessage();
+                }
+            }
+            else
+            {
+                krnio_close(1);
+                menu_fileerrormessage();
+            }
+        }
+    }
 }
 
 #pragma code(code)

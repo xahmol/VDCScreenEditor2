@@ -1438,12 +1438,132 @@ char filepicker(char filter)
     }
 }
 
+char choosedeviceid(char ypos)
+// Choose device ID dialogue
+{
+    char key;
+
+    vdc_prints(21, ypos, "Choose drive ID:");
+    vdc_prints(21, ypos + 2, "Change with + / - key, RET to select.");
+    vdc_state.text_attr = mc_pd_select;
+
+    do
+    {
+        sprintf(linebuffer, "%2u", targetdevice);
+        vdc_prints(21, ypos + 1, linebuffer);
+
+        key = vdcwin_getch();
+
+        switch (key)
+        {
+        case '+':
+            if (++targetdevice > MAXDEVID)
+            {
+                targetdevice = 8;
+            }
+            while (!bnk_iec_active(targetdevice))
+            {
+                if (++targetdevice > MAXDEVID)
+                {
+                    targetdevice = 8;
+                }
+            }
+            break;
+
+        case '-':
+            if (--targetdevice < 8)
+            {
+                targetdevice = MAXDEVID;
+            }
+            while (!bnk_iec_active(targetdevice))
+            {
+                if (--targetdevice < 8)
+                {
+                    targetdevice = MAXDEVID;
+                }
+            }
+            break;
+
+        default:
+            break;
+        }
+
+    } while (key != CH_ENTER && key != CH_STOP && key != CH_ESC);
+
+    vdc_state.text_attr = mc_menupopup;
+    vdc_prints(21, ypos + 1, linebuffer);
+    vdc_clear(20, ypos + 2, CH_SPACE, 40, 1);
+    if (key == CH_ESC || key == CH_STOP)
+    {
+        return 0;
+    }
+    return 1;
+}
+
+signed chooseidandfilename(const char *headertext, char maxlen)
+// Function to present dialogue to enter device id and filename
+// Input: Headertext to print, maximum length of filename input string
+{
+    int valid = 0;
+    char *ptrend;
+
+    vdc_state.text_attr = mc_menupopup;
+    vdcwin_win_new(VDC_POPUP_BORDER, 20, 5, 40, 12);
+
+    vdc_underline(1);
+    vdc_prints(21, 6, headertext);
+    vdc_underline(0);
+
+    if (!choosedeviceid(8))
+    {
+        return -1;
+    }
+
+    vdc_prints(21, 10, "Choose filename:");
+    return textInput(21, 11, filename, maxlen);
+}
+
+char checkiffileexists(char *filetocheck, unsigned char id)
+// Check if file exists and, if yes, ask confirmation of overwrite
+{
+    unsigned char proceed = 1;
+    unsigned char yesno;
+    unsigned char error;
+
+    sprintf(buffer, "r0:%s=%s", filetocheck, filetocheck);
+    error = cmd(id, buffer);
+
+    if (error == 63)
+    {
+        yesno = menu_areyousure("File exists.");
+        if (yesno == 2)
+        {
+            proceed = 0;
+        }
+        else
+        {
+            proceed = 2;
+        }
+    }
+    else
+    {
+        if (error && error != 62)
+        {
+            menu_fileerrormessage();
+            proceed = 0;
+        }
+    }
+
+    return proceed;
+}
+
 char import_dialogue(char mode, const char *message)
 // Dialogue for import functions. Mode 0 = PRG, mode 2 = SEQ
 {
     unsigned newwidth, newheight, y;
     unsigned maxsize = MEMORYLIMIT - SCREENMAPBASE;
     char *ptrend;
+    char yc = 8;
 
     memset(&importvars,0,sizeof(importvars));
     importvars.xpos = screen_col + canvas.sourcexoffset;
@@ -1458,31 +1578,31 @@ char import_dialogue(char mode, const char *message)
 
     // Create popup window
     vdc_state.text_attr = mc_menupopup;
-    vdcwin_win_new(VDC_POPUP_BORDER, 20, 5, 40, 12);
+    vdcwin_win_new(VDC_POPUP_BORDER, 20, 5, 40, 14);
 
     vdc_underline(1);
     vdc_prints(21, 6, message);
     vdc_underline(0);
 
     // Ask to inout import parameters
-    vdc_prints(21, 8, "Enter import width:");
+    vdc_prints(21, yc++, "Enter import width:");
     sprintf(buffer, "%u", canvas.sourcewidth);
-    textInput(21, 9, buffer, 3);
+    textInput(21, yc++, buffer, 3);
     importvars.width = (unsigned)strtol(buffer, &ptrend, 10);
 
-    vdc_prints(21, 10, "Enter import height:");
+    vdc_prints(21, yc++, "Enter import height:");
     sprintf(buffer, "%u", canvas.sourceheight);
-    textInput(21, 11, buffer, 3);
+    textInput(21, yc++, buffer, 3);
     importvars.height = (unsigned)strtol(buffer, &ptrend, 10);
 
-    vdc_prints(21, 12, "Enter target X coord:");
+    vdc_prints(21, yc++, "Enter target X coord:");
     sprintf(buffer, "%u", importvars.xpos);
-    textInput(21, 13, buffer, 3);
+    textInput(21, yc++, buffer, 3);
     importvars.xpos = (unsigned)strtol(buffer, &ptrend, 10);
 
-    vdc_prints(21, 14, "Enter target Y coord:");
+    vdc_prints(21, yc++, "Enter target Y coord:");
     sprintf(buffer, "%u", importvars.ypos);
-    textInput(21, 15, buffer, 3);
+    textInput(21, yc++, buffer, 3);
     importvars.ypos = (unsigned)strtol(buffer, &ptrend, 10);
 
     // See if for import canvas dimensions should be enlarged and check if this fits
@@ -1491,7 +1611,7 @@ char import_dialogue(char mode, const char *message)
 
     if ((newwidth * newheight * 2) + 48 > maxsize)
     {
-        vdc_prints(21, 16, "New size unsupported. Press key.");
+        vdc_prints(21, yc, "New size unsupported. Press key.");
         getch();
         vdcwin_win_free();
         return 0;
@@ -1533,45 +1653,46 @@ char import_dialogue(char mode, const char *message)
         }
 
         // Ask for additional import parameters
-        vdc_clear(20, 8, CH_SPACE, 40, 8);
+        vdc_clear(20, 8, CH_SPACE, 40, 10);
+        yc = 8;
 
         if (!mode)
         {
-            vdc_prints(21, 8, "Includes load addres at first 2 bytes?");
-            importvars.loadaddr = menu_pulldown(25, 9, VDC_MENU_YESNO, 0);
-            vdc_prints(21, 9, pulldown_titles[VDC_MENU_YESNO][importvars.loadaddr - 1]);
+            vdc_prints(21, yc++, "Includes load addres at first 2 bytes?");
+            importvars.loadaddr = menu_pulldown(25, yc, VDC_MENU_YESNO, 0);
+            vdc_prints(21, yc++, pulldown_titles[VDC_MENU_YESNO][importvars.loadaddr - 1]);
 
-            vdc_prints(21, 10, "Import chars, color or both?");
+            vdc_prints(21, yc++, "Import chars, color or both?");
             importvars.content = menu_pulldown(25, 11, 6, 0);
-            vdc_prints(21, 11, pulldown_titles[6][importvars.content - 1]);
+            vdc_prints(21, yc++, pulldown_titles[6][importvars.content - 1]);
         }
 
         if (mode == 2)
         {
-            vdc_prints(21, 8, "Ignore CLS / Clear?");
-            importvars.cls = menu_pulldown(25, 9, VDC_MENU_YESNO, 0);
-            vdc_prints(21, 9, pulldown_titles[VDC_MENU_YESNO][importvars.cls - 1]);
+            vdc_prints(21, yc++, "Ignore CLS / Clear?");
+            importvars.cls = menu_pulldown(25, yc, VDC_MENU_YESNO, 0);
+            vdc_prints(21, yc++, pulldown_titles[VDC_MENU_YESNO][importvars.cls - 1]);
         }
 
         if (importvars.content != 2 || mode == 2)
         {
-            vdc_prints(21, 12, "Convert VIC colours?");
-            importvars.convert = menu_pulldown(25, 13, VDC_MENU_YESNO, 0);
-            vdc_prints(21, 13, pulldown_titles[VDC_MENU_YESNO][importvars.convert - 1]);
+            vdc_prints(21, yc++, "Convert VIC colours?");
+            importvars.convert = menu_pulldown(25, yc, VDC_MENU_YESNO, 0);
+            vdc_prints(21, yc++, pulldown_titles[VDC_MENU_YESNO][importvars.convert - 1]);
         }
 
         if (importvars.content == 2 || importvars.convert == 1)
         {
-            vdc_prints(21, 12, "Uppercase charset?   ");
-            importvars.uppercase = menu_pulldown(25, 13, VDC_MENU_YESNO, 0);
-            vdc_prints(25, 13, pulldown_titles[VDC_MENU_YESNO][importvars.uppercase - 1]);
+            vdc_prints(21, yc++, "Uppercase charset?   ");
+            importvars.uppercase = menu_pulldown(25, yc, VDC_MENU_YESNO, 0);
+            vdc_prints(21, yc++, pulldown_titles[VDC_MENU_YESNO][importvars.uppercase - 1]);
         }
 
         if (importvars.content == 1)
         {
-            vdc_prints(21, 14, "Enter offset char to color:");
+            vdc_prints(21, yc++, "Enter offset char to color:");
             sprintf(buffer, "%u", importvars.offset);
-            textInput(21, 15, buffer, 6);
+            textInput(21, yc, buffer, 6);
             importvars.offset = strtol(buffer, &ptrend, 10);
         }
     }
