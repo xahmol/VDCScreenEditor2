@@ -573,6 +573,7 @@ void export_seq()
 
     if (escapeflag == -1)
     {
+        vdcwin_win_free();
         return;
     }
 

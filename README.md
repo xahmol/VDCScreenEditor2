@@ -52,7 +52,7 @@ Commodore 128 80 column screen editor - version 2
 Version v20-20240403-1124:
 - First release of v2 version of VDCSE
 - Completely rebuild using the Oscar64 compiler (previously CC65)
-- Added support for multiple VDC text screen modes, including 80x50 (ideal for C64 PETSCII art aspect ratio)
+- Added support for multiple VDC text screen modes, including 80x50 (ideal for C64 PETSCII art aspect ratio). NB: Needs a C128 with 64KB VDC RAM to have still also room for swap VDC memory.
 - Added import and export functions: Import of both raw screen data in PRG files, or BBS Petscii code sequences in SEQ format export to SEQ format. SEQ format can be a.o. used to import from and export to other PETSCII editors like Petmate 9.
 - Import functions include a VIC to VDC colour converter. Which is obviously a comprimise as VDC has only one color as alternative for the VIC pairs Orange/Brown (both convert to VDC Dark Yellow) and Light Grey/Medium Grey (both convert to VDC Light Grey), and the other colours have different hues on VDC than on VIC (for example light red from a pink like hue on VIC to red on VDC)
 - Import can be done to any given coordinate in the existing project, canvas is automatically enlarged if needed to make it fit.
@@ -127,18 +127,31 @@ Run the program by entering RUN "VDCSE",U\<device number\> (or use other methods
 Description of contents of the disk image:
 
 - VDCSE                     (PRG):      Main executable
-- VDCSE.MACO                (PRG):      Machine code routines to be loaded in low memory
-- VDCSE.FALT                (PRG):      System font for alternative charset
-- VDCSE.FSTD                (PRG):      System font for standard charset
-- VDCSE.TSCR                (PRG):      Title screen
-- VDCSE.HSC1                (PRG):      Help screen for main mode
-- VDCSE.HSC2                (PRG):      Help screen for character edit mode
-- VDCSE.HSC3                (PRG):      Help screen for select, move and line/box modes
-- VDCSE.HSC4                (PRG):      Help screen for write and color write modes
-- VDCSE.PETV                (PRG):      Mapping table for visual PETSCII map
+- VDCSELMC                  (PRG):      Machine code routines to be loaded in low memory
+- VDCSEOVL1 - VDCOVL6       (PRG):      Application code overlay files 1 to 6
+- VDCSEFALT                 (PRG):      System font for alternative charset
+- VDCSEFSTD                 (PRG):      System font for standard charset
+- VDCSETSCR                 (PRG):      Title screen
+- VDCSEHSC1                 (PRG):      Help screen for main mode
+- VDCSEHSC2                 (PRG):      Help screen for character edit mode
+- VDCSEHSC3                 (PRG):      Help screen for select, move and line/box modes
+- VDCSEHSC4                 (PRG):      Help screen for write and color write modes
+- VDCSEPETV                 (PRG):      Mapping table for visual PETSCII map
 - VDCSE2PRG                 (PRG):      Executable of the VDCSE2PRG utility
-- VDCSE2PRG.ASS             (PRG):      BASIC header and assembly part for generating executables
-- VDCSE2PRG.MAC             (PRG):      Machine code helper routines of VDCSE2PRG
+- VDCSE2PRGASS              (PRG):      BASIC header and assembly part for generating executables
+- VDCSE2PRGMAC              (PRG):      Machine code helper routines of VDCSE2PRG
+
+All other files are supplied demo files:
+
+*Demo project files:*
+- *.proj are project meta data files. Load these to load the demo projects, including the corresponding screen and charsets.
+- *.scrn are screen files part of the projects
+- *.chrs are charset definition files for standard charsets of the projects
+- *.chra are charset definition files for alternate charsets of the projects
+
+*Raw PRG screen data files and SEQ BBS PETSCII data sequences for import (only on .d71 and .d81 image)*
+- *raw files are demonstration raw C64 PETSCII screen files to try in the PRG importer with VIC color conversion. All files uses an offset between text en colour data of 0, apart from 'loveisthedrugraw' that uses an offset of 288 (to demonstrate it is possible to use an offset and this was the offset in memory of the original C64 demo)
+- SEQ file type files: example for using the SEQ importer. VF7-V2-80X50 uses 80 by 50 dimension.
 
 (Fun fact: all screens have actually been created using VDCSE as editor)
 
