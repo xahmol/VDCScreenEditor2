@@ -279,6 +279,7 @@ void loadproject()
 // Function to load project (screen, charsets and metadata)
 {
     char projbuffer[23];
+    char oldcharchanged[2];
     memset(projbuffer, 0, 23);
 
     if (!filepicker(1))
@@ -296,6 +297,8 @@ void loadproject()
         return;
     }
 
+    oldcharchanged[0] = charsetchanged[0];
+    oldcharchanged[1] = charsetchanged[1];
     charsetchanged[0] = projbuffer[0];
     charsetchanged[1] = projbuffer[1];
     screen_col = projbuffer[2];
@@ -337,6 +340,12 @@ void loadproject()
         }
         undo_undopossible = 0;
         undo_redopossible = 0;
+    }
+
+    // Restore charsets if needed if new project has no charsets
+    if((!charsetchanged[0] && oldcharchanged[0]) || (!charsetchanged[1] && oldcharchanged[1]))
+    {
+        vdc_restore_charsets();
     }
 
     // Load standard charset

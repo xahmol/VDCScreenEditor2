@@ -248,6 +248,12 @@ void import_prg()
 {
     if (import_dialogue(0, "Import PRG"))
     {
+        // Create undo option
+        if (undoenabled == 1)
+        {
+            undo_new(importvars.ypos, importvars.xpos, importvars.width, importvars.height);
+        }
+
         // Load imprt data and check for errors
         vdc_clear(20, 8, CH_SPACE, 40, 10);
         if (importread(targetdevice, filename))

@@ -1286,8 +1286,8 @@ char filepicker(char filter)
                         current = current->next;
                         lastpage = pos / DIRH;
                         pos++;
-                        nextpage = pos/ DIRH;
-                        if(lastpage!=nextpage)
+                        nextpage = pos / DIRH;
+                        if (lastpage != nextpage)
                         {
                             cwd.firstprinted = current;
                         }
@@ -1565,7 +1565,7 @@ char import_dialogue(char mode, const char *message)
     char *ptrend;
     char yc = 8;
 
-    memset(&importvars,0,sizeof(importvars));
+    memset(&importvars, 0, sizeof(importvars));
     importvars.xpos = screen_col + canvas.sourcexoffset;
     importvars.ypos = screen_row + canvas.sourceyoffset;
     importvars.offset = 48;
@@ -1733,6 +1733,14 @@ void mainmenuloop()
         case 14:
             loadoverlay(2);
             selectscreenmode();
+            if (charsetchanged[0])
+            {
+                bnk_redef_charset(vdc_state.char_std, BNK_1_FULL, (char *)CHARSETNORMAL, 256);
+            }
+            if (charsetchanged[1])
+            {
+                bnk_redef_charset(vdc_state.char_alt, BNK_1_FULL, (char *)CHARSETALTERNATE, 256);
+            }
             break;
 
         case 15:
@@ -1805,6 +1813,12 @@ void mainmenuloop()
         case 34:
             loadoverlay(3);
             savecharset(1);
+            break;
+
+        case 35:
+            vdc_restore_charsets();
+            charsetchanged[0]=0;
+            charsetchanged[1]=0;
             break;
 
         case 41:

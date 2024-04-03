@@ -47,7 +47,16 @@ Commodore 128 80 column screen editor - version 2
 ## Version history and download
 ([Back to contents](#contents))
 
-[Link to latest build](https://github.com/xahmol/VDCScreenEdit/raw/main/vdcscreenedit-v099-20220324-1527.zip)
+[Link to latest build](https://github.com/xahmol/VDCScreenEdit/raw/main/vdcse_v20-20240403-1124.zip)
+
+Version v20-20240403-1124:
+- First release of v2 version of VDCSE
+- Completely rebuild using the Oscar64 compiler (previously CC65)
+- Added support for multiple VDC text screen modes, including 80x50 (ideal for C64 PETSCII art aspect ratio)
+- Added import and export functions: Import of both raw screen data in PRG files, or BBS Petscii code sequences in SEQ format export to SEQ format. SEQ format can be a.o. used to import from and export to other PETSCII editors like Petmate 9.
+- Import functions include a VIC to VDC colour converter. Which is obviously a comprimise as VDC has only one color as alternative for the VIC pairs Orange/Brown (both convert to VDC Dark Yellow) and Light Grey/Medium Grey (both convert to VDC Light Grey), and the other colours have different hues on VDC than on VIC (for example light red from a pink like hue on VIC to red on VDC)
+- Import can be done to any given coordinate in the existing project, canvas is automatically enlarged if needed to make it fit.
+- Many smaller refinements and bugfixes
 
 Version v099-20220324-1527:
 - Major overhaul of memory management by moving many functions to memory overlays. Gives room for new functionality (as before I did not have room left)
@@ -813,6 +822,8 @@ Credits for PETSCII art samples bundled:
     -   (A head of) Monkey Island, by Logiker / Vintage Computing Carinthia https://csdb.dk/release/?id=239879
     -   MorboSez, by TheRyk / Mayday! https://csdb.dk/release/?id=239922
     -   Arcade Venus, by Skleptoid https://csdb.dk/release/?id=239896
+
+- Round font based on Small Round PETSCII Font by Cupid https://csdb.dk/release/?id=188169
 
 The code can be used freely as long as you retain a notice describing original source and author.
 

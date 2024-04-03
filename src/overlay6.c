@@ -465,7 +465,7 @@ void import_seq()
         // Create undo option
         if (undoenabled == 1)
         {
-            undo_new(importvars.xpos, importvars.ypos, importvars.width, importvars.height);
+            undo_new(importvars.ypos, importvars.xpos, importvars.width, importvars.height);
         }
 
         // Exit pop up window
@@ -571,8 +571,6 @@ void export_seq()
 
     escapeflag = chooseidandfilename("Save screen", 15);
 
-    vdcwin_win_free();
-
     if (escapeflag == -1)
     {
         return;
@@ -600,6 +598,8 @@ void export_seq()
         // If open is succesful, read contents
         if (status)
         {
+            vdc_prints(21, 13, "Exporting data to disk.");
+
             // Open file for inout
             if (krnio_chkout(1))
             {
@@ -736,6 +736,8 @@ void export_seq()
             }
         }
     }
+
+    vdcwin_win_free();
 }
 
 #pragma code(code)
