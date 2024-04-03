@@ -42,14 +42,14 @@ Commodore 128 80 column screen editor - version 2
 [Credits](#credits)
 
 
- ![VDCSE Title Screen](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20Titlescreen.png?raw=true)
+ ![VDCSE Title Screen](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Titlescreen.png?raw=true)
 
 ## Version history and download
 ([Back to contents](#contents))
 
-[Link to latest build](https://github.com/xahmol/VDCScreenEdit/raw/main/vdcse_v20-20240403-1124.zip)
+[Link to latest build](https://github.com/xahmol/VDCScreenEdit/raw/main/vdcse_v20-20240403-1555.zip)
 
-Version v20-20240403-1124:
+Version v20-20240403-1555:
 - First release of v2 version of VDCSE
 - Completely rebuild using the Oscar64 compiler (previously CC65)
 - Added support for multiple VDC text screen modes, including 80x50 (ideal for C64 PETSCII art aspect ratio). NB: Needs a C128 with 64KB VDC RAM to have still also room for swap VDC memory.
@@ -92,12 +92,6 @@ Version 090-20220103-1000:
 
 Version 090-20210922-2251:
 - First released beta version
-
-## Known issues and bugs
-
-[Crash on save screen after being idle for half an hour in VICE](https://github.com/xahmol/VDCScreenEdit/issues/14)
-
-Advice because of this bug is that if you use VICE instead of original hardware to run VDCSE to save your work often, at least every 15 minutes (which might be a good advice on other platforms as well).
 
 ## Introduction
 ([Back to contents](#contents))
@@ -162,7 +156,7 @@ Leave the title screen by pressing any key.
 
 After the title screen, the program starts in this mode. At start the screen shows this:
 
-![Screen in main mode](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20empty%20start%20screen.png?raw=true)
+![Screen in main mode](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20empty%20start%20screen.png?raw=true)
 
 Only a blinking cursor with the presently selected [screencode](https://sta.c64.org/cbm64scr.html) and attributes is visible.
 
@@ -255,7 +249,7 @@ Press **F8** to show a help screen with all keyboard commands for this mode.
 ## Statusbar
 If enabled, the statusbar is plotted as this at the lowest line of the screen:
 
-![Status bar](https://github.com/xahmol/VDCScreenEdit/raw/main/screenshots/VDCSE%20statusbar.png)
+![Status bar](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20statusbar.png?raw=true)
 
 From left to right, this status bar shows:
 
