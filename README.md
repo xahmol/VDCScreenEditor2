@@ -1,4 +1,4 @@
-# VDCScreenEditor2
+# VDC Screen Editor 2
 Commodore 128 80 column screen editor - version 2
 
 (DOCUMENTATION IN PROGRESS OF BEING UPDATED FROM V1 TO V2)
@@ -47,9 +47,9 @@ Commodore 128 80 column screen editor - version 2
 ## Version history and download
 ([Back to contents](#contents))
 
-[Link to latest build](https://github.com/xahmol/VDCScreenEdit/raw/main/vdcse_v20-20240403-1555.zip)
+[Link to latest build](https://github.com/xahmol/VDCScreenEdit/raw/main/vdcse_v20-20240403-1732.zip)
 
-Version v20-20240403-1555:
+Version v20-20240403-1732:
 - First release of v2 version of VDCSE
 - Completely rebuild using the Oscar64 compiler (previously CC65)
 - Added support for multiple VDC text screen modes, including 80x50 (ideal for C64 PETSCII art aspect ratio). NB: Needs a C128 with 64KB VDC RAM to have still also room for swap VDC memory.
@@ -268,7 +268,8 @@ Pressing **F6** toggles statusbar visibility in every mode.
 ([Back to contents](#contents))
 
 From [main mode](#main-mode), press **F1** to go to the main menu. The following menu will pop up:
-![VDCSE Main Menu](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20Main%20menu.png?raw=true)
+
+![VDCSE Main Menu](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Main%20menu.png?raw=true)
 
 (NB: Note that if your design uses a changed alternate character set, the program will load the standard system font and you design might temporarily look incorrect. This will be restored on exiting the main menu. Also, the colors of the main menu and the highlight colors might differ if you have chosen a non-black background color, to ensure visibility of the menus).
 
@@ -283,7 +284,7 @@ Navigation in this menu is performed by the following keys:
 
 **_Screen menu_**
 
-![Screen menu](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20Screen%20menu.png?raw=true)
+![Screen menu](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20menu.png?raw=true)
 
 *Width: Resize width*
 
@@ -293,7 +294,7 @@ Note that with shrinking the width you might loose data, as all characters right
 
 NB: NO UNDO IS AVAILABLE FOR THIS, so if you confirm shrinking the size, all lost data is lost irretrievably.
 
-![Resize width](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20Screen%20menu%20-%20width.png?raw=true)
+![Resize width](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20menu%20-%20width.png?raw=true)
 
 *Height: Resize height*
 
@@ -301,7 +302,7 @@ Similar to resize width, with this option you can resize the height in the same 
 
 Also here: on shrinking you might loose data, which is lost if you confirm.
 
-![Resize height](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20Screen%20menu%20-%20height.png?raw=true)
+![Resize height](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20menu%20-%20height.png?raw=true)
 
 *Background: Change background color*
 
@@ -309,7 +310,17 @@ Select the background color. Note that if the chosen color is not black or grey,
 
 The color can be selected with the **+** and **-** keys to increase resp. decrease the color value. The background color will change directly accordingly. Press **ENTER** to accept the new color, or **ESC** or **STOP** to cancel.
 
-![Change background color](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20Screen%20menu%20-%20bgcolor.png?raw=true)
+![Change background color](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20menu%20-%20bgcolor.png?raw=true)
+
+*Screenmode: Change application screen mode*
+
+Select the screen mode. You can choose between 80x25, 80x50 and 80x70 in PAL, or 80x25, 80x50 and 80x60 for NTSC. Note that only 80x25 is supported on 16 KB VDC RAM machines, in that case selecting the other options will do nothing.
+
+![Change screen mode](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20menu%20-%20screenmode.png?raw=true)
+
+Example of the application interface in PAL 80x50:
+
+![80x50 mode interface example](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%2080x50%20mode%20example.png?raw=true)
 
 *Clear: Clear the canvas*
 
@@ -321,43 +332,147 @@ Similar to clear, but this will fill the canvas with the present selected [scree
 
 **_File menu_**
 
-![File menu](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20File%20menu.png?raw=true)
+![File menu](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20File%20menu.png?raw=true)
 
 In general: pressing **ESC** or **STOP** on any devide ID or filename input dialogue cancels the file operation.
 
 *Save screen*
 
-This option saves the present canvas to disk. First the device ID number is asked of the device to save to (should be between 8 and 30 and pointing to an active disk system with that ID number). Then the filename is asked (max 15 characters in length).
+This option saves the present canvas to disk.
+
+First the device ID number is asked of the device to save to (should be between 8 and 30 and pointing to an active disk system with that ID number). Choose the ID by increasing or decreasing the ID number with the **+** or **-** keys, confirm the ID with **RETURN**.
+
+![Choose drive ID](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20File%20menu%20-%20choose%20drive%20ID.png?raw=true)
+
+Then the filename is asked (max 15 characters in length).
+
+![Choose filename](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20File%20menu%20-%20enter%20filemame.png?raw=true)
 
 If a file with that name is already existing, confirmation is asked. Confirming will delete the old file before saving the new file.
 
 In case of a file error, a popup will be shown with the error number.
 
-![Save screen](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20File%20menu%20-%20save.png?raw=true)
-
 *Load screen*
 
-With this option you can load a screen from disk. Dialogue for this option is very similar to the Save screen option above. Device ID and filename will be asked, but next to that the width and height in characters will be asked as that can not be read from a standard screen file.
+With this option you can load a screen from disk.
 
-![Load screen](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20File%20menu%20-%20load.png?raw=true)
+First pick the file to load with the file picker interface.
+
+![File picker](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20file%20picker.png?raw=true)
+
+Keyboard commands in this interface:
+
+|Key|Description
+|---|---|
+|**+** / **-**|Increase or Decrease the device ID to load from. Dir is refreshed on change, or shows a message for empty directories or invalid drives.
+|**RETURN**|Select the highlighted file for loading
+|**T**|Go to the first file in the directory
+|**E**|Go to the last file in the directory
+|**P**/**U**|Page down or up
+|**Cursor Up / Cursor Down**|Move cursor up or down
+|**ESC** / **STOP**|Cancel picking a file
+
+After that enter the screen dimensions of the screen to load.
+
+![Load screen](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20load%20screen.png?raw=true)
 
 *Save project*
 
 Similar to save screen, but with this option also the canvas metadata (width, height, present cursor position etc.) and the character sets if altered will be saved. Maximum filename length is now 10 to allow for an .xxxx suffix as it will save up to four files: filename.proj for the metadata, filename.scrn for the screen data, filename.chr1 for the standard charset and filename.chr2 for the alternate charset.
 
-![Save project](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20File%20menu%20-%20projsav.png?raw=true)
+![Save project](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20save%20project.png?raw=true)
 
 *Load project*
-Loads a project: the metadata, the screen and the charsets. Provide the filename without the .xxxx suffix (.proj,.scrn,.chr1 and .chr2). As the canvas width and height is now read from the metadata, no user input on canvas size is needed.
+Loads a project: the metadata, the screen and the charsets..
 
-![Load project](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20File%20menu%20-%20projload.png?raw=true)
+As the canvas width and height is now read from the metadata, no user input on canvas size is needed. Just select the desired project file from the file picker. Only project files are shown.
 
-**_Charset: Load and save character sets_**
+**_Charset: Load, save or restore character sets_**
 
-![Charset menu](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20Charset%20menu.png?raw=true)
+![Charset menu](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Charset%20menu.png?raw=true)
 
 In this menu you can select the options to Load or Save character sets. Select the options standard to load or save the standard character sets, or alternate for alternate character set.
 Dialogue of these options is similar to the screen save and load options: enter device ID and filename.
+
+The menu also has the option Reset charsets. This restores the charsets to the default system ROM charsets. **NB: No undo is available, so take care on unsaved changed charsets.**
+
+**_Imp/Export: Importing PRG and SEQ files, exporting to SEQ_**
+
+In this menu the import and export options can be selected.
+
+![Imp/Export menu](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20import%20export%20menu.png?raw=true)
+
+*Import PRG*
+
+Use this option to import raw screen data from a PRG type file.
+
+![Import PRG dialogue 1](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20PRG%20export%20dialogue%201.png?raw=true)
+
+In the first screen of the Import PRG dialogue, enter the screen dimensions of the screen to be imported (width and height), plus the target co-ordinates in the present project this screen needs to be imported at. Defaults are set on the present canvas dimensions and the present cursor location.
+
+If needed given the import screen dimensions and target co-ordinates, the canvas will be automatically enlarged to make the imported screen fit.
+
+![Import PRG dialogue 2](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20PRG%20export%20dialogue%202.png?raw=true)
+
+In the second screen of the Import PRG dialogue these questions are asked:
+
+***Includes load address at first 2 bytes?***
+
+Pick Yes or No from the pulldown menu to indicate if the file to be imported does contain a loading address in its first two bytes. If Yes is selected, the first two bytes of the file will be skipped on import.
+
+***Include chars, colour, or both?***
+
+Pick Both, Chars or Color for importing resp. both text and attributes from the file, only text or only attributes.
+
+***Convert VIC colours***
+
+Pick Yes or No from the pulldown menu to indicate ifthe colour data in the file to import is coded for VIC colours. If selected yes, the VIC coded colours will be converted to VDC colours.
+
+**NB: The colour conversion is a comprimise** as VDC has only one color as alternative for the VIC pairs Orange/Brown (both convert to VDC Dark Yellow) and Light Grey/Medium Grey (both convert to VDC Light Grey), and the other colours have different hues on VDC than on VIC (for example light red from a pink like hue on VIC to red on VDC)
+
+***Uppercase charset?**
+
+In case VIC colour conversion is selected, the dialogue also asks if the imported screen is based on an uppercase or lowercase charset. Select Yes for uppercase, No for lowercase.
+
+***Enter offset char to colour***
+
+Enter the offset in bytes between the text and attribute data in the file to be imported. Note that only files with first text, and then attribute data are suppported.
+
+Enter 0 if the attribute data is directly after the text data, but enter the offset if there is a gap between the two in the file.
+
+Default is set at 48, which is the offset the VDCSE native file format uses.
+
+
+After answering all questions the file is imported, a dialogue is shown to indicate progress.
+
+Note that undo (if enabled) is supported.
+
+*Import SEQ*
+
+Use this option to import a PETSCII code sequence file, typically used for BBSses (or exported by tools like Petmate).
+
+The first screen of the Import SEQ dialogue is exactly the same as for PRG import: enter the screen dimensions of the screen to be imported (width and height), plus the target co-ordinates in the present project this screen needs to be imported at. Defaults are set on the present canvas dimensions and the present cursor location.
+
+![Import SEQ dialogue 2](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20SEQ%20export%20dialogue.png?raw=true)
+
+
+In the second screen of the Import SEQ dialogue these questions are asked:
+
+***Ignore CLS / CLear***
+
+Pick Yes or No from the pulldown menu to indicate if the Clear PETSCII control code should be ignored (Yes) or not. This can be handy to import the PETSCII art without clearing the area so that present art can be overplotted but existing art can remain if the BBS seqyence uses cursor movement control characters instead of spaces.
+
+For the other two questions, Convert VIC colours and Uppercase charset, see the explanation of Import PRG.
+
+After answering all questions the file is imported, a dialogue is shown to indicate progress.
+
+Note that undo (if enabled) is supported.
+
+*Export SEQ*
+
+This option exports the present project to a BBS PETSCII codes sequence in a SEQ file. Note that VDC colour and attribute control codes are used.
+
+Choose device ID and enter filename as explained under the Save screen option explanation of the file menu.
 
 **_Information: Version information, exit program or toggle Undo enabled_**
 
@@ -365,17 +480,17 @@ Depending on the available VDC memory size two or three options are available in
 
 *Menu with 16 KiB VDC memory:*
 
-![Information menu 16KiB VDC](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20Screen%20Information%2016k.png?raw=true)
+![Information menu 16KiB VDC](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20Information%2016k.png?raw=true)
 
 *Menu with 64 KiB VDC memory:*
 
-![Information menu 64KiB VDC](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20Screen%20Information%2064k.png?raw=true)
+![Information menu 64KiB VDC](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20Information%2064k.png?raw=true)
 
 *Information*
 
 This option shows a popup with version information.
 
-![Information](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20Version%20info.png?raw=true)
+![Information](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20credits.png?raw=true)
 
 *Exit program*
 
@@ -390,7 +505,7 @@ Only available if 64 KiB VDC memory is detected: This option toggles if the Undo
 
 Pressing **E** from the main mode will result in the character editor popping up, which looks like this:
 
-![Character editor](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20Chaedit.png?raw=true)
+![Character editor](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Chaedit.png?raw=true)
 
 It shows a magnified grid of the bits in the present character. The header shows the screencode of the present character (in hex) and if the Standard (Std) or Alternate (Alt) character set is active. On the left of the grid the byte values of the 8 lines of the character are shown in hex.
 
@@ -469,7 +584,7 @@ Pressing **P** in the main mode starts the Palette mode. In this mode a characte
 
 A window like this appears:
 
-![Palette mode screenshot](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20Palette.png?raw=true)
+![Palette mode screenshot](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Palette.png?raw=true)
 
 The window shows the 10 favorite slots as first line, below that the standard character set and below that the alternate character set.
 
@@ -503,7 +618,7 @@ Visual PETSCII mode is a mode in which the palette for the standard charset is m
 
 This looks like this:
 
-![Visual PETSCII palette](https://raw.githubusercontent.com/xahmol/VDCScreenEdit/main/screenshots/VDCSE%20Palette%20Visual.png)
+![Visual PETSCII palette](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Palette%20Visual.png?raw=true)
 
 Pressing **V** toggles between normal and visual mode.
 
@@ -518,7 +633,7 @@ Pressing **S** in the main mode starts the Select mode.
 
 If enabled, the statusbar shows this on entering this mode:
 
-![Status bar in Select mode](https://github.com/xahmol/VDCScreenEdit/raw/main/screenshots/VDCSE%20statusbar%20Select.png)
+![Status bar in Select mode](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20statusbar%20Select.png?raw=true)
 
 In this mode a selection can be made on which different operations can be performed as described below.
 
@@ -541,7 +656,7 @@ Ensure that the cursor is located at the desired upper left corner of the select
 
 The selection will be visually shown with plotting in the present selected screencode and attributes. It should look like this:
 
-![Select mode](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE%20select.png?raw=true)
+![Select mode](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20select.png?raw=true)
 
 Accept the selection by pressing **RETURN**, cancel the selection by pressing **ESC**.
 
@@ -550,7 +665,7 @@ Accept the selection by pressing **RETURN**, cancel the selection by pressing **
 After accepting the selection, press **X**, **C**, **D**, **A** or **P** to choose an action, or press **ESC** or **STOP** to cancel.
 Statusbar (if enabled) shows this as prompter:
 
-![Statusbar Select Options](https://github.com/xahmol/VDCScreenEdit/raw/main/screenshots/VDCSE%20statusbar%20Select%20choose%20option.png)
+![Statusbar Select Options](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20statusbar%20Select%20choose%20option.png?raw=true)
 
 *Cut and copy*
 
@@ -558,7 +673,7 @@ After pressing **X** for cut or **C** for copy, move cursor to the upper left co
 
 Statusbar (if enabled) displays Cut or Copy correspondingly, like:
 
-![Statusbar Cut or Copy](https://github.com/xahmol/VDCScreenEdit/raw/main/screenshots/VDCSE%20statusbar%20Select%20Copy.png)
+![Statusbar Cut or Copy](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20statusbar%20Select%20Copy.png?raw=true)
 
 *Delete*
 
