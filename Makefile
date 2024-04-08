@@ -24,6 +24,7 @@ CC = /home/xahmol/oscar64/bin/oscar64
 # Application names
 MAIN = vdcse
 GEN = vdcse2prg
+VIEW = vdcse2prgvwc
 
 # Build versioning
 VERSION_MAJOR = 2
@@ -37,12 +38,13 @@ CFLAGS  = -i=include -tm=$(SYS) -O2 -dNOFLOAT -dHEAPCHECK -dVERSION="\"$(VERSION
 # Sources
 MAINSRC = src/main.c
 GENSRC = src/prg_gen.c
+VIEWSRC = src/view.c
 
 # Files to add to disk
 PROGRAM = -write $(MAIN).prg $(MAIN) -write $(GEN).prg $(GEN)
-OVERLAYS = -write vdcselmc.prg vdcselmc -write vdcseovl1.prg vdcseovl1 -write vdcseovl2.prg vdcseovl2 -write vdcseovl3.prg vdcseovl3 -write vdcseovl4.prg vdcseovl4 -write vdcseovl5.prg vdcseovl5 -write vdcseovl6.prg vdcseovl6 -write vdcse2prglmc.prg vdcse2prglmc
-ASSETS = -write vdcsefalt.prg vdcsefalt -write vdcsefstd.prg vdcsefstd -write vdcsepetv.prg vdcsepetv
-SCREENS = -write vdcsetscr.prg vdcsetscr -write vdcsehsc1.prg vdcsehsc1 -write vdcsehsc2.prg vdcsehsc2 -write vdcsehsc3.prg vdcsehsc3 -write vdcsehsc4.prg vdcsehsc4
+OVERLAYS = -write $(MAIN)lmc.prg $(MAIN)lmc -write $(MAIN)ovl1.prg $(MAIN)ovl1 -write $(MAIN)ovl2.prg $(MAIN)ovl2 -write $(MAIN)ovl3.prg $(MAIN)ovl3 -write $(MAIN)ovl4.prg $(MAIN)ovl4 -write $(MAIN)ovl5.prg $(MAIN)ovl5 -write $(MAIN)ovl6.prg $(MAIN)ovl6 -write $(GEN)lmc.prg $(GEN)lmc
+ASSETS = -write $(MAIN)petv.prg $(MAIN)petv
+SCREENS = -write $(MAIN)tscr.prg $(MAIN)tscr -write $(MAIN)hsc1.prg $(MAIN)hsc1 -write $(MAIN)hsc2.prg $(MAIN)hsc2 -write $(MAIN)hsc3.prg $(MAIN)hsc3 -write $(MAIN)hsc4.prg $(MAIN)hsc4
 SAMPLESPROJ = -write loveisdrug.proj.prg loveisdrug.proj -write loveisdrug.scrn.prg loveisdrug.scrn -write bcc2024.proj.prg bcc2024.proj -write bcc2024.scrn.prg bcc2024.scrn -write fjaeld24.proj.prg fjaeld24.proj -write fjaeld24.scrn.prg fjaeld24.scrn -write vf7-v2.proj.prg vf7-v2.proj -write vf7-v2.scrn.prg vf7-v2.scrn
 SAMPLESRAW = -write loveisthedrugraw.prg loveisthedrugraw -write fullackraw.prg fullackraw -write moneyislandraw.prg moneyislandraw -write morbosezraw.prg morbosezraw -write arcadevenusraw.prg arcadevenusraw -write drakardemonerraw.prg drakardemonerraw -write greatescaperaw.prg greatescaperaw -write aquamanraw.prg aquamanraw -write umlautraw.prg umlautraw -write vf7-v2raw.prg vf7-v2raw -write vf7-v2-80x50.seq vf7-v2-80x50,s
 SAMPLESOWN = -write ludo.proj.prg ludo.proj -write ludo.scrn.prg ludo.scrn -write ludo.chrs.prg ludo.chrs -write ludo.chra.prg ludo.chra -write careers.proj.prg careers.proj -write careers.scrn.prg careers.scrn -write careers.chrs.prg careers.chrs -write careers.chra.prg careers.chra -write carmscr.proj.prg carmscr.proj -write carmscr.scrn.prg carmscr.scrn -write carmscr.chrs.prg carmscr.chrs -write carmscr.chra.prg carmscr.chra -write roundfont.proj.prg roundfont.proj -write roundfont.scrn.prg roundfont.scrn
@@ -52,7 +54,7 @@ ULTHOST = ftp://192.168.1.19/usb1/temp/
 ULTHOST2 = ftp://192.168.1.31/usb1/temp/
 
 # ZIP file contents
-ZIP = vdcse_$(VERSION).zip
+ZIP = $(MAIN)_$(VERSION).zip
 README = README.pdf
 
 ########################################
@@ -83,7 +85,6 @@ d64:	bootsect.bin
 	c1541 -cd build/ -attach $(MAIN).d64 $(ASSETS)
 	c1541 -cd build/ -attach $(MAIN).d64 $(SCREENS)
 	c1541 -cd build/ -attach $(MAIN).d64 $(SAMPLESPROJ)
-#	c1541 -cd build/ -attach $(MAIN).d64 -write vdcse2prg.ass.prg vdcse2prg.ass
 
 d71:	bootsect.bin
 	c1541 -cd build/ -format "vdcse,xm" d71 $(MAIN).d71
@@ -95,7 +96,6 @@ d71:	bootsect.bin
 	c1541 -cd build/ -attach $(MAIN).d71 $(ASSETS)
 	c1541 -cd build/ -attach $(MAIN).d71 $(SCREENS)
 	c1541 -cd build/ -attach $(MAIN).d71 $(SAMPLESPROJ) $(SAMPLESRAW) $(SAMPLESOWN)
-#	c1541 -cd build/ -attach $(MAIN).d71 -write vdcse2prg.ass.prg vdcse2prg.ass
 
 d81:	bootsect.bin
 	c1541 -cd build/ -format "vdcse,xm" d81 $(MAIN).d81
@@ -107,9 +107,6 @@ d81:	bootsect.bin
 	c1541 -cd build/ -attach $(MAIN).d81 $(ASSETS)
 	c1541 -cd build/ -attach $(MAIN).d81 $(SCREENS)
 	c1541 -cd build/ -attach $(MAIN).d81 $(SAMPLESPROJ) $(SAMPLESRAW) $(SAMPLESOWN)
-#	c1541 -cd build/ -attach $(MAIN).d81 -write vdcse2prg.ass.prg vdcse2prg.ass
-#	c1541 -cd build/ -attach $(MAIN).d81 -write vdcse2prg.mac.prg vdcse2prg.mac
-
 
 # Creating ZIP file for distribution
 $(ZIP):

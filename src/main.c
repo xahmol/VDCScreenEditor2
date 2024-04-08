@@ -1939,18 +1939,9 @@ int main(void)
     }
 
     // Load default charsets to bank 1
-    printcentered("Load charsets", 29, 24, 22);
-    if (!bnk_load(bootdevice, 1, (char *)CHARSETSYSTEM, "vdcsefalt"))
-    {
-        menu_fileerrormessage();
-        exit(1);
-    }
-    if (!bnk_load(bootdevice, 1, (char *)CHARSETNORMAL, "vdcsefstd"))
-    {
-        menu_fileerrormessage();
-        exit(1);
-    }
-    bnk_memcpy(BNK_1_FULL, (char *)CHARSETALTERNATE, BNK_1_FULL, (char *)CHARSETSYSTEM, 2048);
+    printcentered("Copy charsets", 29, 24, 22);
+    bnk_memcpy(BNK_1_FULL,(char *)CHARSETNORMAL,BNK_CHARROM,(char *)0xd000,0x1000);
+    bnk_memcpy(BNK_1_FULL, (char *)CHARSETSYSTEM, BNK_1_FULL, (char *)CHARSETALTERNATE, 0x0800);
 
     // Clear screen map in bank 1 with spaces in text color white
     screenmapfill(CH_SPACE, VDC_WHITE);

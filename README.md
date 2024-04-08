@@ -123,8 +123,6 @@ Description of contents of the disk image:
 - VDCSE                     (PRG):      Main executable
 - VDCSELMC                  (PRG):      Machine code routines to be loaded in low memory
 - VDCSEOVL1 - VDCOVL6       (PRG):      Application code overlay files 1 to 6
-- VDCSEFALT                 (PRG):      System font for alternative charset
-- VDCSEFSTD                 (PRG):      System font for standard charset
 - VDCSETSCR                 (PRG):      Title screen
 - VDCSEHSC1                 (PRG):      Help screen for main mode
 - VDCSEHSC2                 (PRG):      Help screen for character edit mode
@@ -132,8 +130,8 @@ Description of contents of the disk image:
 - VDCSEHSC4                 (PRG):      Help screen for write and color write modes
 - VDCSEPETV                 (PRG):      Mapping table for visual PETSCII map
 - VDCSE2PRG                 (PRG):      Executable of the VDCSE2PRG utility
-- VDCSE2PRGASS              (PRG):      BASIC header and assembly part for generating executables
-- VDCSE2PRGMAC              (PRG):      Machine code helper routines of VDCSE2PRG
+- VDCSE2PRGVWC              (PRG):      Code for creating viewer
+- VDCSE2PRGLMC              (PRG):      Machine code helper routines of VDCSE2PRG
 
 All other files are supplied demo files:
 
