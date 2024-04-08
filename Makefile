@@ -23,6 +23,7 @@ CC = /home/xahmol/oscar64/bin/oscar64
 
 # Application names
 MAIN = vdcse
+GEN = vdcse2prg
 
 # Build versioning
 VERSION_MAJOR = 2
@@ -35,9 +36,11 @@ CFLAGS  = -i=include -tm=$(SYS) -O2 -dNOFLOAT -dHEAPCHECK -dVERSION="\"$(VERSION
 
 # Sources
 MAINSRC = src/main.c
+GENSRC = src/prg_gen.c
 
 # Files to add to disk
-OVERLAYS = -write vdcselmc.prg vdcselmc -write vdcseovl1.prg vdcseovl1 -write vdcseovl2.prg vdcseovl2 -write vdcseovl3.prg vdcseovl3 -write vdcseovl4.prg vdcseovl4 -write vdcseovl5.prg vdcseovl5 -write vdcseovl6.prg vdcseovl6
+PROGRAM = -write $(MAIN).prg $(MAIN) -write $(GEN).prg $(GEN)
+OVERLAYS = -write vdcselmc.prg vdcselmc -write vdcseovl1.prg vdcseovl1 -write vdcseovl2.prg vdcseovl2 -write vdcseovl3.prg vdcseovl3 -write vdcseovl4.prg vdcseovl4 -write vdcseovl5.prg vdcseovl5 -write vdcseovl6.prg vdcseovl6 -write vdcse2prglmc.prg vdcse2prglmc
 ASSETS = -write vdcsefalt.prg vdcsefalt -write vdcsefstd.prg vdcsefstd -write vdcsepetv.prg vdcsepetv
 SCREENS = -write vdcsetscr.prg vdcsetscr -write vdcsehsc1.prg vdcsehsc1 -write vdcsehsc2.prg vdcsehsc2 -write vdcsehsc3.prg vdcsehsc3 -write vdcsehsc4.prg vdcsehsc4
 SAMPLESPROJ = -write loveisdrug.proj.prg loveisdrug.proj -write loveisdrug.scrn.prg loveisdrug.scrn -write bcc2024.proj.prg bcc2024.proj -write bcc2024.scrn.prg bcc2024.scrn -write fjaeld24.proj.prg fjaeld24.proj -write fjaeld24.scrn.prg fjaeld24.scrn -write vf7-v2.proj.prg vf7-v2.proj -write vf7-v2.scrn.prg vf7-v2.scrn
@@ -51,17 +54,18 @@ ULTHOST2 = ftp://192.168.1.31/usb1/temp/
 # ZIP file contents
 ZIP = vdcse_$(VERSION).zip
 README = README.pdf
-ZIPLIST = build/*.* $(README)
 
 ########################################
 
 .SUFFIXES:
 .PHONY: all clean deploy vice
-all: $(MAIN).prg bootsect.bin d64 d71 d81 $(ZIP)
+all: $(MAIN).prg $(GEN).prg bootsect.bin d64 d71 d81 $(ZIP)
 
 $(MAIN).prg: $(MAINSRC)
 	$(CC) $(CFLAGS) -n -o=build/$(MAIN).prg $<
-#	$(CC) $(CFLAGS) -n -o=build/diskdir.prg src/diskdir.c
+
+$(GEN).prg: $(GENSRC)
+	$(CC) $(CFLAGS) -n -o=build/$(GEN).prg $<
 
 bootsect.bin: $(MAIN).prg
 	$(CC) -tf=bin -rt=src/bootsect.c -o=build/bootsect.bin
@@ -74,40 +78,35 @@ d64:	bootsect.bin
 	c1541 -cd build/ -attach $(MAIN).d64 -bwrite bootsect.bin 1 0
 	c1541 -cd build/ -attach $(MAIN).d64 -bpoke 18 0 4 $14 %11111110
 	c1541 -cd build/ -attach $(MAIN).d64 -bam 1 1
-	c1541 -cd build/ -attach $(MAIN).d64 -write vdcse.prg vdcse
+	c1541 -cd build/ -attach $(MAIN).d64 $(PROGRAM)
 	c1541 -cd build/ -attach $(MAIN).d64 $(OVERLAYS)
 	c1541 -cd build/ -attach $(MAIN).d64 $(ASSETS)
 	c1541 -cd build/ -attach $(MAIN).d64 $(SCREENS)
 	c1541 -cd build/ -attach $(MAIN).d64 $(SAMPLESPROJ)
-#	c1541 -cd build/ -attach $(MAIN).d64 -write vdcse2prg.prg vdcse2prg
 #	c1541 -cd build/ -attach $(MAIN).d64 -write vdcse2prg.ass.prg vdcse2prg.ass
-#	c1541 -cd build/ -attach $(MAIN).d64 -write vdcse2prg.mac.prg vdcse2prg.mac
 
 d71:	bootsect.bin
 	c1541 -cd build/ -format "vdcse,xm" d71 $(MAIN).d71
 	c1541 -cd build/ -attach $(MAIN).d71 -bwrite bootsect.bin 1 0
 	c1541 -cd build/ -attach $(MAIN).d71 -bpoke 18 0 4 $14 %11111110
 	c1541 -cd build/ -attach $(MAIN).d71 -bam 1 1
-	c1541 -cd build/ -attach $(MAIN).d71 -write vdcse.prg vdcse
+	c1541 -cd build/ -attach $(MAIN).d71 $(PROGRAM)
 	c1541 -cd build/ -attach $(MAIN).d71 $(OVERLAYS)
 	c1541 -cd build/ -attach $(MAIN).d71 $(ASSETS)
 	c1541 -cd build/ -attach $(MAIN).d71 $(SCREENS)
 	c1541 -cd build/ -attach $(MAIN).d71 $(SAMPLESPROJ) $(SAMPLESRAW) $(SAMPLESOWN)
-#	c1541 -cd build/ -attach $(MAIN).d71 -write vdcse2prg.prg vdcse2prg
 #	c1541 -cd build/ -attach $(MAIN).d71 -write vdcse2prg.ass.prg vdcse2prg.ass
-#	c1541 -cd build/ -attach $(MAIN).d71 -write vdcse2prg.mac.prg vdcse2prg.mac
 
 d81:	bootsect.bin
 	c1541 -cd build/ -format "vdcse,xm" d81 $(MAIN).d81
 	c1541 -cd build/ -attach $(MAIN).d81 -bwrite bootsect.bin 1 0
 	c1541 -cd build/ -attach $(MAIN).d81 -bpoke 40 1 16 $27 %11111110
 	c1541 -cd build/ -attach $(MAIN).d81 -bam 1 1
-	c1541 -cd build/ -attach $(MAIN).d81 -write vdcse.prg vdcse
+	c1541 -cd build/ -attach $(MAIN).d81 $(PROGRAM)
 	c1541 -cd build/ -attach $(MAIN).d81 $(OVERLAYS)
 	c1541 -cd build/ -attach $(MAIN).d81 $(ASSETS)
 	c1541 -cd build/ -attach $(MAIN).d81 $(SCREENS)
 	c1541 -cd build/ -attach $(MAIN).d81 $(SAMPLESPROJ) $(SAMPLESRAW) $(SAMPLESOWN)
-#	c1541 -cd build/ -attach $(MAIN).d81 -write vdcse2prg.prg vdcse2prg
 #	c1541 -cd build/ -attach $(MAIN).d81 -write vdcse2prg.ass.prg vdcse2prg.ass
 #	c1541 -cd build/ -attach $(MAIN).d81 -write vdcse2prg.mac.prg vdcse2prg.mac
 
