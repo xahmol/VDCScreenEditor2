@@ -12,6 +12,7 @@
         "stdlib.h": "c",
         "vdc_core.h": "c",
         "peekpoke.h": "c",
-        "overlay2.h": "c"
+        "overlay2.h": "c",
+        "system_error": "c"
     }
 }

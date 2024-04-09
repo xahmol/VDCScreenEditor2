@@ -70,6 +70,8 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #define BANKING_H
 
 // Defines for MMU modes, MMU $FF00 configuration values
+#define BNK_DEFAULT 0x0e
+#define BNK_CHARROM 0x01
 #define BNK_0_FULL 0x3f
 #define BNK_1_FULL 0x7f
 #define BMK_0_IO 0x3e
@@ -88,6 +90,8 @@ __noinline char bnk_readb(char cr, volatile char *p);
 __noinline void bnk_writeb(char cr, volatile char *p, char b);
 __noinline void bnk_memcpy(char dcr, volatile char *dp, char scr, volatile char *sp, unsigned size);
 __noinline void bnk_memset(char cr, volatile char *p, char val, unsigned size);
+__noinline bool bnk_load(char device, char bank, const char *start, const char *fname);
+__noinline bool bnk_save(char device, char bank, const char *start, const char *end, const char *fname);
 
 // Globals
 extern char bootdevice;

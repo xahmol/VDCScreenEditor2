@@ -71,6 +71,11 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "vdcwin_nobnk.h"
 #include "bank_minimal.h"
 
+// Viewer data addess. Align with the address of the view struct in view.c
+#define VIEW 0x2dd1
+#define MEMSTART 0x3200
+#define MEMMAX 0xbfff
+
 // Kernal defines for IEC statis detection
 #define STATUS 0x90 // Kernal I/O completion status
 #define SECOND 0xFF93
@@ -105,9 +110,21 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #define MAXDEVID 30
 
 // Memory region for code, data etc. from 0x1c80 to 0xbfff
-#pragma region( vdcse, 0x1c80, 0xc000 - OVERLAYSIZE, , , {code, data, bss, heap, stack} )
+#pragma region( vdcse2prg, 0x1c80, 0xc000, , , {code, data, bss, heap, stack} )
 
 // Global variables
+struct VIEWDATA
+{
+    char *screen;
+    char *charstd;
+    char *charalt;
+    unsigned width;
+    unsigned height;
+    unsigned screensize;
+    char mode;
+    char background;
+};
+struct VIEWDATA view;
 struct DirEntry
 {
     char name[17]; /* File name in PetSCII, limited to 16 chars */
@@ -151,18 +168,12 @@ struct DirElement *next;
 struct Directory cwd;
 char DOSstatus[40];
 char charsetchanged[2];
-unsigned screenwidth;
-unsigned screenheight;
-char screenmode;
 char targetdevice;
 char filename[21];
 char filedest[21] = "";
-unsigned screen_col;
-unsigned screen_row;
 struct VDCWin fullscreen;
-unsigned screentotal;
-char screenbackground;
 char buffer[81];
+struct VDCWin interface;
 
 // Menucolors
 char mc_mb_normal = VDC_LGREEN + VDC_A_REVERSE + VDC_A_ALTCHAR;
@@ -226,32 +237,6 @@ unsigned cmd(const char device, const char *cmd)
 
     return dosCommand(15, device, 15, cmd);
 }
-
-bool load(char device, const char *start, const char *fname)
-// Load to the specified bank
-{
-    krnio_setbnk(0, 0);
-    krnio_setnam(fname);
-    __asm
-        {
-		lda	#1
-		ldx	device
-		ldy #0		
-		jsr	$ffba // setlfs
-		
-		lda #0
-		ldx start
-		ldy start+1
-		jsr	$FFD5 // load
-
-		lda #0
-		bcs W1
-		lda #1
-	W1: sta accu
-        }
-    krnio_setbnk(0, 0);
-}
-#pragma native(load)
 
 signed textInput(char xpos, char ypos, char *str, unsigned char size)
 /**
@@ -1156,25 +1141,36 @@ void error_message()
     exit(1);
 }
 
+void too_big()
+// Show error message for when project is too big
+{
+    vdcwin_printline(&interface, "Project to big.");
+    vdcwin_printline(&interface, "Press key to exit.");
+    vdcwin_getch();
+    vdc_exit();
+    bnk_exit();
+    exit(1);
+}
+
 // Main loop
 
 int main(void)
 {
     // Main application initialization, loop and exit
-    struct VDCWin interface;
     char key, error;
     char yc = DIRY + 1;
     char valid = 0;
     unsigned length;
-    unsigned address;
+    unsigned totalscreensize;
+    char *address;
     char projbuffer[23];
     char *ptrend;
 
     // Reset startvalues global variables
     charsetchanged[0] = 0;
     charsetchanged[1] = 0;
-    screenbackground = 0;
     memset(&filename, 0, sizeof(filename));
+    memset(&view, 0, sizeof(view));
 
     // Load banking overlay
     bnk_init();
@@ -1183,7 +1179,7 @@ int main(void)
     targetdevice = bootdevice;
 
     // Init screen and banking functions, start with default 80x25 text mode
-    vdc_init(VDC_TEXT_80x25_PAL, 1);
+    vdc_init(VDC_TEXT_80x25_PAL, 0);
     vdcwin_init(&fullscreen, 0, 0, 80, 25);
     vdcwin_init(&interface, DIRX + 1, DIRY + 1, DIRW - 2, DIRH + 4);
 
@@ -1240,22 +1236,109 @@ int main(void)
         }
     }
 
-    // Strip .proj extension
-    filename[strlen(filename) - 5] = 0;
-
     // Load project variables
     vdcwin_printline(&interface, "Loading project meta data.");
-    sprintf(linebuffer, "%s.proj", filename);
-    if (!load(targetdevice, projbuffer, linebuffer))
+    if (!bnk_load(targetdevice, 0, projbuffer, filename))
     {
         error_message();
     }
     charsetchanged[0] = projbuffer[0];
     charsetchanged[1] = projbuffer[1];
-    screenwidth = projbuffer[4] * 256 + projbuffer[5];
-    screenheight = projbuffer[6] * 256 + projbuffer[7];
-    screenbackground = projbuffer[10];
-    screenmode = projbuffer[22];
+    view.width = projbuffer[4] * 256 + projbuffer[5];
+    view.height = projbuffer[6] * 256 + projbuffer[7];
+    view.background = projbuffer[10];
+    view.mode = projbuffer[22];
+    view.screensize = view.width * view.height;
+    totalscreensize = (view.screensize * 2) + 48;
+
+    // Strip .proj extension
+    filename[strlen(filename) - 5] = 0;
+
+    // Calculate screen address
+    address = (char *)MEMSTART;
+    if (address + totalscreensize > (char *)MEMMAX)
+    {
+        too_big();
+    }
+    view.screen = address;
+    address += totalscreensize;
+
+    // Calculate std charset address if needed
+    if (charsetchanged[0])
+    {
+        if (address + 0x0800 > (char *)MEMMAX)
+        {
+            too_big();
+        }
+        view.charstd = address;
+        address += 0x0800;
+    }
+
+    // Calculate alt charset address if needed
+    if (charsetchanged[1])
+    {
+        if (address + 0x0800 > (char *)MEMMAX)
+        {
+            too_big();
+        }
+        view.charalt = address;
+        address += 0x0800;
+    }
+
+    // Load viewer code
+    sprintf(linebuffer, "Loading viewer code to address %4x.", MEMSTART);
+    vdcwin_printline(&interface, linebuffer);
+    if (!bnk_load(bootdevice, 1, (char *)0x1c01, "vdcse2prgvwc"))
+    {
+        error_message();
+    }
+
+    // Copy viewer data
+    sprintf(linebuffer, "Copy vieuwer data to address %4x.", VIEW);
+    vdcwin_printline(&interface, linebuffer);
+    bnk_memcpy(BNK_1_FULL, (char *)VIEW, BNK_DEFAULT, (char*)&view, sizeof(view));
+
+    // Load screen data
+    sprintf(linebuffer, "Load screen data to address %4x.", view.screen);
+    vdcwin_printline(&interface, linebuffer);
+    sprintf(linebuffer, "%s.scrn", filename);
+    if (!bnk_load(targetdevice, 1, view.screen, linebuffer))
+    {
+        error_message();
+    }
+
+    // Load std charset data
+    if (charsetchanged[0])
+    {
+        sprintf(linebuffer, "Load std charset to address %4x.", view.charstd);
+        vdcwin_printline(&interface, linebuffer);
+        sprintf(linebuffer, "%s.chrs", filename);
+        if (!bnk_load(targetdevice, 1, view.charstd, linebuffer))
+        {
+            error_message();
+        }
+    }
+
+    // Load alt charset data
+    if (charsetchanged[1])
+    {
+        sprintf(linebuffer, "Load alt charset to address %4x.", view.charalt);
+        vdcwin_printline(&interface, linebuffer);
+        sprintf(linebuffer, "%s.chra", filename);
+        if (!bnk_load(targetdevice, 1, view.charalt, linebuffer))
+        {
+            error_message();
+        }
+    }
+
+    // Saving resulting file
+    sprintf(linebuffer, "Saving %4x bytes to %s.", address - (char *)MEMSTART, filedest);
+    vdcwin_printline(&interface, linebuffer);
+    if (bnk_save(targetdevice, 1, (char *)0x1c01, address, filedest))
+    {
+        error_message();
+    }
+    vdcwin_printline(&interface, "Finished! Press key to exit.");
 
     getch();
     vdc_exit();

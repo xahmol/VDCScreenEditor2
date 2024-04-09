@@ -43,7 +43,7 @@ VIEWSRC = src/view.c
 # Files to add to disk
 PROGRAM = -write $(MAIN).prg $(MAIN) -write $(GEN).prg $(GEN)
 OVERLAYS = -write $(MAIN)lmc.prg $(MAIN)lmc -write $(MAIN)ovl1.prg $(MAIN)ovl1 -write $(MAIN)ovl2.prg $(MAIN)ovl2 -write $(MAIN)ovl3.prg $(MAIN)ovl3 -write $(MAIN)ovl4.prg $(MAIN)ovl4 -write $(MAIN)ovl5.prg $(MAIN)ovl5 -write $(MAIN)ovl6.prg $(MAIN)ovl6 -write $(GEN)lmc.prg $(GEN)lmc
-ASSETS = -write $(MAIN)petv.prg $(MAIN)petv
+ASSETS = -write $(MAIN)petv.prg $(MAIN)petv -write $(VIEW).prg $(VIEW)
 SCREENS = -write $(MAIN)tscr.prg $(MAIN)tscr -write $(MAIN)hsc1.prg $(MAIN)hsc1 -write $(MAIN)hsc2.prg $(MAIN)hsc2 -write $(MAIN)hsc3.prg $(MAIN)hsc3 -write $(MAIN)hsc4.prg $(MAIN)hsc4
 SAMPLESPROJ = -write loveisdrug.proj.prg loveisdrug.proj -write loveisdrug.scrn.prg loveisdrug.scrn -write bcc2024.proj.prg bcc2024.proj -write bcc2024.scrn.prg bcc2024.scrn -write fjaeld24.proj.prg fjaeld24.proj -write fjaeld24.scrn.prg fjaeld24.scrn -write vf7-v2.proj.prg vf7-v2.proj -write vf7-v2.scrn.prg vf7-v2.scrn
 SAMPLESRAW = -write loveisthedrugraw.prg loveisthedrugraw -write fullackraw.prg fullackraw -write moneyislandraw.prg moneyislandraw -write morbosezraw.prg morbosezraw -write arcadevenusraw.prg arcadevenusraw -write drakardemonerraw.prg drakardemonerraw -write greatescaperaw.prg greatescaperaw -write aquamanraw.prg aquamanraw -write umlautraw.prg umlautraw -write vf7-v2raw.prg vf7-v2raw -write vf7-v2-80x50.seq vf7-v2-80x50,s
@@ -61,13 +61,16 @@ README = README.pdf
 
 .SUFFIXES:
 .PHONY: all clean deploy vice
-all: $(MAIN).prg $(GEN).prg bootsect.bin d64 d71 d81 $(ZIP)
+all: $(MAIN).prg $(GEN).prg $(VIEW).prg bootsect.bin d64 d71 d81 $(ZIP)
 
 $(MAIN).prg: $(MAINSRC)
 	$(CC) $(CFLAGS) -n -o=build/$(MAIN).prg $<
 
 $(GEN).prg: $(GENSRC)
 	$(CC) $(CFLAGS) -n -o=build/$(GEN).prg $<
+
+$(VIEW).prg: $(VIEWSRC)
+	$(CC) $(CFLAGS) -n -o=build/$(VIEW).prg $<
 
 bootsect.bin: $(MAIN).prg
 	$(CC) -tf=bin -rt=src/bootsect.c -o=build/bootsect.bin

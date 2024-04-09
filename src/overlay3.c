@@ -343,9 +343,12 @@ void loadproject()
     }
 
     // Restore charsets if needed if new project has no charsets
-    if((!charsetchanged[0] && oldcharchanged[0]) || (!charsetchanged[1] && oldcharchanged[1]))
+    if ((!charsetchanged[0] && oldcharchanged[0]) || (!charsetchanged[1] && oldcharchanged[1]))
     {
         vdc_restore_charsets();
+        bnk_memcpy(BNK_1_FULL, (char *)CHARSETNORMAL, BNK_CHARROM, (char *)0xd000, 0x1000);
+        charsetchanged[0] = 0;
+        charsetchanged[0] = 1;
     }
 
     // Load standard charset

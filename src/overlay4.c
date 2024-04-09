@@ -285,11 +285,11 @@ void chareditor()
             showchareditgrid(char_screencode, char_altorstd);
             break;
 
-        // Restore from system font
+        // Restore from ROM
         case 's':
             for (y = 0; y < 8; y++)
             {
-                char_present[y] = bnk_readb(BNK_1_FULL, (char*) CHARSETSYSTEM + y + (char_screencode * 8));
+                char_present[y] = bnk_readb(BNK_CHARROM, (char*) 0xd000 + ((char_altorstd)?0x0800:0) + y + (char_screencode * 8));
                 vdc_mem_write_at(char_address + y, char_present[y]);
                 bnk_writeb(BNK_1_FULL, (char*) charaddress(char_screencode, char_altorstd, 1) + y, char_present[y]);
             }

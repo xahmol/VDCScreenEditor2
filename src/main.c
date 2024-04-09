@@ -1817,8 +1817,9 @@ void mainmenuloop()
 
         case 35:
             vdc_restore_charsets();
-            charsetchanged[0]=0;
-            charsetchanged[1]=0;
+            bnk_memcpy(BNK_1_FULL, (char *)CHARSETNORMAL, BNK_CHARROM, (char *)0xd000, 0x1000);
+            charsetchanged[0] = 0;
+            charsetchanged[1] = 0;
             break;
 
         case 41:
@@ -1932,7 +1933,7 @@ int main(void)
 
     // Load visual PETSCII map mapping data
     printcentered("Load visual PETSCII", 29, 24, 22);
-    if (!bnk_load(bootdevice, BNK_DEFAULT, (char *)PETSCIIMAP, "vdcsepetv"))
+    if (!bnk_load(bootdevice, 0, (char *)PETSCIIMAP, "vdcsepetv"))
     {
         menu_fileerrormessage();
         exit(1);
@@ -1940,7 +1941,7 @@ int main(void)
 
     // Load default charsets to bank 1
     printcentered("Copy charsets", 29, 24, 22);
-    bnk_memcpy(BNK_1_FULL,(char *)CHARSETNORMAL,BNK_CHARROM,(char *)0xd000,0x1000);
+    bnk_memcpy(BNK_1_FULL, (char *)CHARSETNORMAL, BNK_CHARROM, (char *)0xd000, 0x1000);
     bnk_memcpy(BNK_1_FULL, (char *)CHARSETSYSTEM, BNK_1_FULL, (char *)CHARSETALTERNATE, 0x0800);
 
     // Clear screen map in bank 1 with spaces in text color white

@@ -203,6 +203,43 @@ void bnk_memset(char cr, volatile char *p, char val, unsigned size)
 	mmu.cr = old;
 }
 
+bool bnk_load(char device, char bank, const char *start, const char *fname)
+// Load to the specified bank
+{
+	krnio_setbnk(bank, 0);
+	krnio_setnam(fname);
+	__asm
+	{
+		lda	#1
+		ldx	device
+		ldy #0		
+		jsr	$ffba // setlfs
+		
+		lda #0
+		ldx start
+		ldy start+1
+		jsr	$FFD5 // load
+
+		lda #0
+		bcs W1
+		lda #1
+	W1: sta accu
+	}
+	krnio_setbnk(0, 0);
+}
+#pragma native(bnk_load)
+
+bool bnk_save(char device, char bank, const char *start, const char *end, const char *fname)
+// Save from the specified bank
+{
+	char succes;
+	krnio_setbnk(bank, 0);
+	krnio_setnam(fname);
+	succes = krnio_save(device, start, end);
+	krnio_setbnk(0, 0);
+	return succes;
+}
+
 #pragma code(code)
 #pragma data(data)
 #pragma bss(bss)
