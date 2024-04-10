@@ -72,7 +72,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "bank_minimal.h"
 
 // Viewer data addess. Align with the address of the view struct in view.c
-#define VIEW 0x2dd1
+#define VIEW 0x2edd
 #define MEMSTART 0x3200
 #define MEMMAX 0xbfff
 
@@ -691,11 +691,6 @@ char readDir(char device, char filter)
 
     vdc_state.text_attr = mc_menupopup;
 
-    if (cwd.name[0])
-    {
-        freeDir();
-    }
-
     memset(&cwd, 0, sizeof(cwd));
     memset(disk_id_buf, 0, DISK_ID_LEN);
 
@@ -1137,7 +1132,7 @@ void error_message()
     vdc_exit();
     bnk_exit();
     printf("File error!\n\r");
-    printf(linebuffer, "Error nr.: %2X\n\r", krnio_pstatus[1]);
+    printf("Error nr.: %2X\n\r", krnio_pstatus[1]);
     exit(1);
 }
 
@@ -1294,7 +1289,7 @@ int main(void)
     }
 
     // Copy viewer data
-    sprintf(linebuffer, "Copy vieuwer data to address %4x.", VIEW);
+    sprintf(linebuffer, "Copy viewer data to address %4x.", VIEW);
     vdcwin_printline(&interface, linebuffer);
     bnk_memcpy(BNK_1_FULL, (char *)VIEW, BNK_DEFAULT, (char*)&view, sizeof(view));
 
@@ -1332,9 +1327,9 @@ int main(void)
     }
 
     // Saving resulting file
-    sprintf(linebuffer, "Saving %4x bytes to %s.", address - (char *)MEMSTART, filedest);
+    sprintf(linebuffer, "Saving %u bytes to %s.", address - (char *)MEMSTART, filedest);
     vdcwin_printline(&interface, linebuffer);
-    if (bnk_save(targetdevice, 1, (char *)0x1c01, address, filedest))
+    if (!bnk_save(targetdevice, 1, (char *)0x1c01, address, filedest))
     {
         error_message();
     }

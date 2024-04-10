@@ -72,8 +72,8 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 
 // Memory region for code, data etc. from 0x1c80
 #pragma region( vdcse2prgvwc, 0x1c80, 0x3200, , , {code, data, bss, heap, stack} )
-#pragma stacksize( 512 )
-#pragma heapsize( 0 )
+#pragma stacksize(512)
+#pragma heapsize(0)
 
 struct VIEWDATA
 {
@@ -111,7 +111,7 @@ void show_noscroll()
     }
 
     // Init canvas
-    vdcwin_viewport_init(&canvas,view.screen,view.width,view.height,view.width,view.height,xc,yc);
+    vdcwin_viewport_init(&canvas, view.screen, view.width, view.height, view.width, view.height, xc, yc);
 
     // Show screen
     vdcwin_cpy_viewport(&canvas);
@@ -148,6 +148,13 @@ int main(void)
         show_noscroll();
     }
 
+    // Restore charsets if needed
+    if (!view.mode && (view.charstd || view.charalt))
+    {
+        vdc_restore_charsets();
+    }
+
     // Exit
     vdc_exit();
+    printf("generated with vdcse version %s",VERSION);
 }

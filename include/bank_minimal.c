@@ -77,12 +77,12 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #include "bank_minimal.h"
 #include "peekpoke.h"
 
-// Section and region for low memory area overlay
+// Section and region for low memory area overlay in tape and RS232 buffers
 #pragma overlay(vdcse2prglmc, 1)
 #pragma section(bcode1, 0)
 #pragma section(bdata1, 0)
 #pragma section(bbss1, 0)
-#pragma region(bank1, 0x1300, 0x1b00, , 1, { bcode1, bdata1, bbss1  } )
+#pragma region(bank1, 0x0c00, 0x0e00, , 1, { bcode1, bdata1, bbss1  } )
 
 #pragma code(code)
 #pragma data(data)
@@ -126,10 +126,10 @@ void bnk_init()
 
 	// Set 8Kb shared memory size
 	// So set MMU Ram Configuration Register at:
-	// - bit 0-1:   %10 for 8 KB common RAM
+	// - bit 0-1:   %01 for 4 KB common RAM
 	// - bit 2-3:   %01 for bootom of RAM bank 0 is common
 	// - bit 7:     $0 for VIC RAM in bank 0
-	xmmu.rcr = 0x06;
+	xmmu.rcr = 0x05;
 
 	// Load overlay in low memory
 	printf("loading low memory code.\n");
