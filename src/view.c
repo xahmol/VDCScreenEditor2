@@ -114,12 +114,17 @@ void show_fs_scroll()
 
     do
     {
+        // Adjust VStop if higher than screen height
+        if (nextystop > softscroll.height - vdc_state.height - 2)
+        {
+            nextystop = softscroll.height - vdc_state.height - 1;
+        }
+
         // Phase 1: Scroll right before scrolling down
         if (phase == 1)
         {
             if (hor_dir)
             {
-
                 vdc_fs_softscroll_right(&softscroll, 2);
                 if (softscroll.xoff == softscroll.width - vdc_state.width - 1)
                 {
@@ -143,7 +148,7 @@ void show_fs_scroll()
                 {
                     if (nextystop == softscroll.height - vdc_state.height - 1)
                     {
-                        phase = 5;
+                        phase = 7;
                         if (softscroll.yoff > vdc_state.height)
                         {
                             nextystop -= vdc_state.height;
@@ -157,10 +162,6 @@ void show_fs_scroll()
                     {
                         phase++;
                         nextystop += vdc_state.height;
-                        if (nextystop > softscroll.height - vdc_state.height - 2)
-                        {
-                            nextystop = softscroll.height - vdc_state.height - 1;
-                        }
                     }
                 }
             }
@@ -175,7 +176,6 @@ void show_fs_scroll()
         {
             if (hor_dir)
             {
-
                 vdc_fs_softscroll_left(&softscroll, 2);
                 if (softscroll.xoff == 0)
                 {
@@ -198,7 +198,7 @@ void show_fs_scroll()
                 {
                     if (nextystop == softscroll.height - vdc_state.height - 1)
                     {
-                        phase = 7;
+                        phase = 5;
                         if (softscroll.yoff > vdc_state.height)
                         {
                             nextystop -= vdc_state.height;
@@ -212,10 +212,6 @@ void show_fs_scroll()
                     {
                         phase = 1;
                         nextystop += vdc_state.height;
-                        if (nextystop > softscroll.height - vdc_state.height - 2)
-                        {
-                            nextystop = softscroll.height - vdc_state.height - 1;
-                        }
                     }
                 }
             }
@@ -259,13 +255,14 @@ void show_fs_scroll()
                     else
                     {
                         phase++;
-                        if(nextystop > vdc_state.height -1)
+                        if (nextystop > vdc_state.height - 1)
                         {
                             nextystop -= vdc_state.height;
                         }
-                        else{
+                        else
+                        {
                             nextystop = 0;
-                        } 
+                        }
                     }
                 }
             }
@@ -310,13 +307,14 @@ void show_fs_scroll()
                     else
                     {
                         phase = 5;
-                        if(nextystop > vdc_state.height -1)
+                        if (nextystop > vdc_state.height - 1)
                         {
                             nextystop -= vdc_state.height;
                         }
-                        else{
+                        else
+                        {
                             nextystop = 0;
-                        } 
+                        }
                     }
                 }
             }
