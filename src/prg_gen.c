@@ -72,7 +72,8 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "bank_minimal.h"
 
 // Viewer data addess. Align with the address of the view struct in view.c
-#define VIEW 0x36cf
+#define VIEW 0x36d5
+#define BASICSTART 0x1c01
 #define MEMSTART 0x4000
 #define MEMMAX 0xbfff
 
@@ -1281,9 +1282,9 @@ int main(void)
     }
 
     // Load viewer code
-    sprintf(linebuffer, "Loading viewer code to address %4x.", MEMSTART);
+    sprintf(linebuffer, "Loading viewer code to address %4x.", BASICSTART);
     vdcwin_printline(&interface, linebuffer);
-    if (!bnk_load(bootdevice, 1, (char *)0x1c01, "vdcse2prgvwc"))
+    if (!bnk_load(bootdevice, 1, (char *)BASICSTART, "vdcse2prgvwc"))
     {
         error_message();
     }

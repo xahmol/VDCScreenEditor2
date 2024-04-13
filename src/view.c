@@ -93,7 +93,7 @@ void show_fs_scroll()
 {
     struct VDCSoftScrollSettings softscroll;
     char vert_dir = (view.height > vdc_state.height) ? 1 : 0;
-    char hor_dir = (view.height > vdc_state.width) ? 1 : 0;
+    char hor_dir = (view.width > vdc_state.width) ? 1 : 0;
     char phase = 1;
     char nextystop = vdc_state.height - 1;
 
@@ -106,30 +106,38 @@ void show_fs_scroll()
         return;
     }
 
+    // Ensure no longer keypress is detected
+    while (vdcwin_checkch())
+    {
+        ;
+    }
+
     do
     {
         // Phase 1: Scroll right before scrolling down
-        if (hor_dir)
+        if (phase == 1)
         {
-            if (phase == 1)
+            if (hor_dir)
             {
+
                 vdc_fs_softscroll_right(&softscroll, 2);
                 if (softscroll.xoff == softscroll.width - vdc_state.width - 1)
                 {
                     phase++;
                 }
             }
-        }
-        else
-        {
-            phase++;
+            else
+            {
+                phase++;
+            }
         }
 
         // Phase 2: Scrolling down before scrolling left
-        if (vert_dir)
+        if (phase == 2)
         {
-            if (phase == 2)
+            if (vert_dir)
             {
+
                 vdc_fs_softscroll_down(&softscroll, 2);
                 if (softscroll.yoff == nextystop)
                 {
@@ -156,33 +164,34 @@ void show_fs_scroll()
                     }
                 }
             }
-        }
-        else
-        {
-            phase++;
+            else
+            {
+                phase++;
+            }
         }
 
         // Phase 3: Scrolling left before scrolling down
-        if (hor_dir)
+        if (phase == 3)
         {
-            if (phase == 3)
+            if (hor_dir)
             {
+
                 vdc_fs_softscroll_left(&softscroll, 2);
                 if (softscroll.xoff == 0)
                 {
                     phase++;
                 }
             }
-        }
-        else
-        {
-            phase++;
+            else
+            {
+                phase++;
+            }
         }
 
         // Phase 4: Scrolling down before scrolling right
-        if (vert_dir)
+        if (phase == 4)
         {
-            if (phase == 4)
+            if (vert_dir)
             {
                 vdc_fs_softscroll_down(&softscroll, 2);
                 if (softscroll.yoff == nextystop)
@@ -210,34 +219,86 @@ void show_fs_scroll()
                     }
                 }
             }
-        }
-        else
-        {
-            phase = 1;
+            else
+            {
+                phase++;
+            }
         }
 
-        // Phase 5: Scrolling left before scrolling up
-        if (hor_dir)
+        // Phase 5: Scrolling right before scrolling up
+        if (phase == 5)
         {
-            if (phase == 5)
+            if (hor_dir)
             {
+                vdc_fs_softscroll_right(&softscroll, 2);
+                if (softscroll.xoff == softscroll.width - vdc_state.width - 1)
+                {
+                    phase++;
+                }
+            }
+            else
+            {
+                phase++;
+            }
+        }
+
+        // Phase 6: Scrolling up before scrolling left
+        if (phase == 6)
+        {
+            if (vert_dir)
+            {
+
+                vdc_fs_softscroll_up(&softscroll, 2);
+                if (softscroll.yoff == nextystop)
+                {
+                    if (nextystop == 0)
+                    {
+                        phase = 3;
+                        nextystop = vdc_state.height;
+                    }
+                    else
+                    {
+                        phase++;
+                        if(nextystop > vdc_state.height -1)
+                        {
+                            nextystop -= vdc_state.height;
+                        }
+                        else{
+                            nextystop = 0;
+                        } 
+                    }
+                }
+            }
+            else
+            {
+                phase++;
+            }
+        }
+
+        // Phase 7: Scrolling left before scrolling up
+        if (phase == 7)
+        {
+            if (hor_dir)
+            {
+
                 vdc_fs_softscroll_left(&softscroll, 2);
                 if (softscroll.xoff == 0)
                 {
                     phase++;
                 }
             }
-        }
-        else
-        {
-            phase++;
+            else
+            {
+                phase++;
+            }
         }
 
-        // Phase 6: Scrolling up before scrolling right
-        if (vert_dir)
+        // Phase 8: Scrolling up before right again
+        if (phase == 8)
         {
-            if (phase == 6)
+            if (vert_dir)
             {
+
                 vdc_fs_softscroll_up(&softscroll, 2);
                 if (softscroll.yoff == nextystop)
                 {
@@ -245,29 +306,30 @@ void show_fs_scroll()
                     {
                         phase = 1;
                         nextystop = vdc_state.height;
-                        if (nextystop > softscroll.height - vdc_state.height - 2)
-                        {
-                            nextystop = softscroll.height - vdc_state.height - 1;
-                        }
                     }
                     else
                     {
-                        phase++;
-                        nextystop -= vdc_state.height;
-                        if (nextystop > softscroll.height - vdc_state.height - 2)
+                        phase = 5;
+                        if(nextystop > vdc_state.height -1)
                         {
-                            nextystop = softscroll.height - vdc_state.height - 1;
+                            nextystop -= vdc_state.height;
                         }
+                        else{
+                            nextystop = 0;
+                        } 
                     }
                 }
             }
+            else
+            {
+                phase = 1;
+            }
         }
-        else
+
+        if (vdcwin_checkch())
         {
-            phase = 1;
+            phase = 0;
         }
-
-
     } while (phase);
 
     vdc_fs_softscroll_exit(&softscroll, vdc_state.mode);
@@ -339,5 +401,5 @@ int main(void)
 
     // Exit
     vdc_exit();
-    printf("generated with vdcse version %s", VERSION);
+    printf("generated with vdcse version %s\n\r", VERSION);
 }
