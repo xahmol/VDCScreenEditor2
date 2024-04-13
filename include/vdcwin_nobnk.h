@@ -92,6 +92,19 @@ struct VDCViewport
     unsigned sourceyoffset;
     struct VDCWin view;
 };
+struct VDCSoftScrollSettings {
+    char* source;
+    char width;
+    char height;
+    unsigned addr_offset;
+    char vscroll;
+    char hscroll;
+    char vscroll_base;
+    char hscroll_base;
+    char xoff;
+    char yoff;
+    char hscroll_def;
+};
 
 // Function prototypes
 
@@ -223,6 +236,14 @@ void vdcwin_cpy_viewport(struct VDCViewport *viewport);
 
 // Scroll a viewport on the source screen map on the VDC in the given direction
 void vdcwin_viewportscroll(struct VDCViewport *viewport, char direction);
+
+// Softscroll function prototypes for full screen at once in VDC mem
+char vdc_fs_softscroll_init(struct VDCSoftScrollSettings *settings , char mode);
+void vdc_fs_softscroll_exit(struct VDCSoftScrollSettings *settings, char mode);
+void vdc_fs_softscroll_down(struct VDCSoftScrollSettings *settings, char step);
+void vdc_fs_softscroll_up(struct VDCSoftScrollSettings *settings, char step);
+void vdc_fs_softscroll_right(struct VDCSoftScrollSettings *settings, char step);
+void vdc_fs_softscroll_left(struct VDCSoftScrollSettings *settings, char step);
 
 #pragma compile("vdcwin_nobnk.c")
 
