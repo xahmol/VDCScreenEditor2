@@ -189,7 +189,7 @@ extern char bad_type[4];
 extern char linebuffer2[81];
 extern const char progressBar[4];
 extern const char progressRev[4];
-extern char disk_id_buf[5];
+extern char disk_id_buf[6];
 extern struct DirElement direlement_size;
 extern struct DirElement *previous;
 extern struct DirElement *current;

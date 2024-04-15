@@ -72,7 +72,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "bank_minimal.h"
 
 // Viewer data addess. Align with the address of the view struct in view.c
-#define VIEW 0x36de
+#define VIEW 0x36ee
 #define BASICSTART 0x1c01
 #define MEMSTART 0x4000
 #define MEMMAX 0xbfff
@@ -162,7 +162,7 @@ char bad_type[4];
 char linebuffer2[81];
 const char progressBar[4] = {0xA5, 0xA1, 0xA7, ' '};
 const char progressRev[4] = {0, 0, 1, 1};
-char disk_id_buf[5];
+char disk_id_buf[6];
 struct DirElement direlement_size;
 struct DirElement *previous;
 struct DirElement *current;
@@ -1204,6 +1204,7 @@ int main(void)
     // Input destination filename
     vdcwin_printline(&interface, "Choose filename of generated program:");
     textInput(interface.sx, interface.sy + interface.cy, filedest, 20);
+    vdcwin_printline(&interface,"");
 
     // Check if outtput file already exists
     sprintf(linebuffer, "r0:%s=%s", filedest, filedest);
@@ -1221,12 +1222,13 @@ int main(void)
         if (key == 'y')
         {
             // Scratch old files
+            vdcwin_printline(&interface, "Deleting old file.");
             sprintf(buffer, "s:%s", filedest);
             cmd(targetdevice, buffer);
         }
         else
         {
-            error_message();
+            prg_exit();
         }
     }
     else

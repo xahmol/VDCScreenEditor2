@@ -363,7 +363,7 @@ void show_noscroll()
 int main(void)
 {
     // Init
-    vdc_init(view.mode, 0);
+    vdc_init(view.mode, 1);
     vdc_bgcolor(view.background);
 
     // Check if std charset has to be redefined
@@ -400,4 +400,5 @@ int main(void)
     // Exit
     vdc_exit();
     printf("generated with vdcse version %s\n\r", VERSION);
+    return 0;
 }

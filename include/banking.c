@@ -97,7 +97,7 @@ char bad_type[4];
 char linebuffer2[81];
 const char progressBar[4] = {0xA5, 0xA1, 0xA7, ' '};
 const char progressRev[4] = {0, 0, 1, 1};
-char disk_id_buf[5];
+char disk_id_buf[6];
 struct DirElement direlement_size;
 struct DirElement *previous;
 struct DirElement *current;
