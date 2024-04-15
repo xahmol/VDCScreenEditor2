@@ -152,10 +152,6 @@ void bnk_exit()
 #pragma data(bdata1)
 #pragma bss(bbss1)
 
-char sid_irq[2];
-char sid_oldcr;
-char sid_pause;
-
 char bnk_readb(char cr, volatile char *p)
 // Function to read a byte from given address with specified banking config register value
 {
