@@ -112,7 +112,6 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 
 // Memory region for code, data etc. from 0x1c80 to 0xbfff
 #pragma region( vdcse2prg, 0x1c80, 0xc000, , , {code, data, bss, heap, stack} )
-#pragma heapsize(4096)
 
 // Global variables
 struct VIEWDATA
@@ -1204,6 +1203,7 @@ int main(void)
     // Input destination filename
     vdcwin_printline(&interface, "Choose filename of generated program:");
     textInput(interface.sx, interface.sy + interface.cy, filedest, 20);
+    vdcwin_printline(&interface,"");
 
     // Check if outtput file already exists
     sprintf(linebuffer, "r0:%s=%s", filedest, filedest);
@@ -1226,7 +1226,7 @@ int main(void)
         }
         else
         {
-            error_message();
+            prg_exit();
         }
     }
     else
@@ -1297,7 +1297,7 @@ int main(void)
     // Copy viewer data
     sprintf(linebuffer, "Copy viewer data to address %4x.", VIEW);
     vdcwin_printline(&interface, linebuffer);
-    bnk_memcpy(BNK_1_FULL, (char *)VIEW, BNK_DEFAULT, (char*)&view, sizeof(view));
+    bnk_memcpy(BNK_1_FULL, (char *)VIEW, BNK_DEFAULT, (char *)&view, sizeof(view));
 
     // Load screen data
     sprintf(linebuffer, "Load screen data to address %4x.", view.screen);
