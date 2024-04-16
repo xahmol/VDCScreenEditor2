@@ -88,6 +88,22 @@ struct VIEWDATA
 };
 struct VIEWDATA view;
 
+void check_charsets()
+// Check if charsets need to be redefined
+{
+    // Check if std charset has to be redefined
+    if (view.charstd)
+    {
+        vdc_redef_charset(vdc_state.char_std, view.charstd, 256);
+    }
+
+    // Check if alt charset has to be redefined
+    if (view.charstd)
+    {
+        vdc_redef_charset(vdc_state.char_alt, view.charalt, 256);
+    }
+}
+
 void show_fs_scroll()
 // Viewer with softscroll
 {
@@ -105,6 +121,8 @@ void show_fs_scroll()
     {
         return;
     }
+
+    check_charsets();
 
     // Ensure no longer keypress is detected
     while (vdcwin_checkch())
@@ -352,6 +370,7 @@ void show_noscroll()
 
     // Init canvas
     vdcwin_viewport_init(&canvas, view.screen, view.width, view.height, view.width, view.height, xc, yc);
+    check_charsets();
 
     // Show screen
     vdcwin_cpy_viewport(&canvas);
@@ -365,18 +384,6 @@ int main(void)
     // Init
     vdc_init(view.mode, 1);
     vdc_bgcolor(view.background);
-
-    // Check if std charset has to be redefined
-    if (view.charstd)
-    {
-        vdc_redef_charset(vdc_state.char_std, view.charstd, 256);
-    }
-
-    // Check if alt charset has to be redefined
-    if (view.charstd)
-    {
-        vdc_redef_charset(vdc_state.char_alt, view.charalt, 256);
-    }
 
     // Check screen dimension against VDC mode dimension to see if scrolling is needed
     if (view.width > vdc_state.width || view.height > vdc_state.height)
