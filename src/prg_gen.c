@@ -72,7 +72,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "bank_minimal.h"
 
 // Viewer data addess. Align with the address of the view struct in view.c
-#define VIEW 0x36e9
+#define VIEW 0x36c4
 #define BASICSTART 0x1c01
 #define MEMSTART 0x4000
 #define MEMMAX 0xbfff

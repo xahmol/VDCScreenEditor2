@@ -87,6 +87,11 @@ struct VIEWDATA
     char background;
 };
 struct VIEWDATA view;
+struct VDCSoftScrollSettings softscroll;
+char vert_dir;
+char hor_dir;
+char phase;
+char nextystop;
 
 void check_charsets()
 // Check if charsets need to be redefined
@@ -104,14 +109,66 @@ void check_charsets()
     }
 }
 
+char right_check()
+// Check right boundery
+{
+    if (softscroll.hscroll > 5)
+    {
+        if (softscroll.xoff == softscroll.width - vdc_state.width - 1)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+char down_check()
+// Check down boundery
+{
+    if (softscroll.vscroll == 6)
+    {
+        if (softscroll.yoff == nextystop)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+char left_check()
+// Check right boundery
+{
+    if (softscroll.hscroll == softscroll.hscroll_def)
+        ;
+    {
+        if (softscroll.xoff == 0)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+char up_check()
+// Check down boundery
+{
+    if (softscroll.vscroll == 0)
+    {
+        if (softscroll.yoff == nextystop)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void show_fs_scroll()
 // Viewer with softscroll
 {
-    struct VDCSoftScrollSettings softscroll;
-    char vert_dir = (view.height > vdc_state.height) ? 1 : 0;
-    char hor_dir = (view.width > vdc_state.width) ? 1 : 0;
-    char phase = 1;
-    char nextystop = vdc_state.height - 1;
+    vert_dir = (view.height > vdc_state.height) ? 1 : 0;
+    hor_dir = (view.width > vdc_state.width) ? 1 : 0;
+    phase = 1;
+    nextystop = vdc_state.height - 1;
 
     softscroll.source = (char *)view.screen;
     softscroll.width = view.width;
@@ -132,6 +189,7 @@ void show_fs_scroll()
 
     do
     {
+        // Check
         // Adjust VStop if higher than screen height
         if (nextystop > softscroll.height - vdc_state.height - 2)
         {
@@ -143,10 +201,13 @@ void show_fs_scroll()
         {
             if (hor_dir)
             {
-                vdc_fs_softscroll_right(&softscroll, 2);
-                if (softscroll.xoff == softscroll.width - vdc_state.width - 1)
+                if (right_check())
                 {
                     phase++;
+                }
+                else
+                {
+                    vdc_fs_softscroll_right(&softscroll, 2);
                 }
             }
             else
@@ -160,9 +221,8 @@ void show_fs_scroll()
         {
             if (vert_dir)
             {
-
                 vdc_fs_softscroll_down(&softscroll, 2);
-                if (softscroll.yoff == nextystop)
+                if (down_check())
                 {
                     if (nextystop == softscroll.height - vdc_state.height - 1)
                     {
@@ -194,10 +254,13 @@ void show_fs_scroll()
         {
             if (hor_dir)
             {
-                vdc_fs_softscroll_left(&softscroll, 2);
-                if (softscroll.xoff == 0)
+                if (left_check())
                 {
                     phase++;
+                }
+                else
+                {
+                    vdc_fs_softscroll_left(&softscroll, 2);
                 }
             }
             else
@@ -212,7 +275,7 @@ void show_fs_scroll()
             if (vert_dir)
             {
                 vdc_fs_softscroll_down(&softscroll, 2);
-                if (softscroll.yoff == nextystop)
+                if (down_check())
                 {
                     if (nextystop == softscroll.height - vdc_state.height - 1)
                     {
@@ -244,10 +307,13 @@ void show_fs_scroll()
         {
             if (hor_dir)
             {
-                vdc_fs_softscroll_right(&softscroll, 2);
-                if (softscroll.xoff == softscroll.width - vdc_state.width - 1)
+                if (right_check())
                 {
                     phase++;
+                }
+                else
+                {
+                    vdc_fs_softscroll_right(&softscroll, 2);
                 }
             }
             else
@@ -263,7 +329,7 @@ void show_fs_scroll()
             {
 
                 vdc_fs_softscroll_up(&softscroll, 2);
-                if (softscroll.yoff == nextystop)
+                if (up_check())
                 {
                     if (nextystop == 0)
                     {
@@ -295,11 +361,13 @@ void show_fs_scroll()
         {
             if (hor_dir)
             {
-
-                vdc_fs_softscroll_left(&softscroll, 2);
-                if (softscroll.xoff == 0)
+                if (left_check())
                 {
                     phase++;
+                }
+                else
+                {
+                    vdc_fs_softscroll_left(&softscroll, 2);
                 }
             }
             else
@@ -315,7 +383,7 @@ void show_fs_scroll()
             {
 
                 vdc_fs_softscroll_up(&softscroll, 2);
-                if (softscroll.yoff == nextystop)
+                if (up_check())
                 {
                     if (nextystop == 0)
                     {

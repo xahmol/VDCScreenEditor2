@@ -15,6 +15,7 @@
         "overlay2.h": "c",
         "system_error": "c",
         "vdcwin_nobnk.h": "c",
-        "bank_minimal.h": "c"
+        "bank_minimal.h": "c",
+        "cia.h": "c"
     }
 }
