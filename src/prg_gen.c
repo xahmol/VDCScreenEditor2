@@ -72,9 +72,9 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "bank_minimal.h"
 
 // Viewer data addess. Align with the address of the view struct in view.c
-#define VIEW 0x36c4
+#define VIEW 0x1c80
 #define BASICSTART 0x1c01
-#define MEMSTART 0x4000
+#define MEMSTART 0x4600
 #define MEMMAX 0xbfff
 
 // Kernal defines for IEC statis detection
@@ -1289,7 +1289,7 @@ int main(void)
     }
 
     // Load viewer code
-    sprintf(linebuffer, "Loading viewer code to address %4x.", BASICSTART);
+    sprintf(linebuffer, "Loading viewer code to address $%4x.", BASICSTART);
     vdcwin_printline(&interface, linebuffer);
     if (!bnk_load(bootdevice, 1, (char *)BASICSTART, "vdcse2prgvwc"))
     {
@@ -1297,12 +1297,12 @@ int main(void)
     }
 
     // Copy viewer data
-    sprintf(linebuffer, "Copy viewer data to address %4x.", VIEW);
+    sprintf(linebuffer, "Copy viewer data to address $%4x.", VIEW);
     vdcwin_printline(&interface, linebuffer);
     bnk_memcpy(BNK_1_FULL, (char *)VIEW, BNK_DEFAULT, (char*)&view, sizeof(view));
 
     // Load screen data
-    sprintf(linebuffer, "Load screen data to address %4x.", view.screen);
+    sprintf(linebuffer, "Load screen data to address $%4x.", view.screen);
     vdcwin_printline(&interface, linebuffer);
     sprintf(linebuffer, "%s.scrn", filename);
     if (!bnk_load(targetdevice, 1, view.screen, linebuffer))
@@ -1313,7 +1313,7 @@ int main(void)
     // Load std charset data
     if (charsetchanged[0])
     {
-        sprintf(linebuffer, "Load std charset to address %4x.", view.charstd);
+        sprintf(linebuffer, "Load std charset to address $%4x.", view.charstd);
         vdcwin_printline(&interface, linebuffer);
         sprintf(linebuffer, "%s.chrs", filename);
         if (!bnk_load(targetdevice, 1, view.charstd, linebuffer))
@@ -1325,7 +1325,7 @@ int main(void)
     // Load alt charset data
     if (charsetchanged[1])
     {
-        sprintf(linebuffer, "Load alt charset to address %4x.", view.charalt);
+        sprintf(linebuffer, "Load alt charset to address $%4x.", view.charalt);
         vdcwin_printline(&interface, linebuffer);
         sprintf(linebuffer, "%s.chra", filename);
         if (!bnk_load(targetdevice, 1, view.charalt, linebuffer))

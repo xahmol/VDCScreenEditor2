@@ -70,11 +70,17 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "vdc_nobnk.h"
 #include "vdcwin_nobnk.h"
 
+// Memory region for viewer data
+#pragma section(viewdata, 0)
+#pragma region( viewdata, 0x1c80, 0x1ca0, , , {viewdata} )
+
 // Memory region for code, data etc. from 0x1c80
-#pragma region( vdcse2prgvwc, 0x1c80, 0x4000, , , {code, data, bss, heap, stack} )
+#pragma region( vdcse2prgvwc, 0x1ca0, 0x4600, , , {code, data, bss, heap, stack} )
 #pragma stacksize(512)
 #pragma heapsize(0)
 
+#pragma data(viewdata)
+#pragma bss(viewdata)
 struct VIEWDATA
 {
     char *screen;
@@ -87,6 +93,9 @@ struct VIEWDATA
     char background;
 };
 struct VIEWDATA view;
+#pragma data(data)
+#pragma bss(bss)
+
 struct VDCSoftScrollSettings softscroll;
 char vert_dir;
 char hor_dir;
@@ -139,7 +148,6 @@ char left_check()
 // Check right boundery
 {
     if (softscroll.hscroll == softscroll.hscroll_def)
-        ;
     {
         if (softscroll.xoff == 0)
         {
@@ -162,7 +170,7 @@ char up_check()
     return 0;
 }
 
-void show_fs_scroll()
+void show_smooth_croll()
 // Viewer with softscroll
 {
     vert_dir = (view.height > vdc_state.height) ? 1 : 0;
@@ -174,7 +182,7 @@ void show_fs_scroll()
     softscroll.width = view.width;
     softscroll.height = view.height;
 
-    if (!vdc_fs_softscroll_init(&softscroll, vdc_state.mode))
+    if (!vdc_softscroll_init(&softscroll, vdc_state.mode))
     {
         return;
     }
@@ -189,7 +197,6 @@ void show_fs_scroll()
 
     do
     {
-        // Check
         // Adjust VStop if higher than screen height
         if (nextystop > softscroll.height - vdc_state.height - 2)
         {
@@ -207,7 +214,7 @@ void show_fs_scroll()
                 }
                 else
                 {
-                    vdc_fs_softscroll_right(&softscroll, 2);
+                    vdc_softscroll_right(&softscroll, 2);
                 }
             }
             else
@@ -221,7 +228,7 @@ void show_fs_scroll()
         {
             if (vert_dir)
             {
-                vdc_fs_softscroll_down(&softscroll, 2);
+                vdc_softscroll_down(&softscroll, 2);
                 if (down_check())
                 {
                     if (nextystop == softscroll.height - vdc_state.height - 1)
@@ -260,7 +267,7 @@ void show_fs_scroll()
                 }
                 else
                 {
-                    vdc_fs_softscroll_left(&softscroll, 2);
+                    vdc_softscroll_left(&softscroll, 2);
                 }
             }
             else
@@ -274,7 +281,7 @@ void show_fs_scroll()
         {
             if (vert_dir)
             {
-                vdc_fs_softscroll_down(&softscroll, 2);
+                vdc_softscroll_down(&softscroll, 2);
                 if (down_check())
                 {
                     if (nextystop == softscroll.height - vdc_state.height - 1)
@@ -313,7 +320,7 @@ void show_fs_scroll()
                 }
                 else
                 {
-                    vdc_fs_softscroll_right(&softscroll, 2);
+                    vdc_softscroll_right(&softscroll, 2);
                 }
             }
             else
@@ -328,7 +335,7 @@ void show_fs_scroll()
             if (vert_dir)
             {
 
-                vdc_fs_softscroll_up(&softscroll, 2);
+                vdc_softscroll_up(&softscroll, 2);
                 if (up_check())
                 {
                     if (nextystop == 0)
@@ -367,7 +374,7 @@ void show_fs_scroll()
                 }
                 else
                 {
-                    vdc_fs_softscroll_left(&softscroll, 2);
+                    vdc_softscroll_left(&softscroll, 2);
                 }
             }
             else
@@ -382,7 +389,7 @@ void show_fs_scroll()
             if (vert_dir)
             {
 
-                vdc_fs_softscroll_up(&softscroll, 2);
+                vdc_softscroll_up(&softscroll, 2);
                 if (up_check())
                 {
                     if (nextystop == 0)
@@ -416,7 +423,62 @@ void show_fs_scroll()
         }
     } while (phase);
 
-    vdc_fs_softscroll_exit(&softscroll, vdc_state.mode);
+    vdc_softscroll_exit(&softscroll, vdc_state.mode);
+}
+
+void show_char_scroll()
+// If insufficient VDC memory use per char instead of smooth scroll. Only vertical scroll supported.
+{
+    struct VDCViewport charscroll;
+
+    vdcwin_viewport_init(&charscroll, (char *)view.screen, view.width, view.height, vdc_state.width, vdc_state.height, 0, 0);
+    check_charsets();
+
+    // Show screen
+    vdcwin_cpy_viewport(&charscroll);
+
+    // Init scroll
+    phase = 1;
+
+    // Ensure no longer keypress is detected
+    while (vdcwin_checkch())
+    {
+        ;
+    }
+
+    do
+    {
+        // Phase 1: Scrolling down
+        if (phase == 1)
+        {
+            vdc_wait_vblank();
+            vdcwin_viewportscroll(&charscroll, SCROLL_DOWN);
+            vdc_wait_no_vblank();
+            vdc_pass_vblank();
+            if (charscroll.sourceyoffset == view.height - vdc_state.height + 1)
+            {
+                phase++;
+            }
+        }
+
+        // Phase 2: Scrolling up
+        if (phase == 2)
+        {
+            vdc_wait_vblank();
+            vdcwin_viewportscroll(&charscroll, SCROLL_UP);
+            vdc_wait_no_vblank();
+            vdc_pass_vblank();
+            if (charscroll.sourceyoffset == 0)
+            {
+                phase = 1;
+            }
+        }
+
+        if (vdcwin_checkch())
+        {
+            phase = 0;
+        }
+    } while (phase);
 }
 
 void show_noscroll()
@@ -458,7 +520,19 @@ int main(void)
     {
         if (vdc_state.memextended)
         {
-            show_fs_scroll();
+            show_smooth_croll();
+        }
+        else
+        {
+            if (view.width > vdc_state.width)
+            {
+                vdc_prints(0,0,"64 KB VDC RAM needed for horizontal scroll. Press key.");
+                vdcwin_getch();
+            }
+            else
+            {
+                show_char_scroll();
+            }
         }
     }
     else
@@ -474,6 +548,6 @@ int main(void)
 
     // Exit
     vdc_exit();
-    printf("generated with vdcse version %s\n\r", VERSION);
+    printf("\n\rgenerated with vdcse version %s\n\r", VERSION);
     return 0;
 }

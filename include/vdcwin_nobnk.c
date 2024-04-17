@@ -1011,7 +1011,7 @@ void vdcwin_viewportscroll(struct VDCViewport *viewport, char direction)
 	vdcwin_cpy_viewport(&vp_fill);
 }
 
-char vdc_fs_softscroll_init(struct VDCSoftScrollSettings *settings, char mode)
+char vdc_softscroll_init(struct VDCSoftScrollSettings *settings, char mode)
 // Initialisize virtual screen for softscroll. Returns 1 on succes, 0 in fail
 {
 	unsigned vdcsize = settings->width * settings->height;
@@ -1054,7 +1054,7 @@ char vdc_fs_softscroll_init(struct VDCSoftScrollSettings *settings, char mode)
 	return 1;
 }
 
-void vdc_fs_softscroll_exit(struct VDCSoftScrollSettings *settings, char mode)
+void vdc_softscroll_exit(struct VDCSoftScrollSettings *settings, char mode)
 // Exit soft scroll virtual screen
 {
 	vdc_cls();
@@ -1064,7 +1064,7 @@ void vdc_fs_softscroll_exit(struct VDCSoftScrollSettings *settings, char mode)
 	vdc_set_mode(mode);
 }
 
-void vdc_fs_softscroll_down(struct VDCSoftScrollSettings *settings, char step)
+void vdc_softscroll_down(struct VDCSoftScrollSettings *settings, char step)
 // Do a soft scroll down
 {
 	vdc_pass_vblank();
@@ -1090,7 +1090,7 @@ void vdc_fs_softscroll_down(struct VDCSoftScrollSettings *settings, char step)
 	}
 }
 
-void vdc_fs_softscroll_up(struct VDCSoftScrollSettings *settings, char step)
+void vdc_softscroll_up(struct VDCSoftScrollSettings *settings, char step)
 // Do a soft scroll up
 {
 	vdc_pass_vblank();
@@ -1112,7 +1112,7 @@ void vdc_fs_softscroll_up(struct VDCSoftScrollSettings *settings, char step)
 	}
 }
 
-void vdc_fs_softscroll_right(struct VDCSoftScrollSettings *settings, char step)
+void vdc_softscroll_right(struct VDCSoftScrollSettings *settings, char step)
 // Do a soft scroll right
 {
 	if (settings->hscroll > step - 1)
@@ -1137,7 +1137,7 @@ void vdc_fs_softscroll_right(struct VDCSoftScrollSettings *settings, char step)
 	}
 }
 
-void vdc_fs_softscroll_left(struct VDCSoftScrollSettings *settings, char step)
+void vdc_softscroll_left(struct VDCSoftScrollSettings *settings, char step)
 // Do a soft scroll left
 {
 	settings->hscroll += step;
