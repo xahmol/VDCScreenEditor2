@@ -72,6 +72,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "vdc_menu.h"
 #include "main.h"
 #include "overlay1.h"
+#include "visualpetscii.h"
 
 // Section and region for low memory area overlay
 #pragma overlay(vdcseovl1, 2)
@@ -385,7 +386,8 @@ void palette_draw()
     char attribute = mc_menupopup - VDC_A_ALTCHAR;
     char x, y;
     char counter = 0;
-    unsigned petsciiaddress = PETSCIIMAP;
+    char petsciimap = 0;
+    ;
 
     vdc_state.text_attr = attribute;
     vdcwin_win_new(VDC_POPUP_BORDER, 44, 1, 34, 21);
@@ -410,9 +412,9 @@ void palette_draw()
         {
             if (visualmap)
             {
-                vdc_printc(45 + x, 4 + y, PEEK(petsciiaddress), attribute);
-                vdc_printc(45 + x, 13 + y, PEEK(petsciiaddress), attribute + VDC_A_ALTCHAR);
-                if (PEEK(petsciiaddress++) == palettechar)
+                vdc_printc(45 + x, 4 + y, visualpetscii[petsciimap], attribute);
+                vdc_printc(45 + x, 13 + y, visualpetscii[petsciimap], attribute + VDC_A_ALTCHAR);
+                if (visualpetscii[petsciimap++] == palettechar)
                 {
                     rowsel = y + 2 + (9 * plotaltchar);
                     colsel = x;
@@ -441,7 +443,7 @@ void palette_returnscreencode()
     {
         if (visualmap)
         {
-            palettechar = PEEK(PETSCIIMAP + colsel + (rowsel - 2) * 32);
+            palettechar = visualpetscii[colsel + (rowsel - 2) * 32];
         }
         else
         {
@@ -454,7 +456,7 @@ void palette_returnscreencode()
     {
         if (visualmap)
         {
-            palettechar = PEEK(PETSCIIMAP + colsel + (rowsel - 11) * 32);
+            palettechar = visualpetscii[colsel + (rowsel - 11) * 32];
         }
         else
         {
@@ -722,7 +724,6 @@ void resizewidth()
         undo_redopossible = 0;
     }
 }
-
 
 void resizeheight()
 {

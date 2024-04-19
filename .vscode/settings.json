@@ -16,6 +16,7 @@
         "system_error": "c",
         "vdcwin_nobnk.h": "c",
         "bank_minimal.h": "c",
-        "cia.h": "c"
+        "cia.h": "c",
+        "string": "c"
     }
 }

@@ -77,6 +77,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "overlay4.h"
 #include "overlay5.h"
 #include "overlay6.h"
+#include "visualpetscii.h"
 
 // Memory region for code, data etc. from 0x1c80 to 0xbfff
 #pragma region( vdcse, 0x1c80, 0xc000 - OVERLAYSIZE, , , {code, data, bss, heap, stack} )
