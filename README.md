@@ -1,8 +1,6 @@
 # VDC Screen Editor 2
 Commodore 128 80 column screen editor - version 2
 
-(DOCUMENTATION IN PROGRESS OF BEING UPDATED FROM V1 TO V2)
-
 ## Contents:
 
 [Version history and download](#version-history-and-download)
@@ -47,15 +45,16 @@ Commodore 128 80 column screen editor - version 2
 ## Version history and download
 ([Back to contents](#contents))
 
-[Link to latest build](https://github.com/xahmol/VDCScreenEdit/raw/main/vdcse_v20-20240403-1732.zip)
+[Link to latest build](https://github.com/xahmol/VDCScreenEdit/raw/main/vdcse_v20-20240421-1150.zip)
 
-Version v20-20240403-1732:
+Version v20-20240421-1150:
 - First release of v2 version of VDCSE
 - Completely rebuild using the Oscar64 compiler (previously CC65)
 - Added support for multiple VDC text screen modes, including 80x50 (ideal for C64 PETSCII art aspect ratio). NB: Needs a C128 with 64KB VDC RAM to have still also room for swap VDC memory.
 - Added import and export functions: Import of both raw screen data in PRG files, or BBS Petscii code sequences in SEQ format export to SEQ format. SEQ format can be a.o. used to import from and export to other PETSCII editors like Petmate 9.
 - Import functions include a VIC to VDC colour converter. Which is obviously a comprimise as VDC has only one color as alternative for the VIC pairs Orange/Brown (both convert to VDC Dark Yellow) and Light Grey/Medium Grey (both convert to VDC Light Grey), and the other colours have different hues on VDC than on VIC (for example light red from a pink like hue on VIC to red on VDC)
 - Import can be done to any given coordinate in the existing project, canvas is automatically enlarged if needed to make it fit.
+- VDCSE2PRG program generator now supports all screensizes that fit in memory and supports the different screenmodes. Features scrolling for sizes bigger than the screensize: smooth scrolling on 64 KB VDC RAM equiped machine and per char vertical scroll (no horizontal scroll) with 16 KB VDC. Project files can now be selected using a filebrowser.
 - Many smaller refinements and bugfixes
 
 Version v099-20220324-1527:
@@ -783,18 +782,40 @@ Leave Color write mode by pressing **ESC** or **STOP**. **F8** will show a help 
 ## VDCSE2PRG utility
 ([Back to contents](#contents))
 
-VDCSE2PRG is a separate utility to create an executable program file for the C128 of a VDCSE project. Only 80x25 screens are supported at the moment, but redefined character sets are supported.
+VDCSE2PRG is a separate utility to create an executable program file for the C128 of a VDCSE project. All screenmodes, redefined charsets and all screensizes are supported, only limit is that data for the screen and charsets combined must fit in 31.232 bytes (approx. 30 kilobytes).
+
+The generated executable program supports:
+- All screenmodes supoorted by VDCSE2
+- All screensizes, also smaller or bigger than the screensize of the selected screenmode and redefined charsets, as long as it fits in the designated 30 kilobytes target memory
+- If the screen is larger than the screensize of the selected screen mode, automated scrolling is supoorted. Note that smooth scroll in both the vertical as horizontal direction is only supoorted on 64 KB VDC RAM machines, on 16 KB VDC RAM machines only vertical per char scroll is supported.
+- The generated program will detect VDC RAM size automatically and choose the proper scroll mode if needed (or exit with a message if horizontal scrolling would be needed given the screensize, while only 16 KB VDC RAM is available.)
 
 This is a seperate utility which can not be started from the VDCSE main program but has to be started seperately by loading the VDCSE2PRG file from disk with for example RUN"VDCSE2PRG",U(device number).
 
-Running this program gives this interface:
+Running this program first gives a filebrowser to select the VDCSE project file to base the generated program on. The browser filters to show only project files, pick the desired one using the filebrowser interface.
 
-![VDCSE2PRG UI](https://github.com/xahmol/VDCScreenEdit/blob/main/screenshots/VDCSE2PRG%20UI.png?raw=true)
+![VDCSE2PRG select file](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2PRG%20-%20filepick.png?raw=true)
 
-Follow the on screen instructions for selecting the input file and the output file name. Input file should be a VDCSE project file in 80x25 characters, with the associated screen and characterset files on the same disk/location.
-Enter the input file filename without the .proj at the end.
+If the selected project fits in the destination memory available, next step is to enter the destination file name. If the file already does exist, confirmation is asked. NB: If Yes is chosen the old file with that name will be deleted.
+
+![VDCSE2PRG enter destination filename](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2PRG%20-%20dest%20filemame.png?raw=true)
+
+After this the ulitily will create and save the viewer program. This gives output as this:
+
+![VDCSE2PRG processing](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2PRG%20-%20processing.png?raw=true)
+
+Press any key to exit the generator.
 
 The generated program can be executed by using a RUN"(target filename)",U(target device ID).
+
+Memory map for created program file:
+$1C01-$1C0D BASIC starter for program using SYS command
+$1C0D-$1C80 Compiler run time environmennt
+$1C80-$1CA0 Viewer data (screenmode, size, charset addresses)
+$1CA0-$4600 Viewer code and viewer heap, stack and dynamic data sections
+$4600-$C000 Room for screens and charsets: first screen, then charsets if redefined (first standard, than alternate charset)
+
+The file view.c in the src dir of this repository shows the C source code used for the Oscar64 compiler, this can also be used as base for own viewers or demos.
 
 ## Color value reference:
 ([Back to contents](#contents))
