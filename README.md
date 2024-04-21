@@ -45,9 +45,9 @@ Commodore 128 80 column screen editor - version 2
 ## Version history and download
 ([Back to contents](#contents))
 
-[Link to latest build](https://github.com/xahmol/VDCScreenEdit/raw/main/vdcse_v20-20240421-1218.zip)
+[Link to latest build](https://github.com/xahmol/VDCScreenEdit/raw/main/vdcse_v20-20240421-1404.zip)
 
-Version v20-20240421-1218:
+Version v20-20240421-1404:
 - First release of v2 version of VDCSE
 - Completely rebuild using the Oscar64 compiler (previously CC65)
 - Added support for multiple VDC text screen modes, including 80x50 (ideal for C64 PETSCII art aspect ratio). NB: Needs a C128 with 64KB VDC RAM to have still also room for swap VDC memory.
@@ -95,10 +95,12 @@ Version 090-20210922-2251:
 ## Introduction
 ([Back to contents](#contents))
 
-VDC Screen Editor is an editor to create text based screens for the Commodore 128 VDC 80 column mode. It fully supports using user defined character sets and allows the use of two 256 character character sets at the same time.
+VDC Screen Editor v2 is an editor to create text based screens for the Commodore 128 VDC 80 column mode. It fully supports using user defined character sets and allows the use of two 256 character character sets at the same time.
 
 Main features of the program:
-- Support for screen maps larger than 80x25 characters. Screens can be up to 30 KiB (30.720 bytes), all sizes fitting in that memory with width of 80 at minimum and heigth of 25 at minimum are supported. NB: As both the character data as the attribute data needs to be stored, a screen takes width times height times 2 bytes in storage. So 30k would fit up to 7 standard 80x25 screens to be distributed over width and height, so e.g. 2 screens wide and 3 screens high (160x75 characters).
+- Support for screen maps larger than the screensize of the present screenmode. Screens can be up to 30 KiB (30.720 bytes), all sizes fitting in that memory are supported. NB: As both the character data as the attribute data needs to be stored, a screen takes width times height times 2 bytes in storage. So 30k would fit up to 7 standard 80x25 screens to be distributed over width and height, so e.g. 2 screens wide and 3 screens high (160x75 characters).
+- Support multiple screenmodes, including a 80x50 mode ideal for PETSCII art. Note that the largest screenmodes of 80x70 PAL or 80x60 NTSC need 64 KB VDC RAM and a monitor supporting it.
+- Integrated file browser.
 - Supports resizing canvas size, clear or fill the canvas
 - Support for loading two user defined charsets (standard charset and alternate charset, should be standard 'C64' charsets of 256 characters of 8 bits width and 8 bits height).
 - Includes a simple character editor to change characters on the fly and directly see the result in your designed screen (for editing a full character set one of the many alternatives for C64 character set editing is suggested).
@@ -109,6 +111,7 @@ Main features of the program:
 - Line and box mode for drawing lines and boxes
 - Select mode to cut, copy, delete or repaint (only color or all attributes) the selection.
 - Move mode to scroll the screen contents (due to memory constraints only for the 80x25 viewport)
+- Import from PRG screen memory dumps and import from and export to SEQ PETSCII sequences.
 
 ## Start program
 ([Back to contents](#contents))
