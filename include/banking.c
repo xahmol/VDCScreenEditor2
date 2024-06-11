@@ -771,7 +771,9 @@ bool bnk_save(char device, char bank, const char *start, const char *end, const 
 	char succes;
 	krnio_setbnk(bank, 0);
 	krnio_setnam(fname);
+
 	succes = krnio_save(device, start, end);
+
 	krnio_setbnk(0, 0);
 	return succes;
 }

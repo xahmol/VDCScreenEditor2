@@ -194,6 +194,7 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
 
     char c;
     char idx = strlen(str);
+    char flag = 0;
 
     if (idx)
     {
@@ -285,14 +286,14 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
         default:
             if (isprint(c) && idx < size)
             {
-                char flag = (str[idx] == 0);
+                flag = str[idx];
                 str[idx] = c;
                 vdcwin_cursor_toggle(&canvas.view);
                 vdc_printc(xpos + idx, ypos, pet2screen(c), mc_menupopup);
                 ++idx;
                 vdcwin_cursor_move(&canvas.view, xpos + idx, ypos);
                 vdcwin_cursor_toggle(&canvas.view);
-                if (flag)
+                if (!flag)
                 {
                     str[idx + 1] = 0;
                 }

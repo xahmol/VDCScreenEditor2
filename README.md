@@ -45,7 +45,12 @@ Commodore 128 80 column screen editor - version 2
 ## Version history and download
 ([Back to contents](#contents))
 
-[Link to latest build](https://github.com/xahmol/VDCScreenEditor2/raw/main/vdcse_v20-20240421-1404.zip)
+[Link to latest build](https://github.com/xahmol/VDCScreenEditor2/raw/main/vdcse_v20-20240611-1354.zip)
+
+Version v20-20240611-1354:
+- Bugfix release:
+    - SOLVED: Saving charactersets crashes the program
+    - SOLVED: If placing chararcters after prefiled filename extra characters are added.
 
 Version v20-20240421-1404:
 - First release of v2 version of VDCSE

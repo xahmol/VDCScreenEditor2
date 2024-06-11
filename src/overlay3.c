@@ -182,7 +182,6 @@ void saveproject()
 {
     char overwrite;
     char projbuffer[23];
-    char tempfilename[21];
     int escapeflag;
 
     escapeflag = chooseidandfilename("Save project", 10);
@@ -195,9 +194,9 @@ void saveproject()
         return;
     }
 
-    sprintf(tempfilename, "%s.proj", filename);
+    sprintf(linebuffer, "%s.proj", filename);
 
-    overwrite = checkiffileexists(tempfilename, targetdevice);
+    overwrite = checkiffileexists(linebuffer, targetdevice);
 
     if (overwrite)
     {
@@ -241,6 +240,7 @@ void saveproject()
 
         // Store project file
         sprintf(buffer, "%s.proj", filename);
+
         if (!bnk_save(targetdevice, 0, projbuffer, projbuffer + 23, buffer))
         {
             menu_fileerrormessage();
