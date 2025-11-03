@@ -13,7 +13,7 @@ Code and resources from others used:
 
     https://github.com/drmortalwombat/oscar64
 
-    Many thanks also to https://github.com/drmortalwombat to provide extrordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
+    Many thanks also to https://github.com/drmortalwombat to provide extraordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
 
 -   Screens used in the demo made with my own VDC Screen Editor.
 
@@ -182,7 +182,7 @@ void vdc_set_multab()
 }
 
 char vdc_set_mode(char mode)
-// Function to set one of the preset VDC modes. Returns 1=succes, 0=fail.
+// Function to set one of the preset VDC modes. Returns 1=success, 0=fail.
 {
     char index = 0;
     unsigned val;
@@ -391,7 +391,7 @@ void vdc_scroll_copy(unsigned dest, unsigned src, char lines, char length)
 }
 
 void vdc_wipe_mem()
-// Function to wipe VDC memory to avoid visible screen corruption on VDC mem lauout change
+// Function to wipe VDC memory to avoid visible screen corruption on VDC mem layout change
 {
     unsigned address = 0;
 
@@ -496,7 +496,7 @@ void vdc_prints_attr(char x, char y, const char *string, char attr)
     unsigned address = vdc_coords(x, y);
     char len = strlen(string);
 
-    // Check for legth. Return if 0 and use printc in case of only one char
+    // Check for length. Return if 0 and use printc in case of only one char
     if(!len)
     {
         return;

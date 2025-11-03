@@ -5,7 +5,7 @@
 #define MACOSTART 0x1300 // Start of machine code area
 #define MACOSIZE 0x0800  // Length of machine code area
 
-/* Bank 0 save data adress mapping */
+/* Bank 0 save data address mapping */
 #define OVERLAYBANK0 0xC000 // Start address overlay storage bank 0
 
 /* Bank 1 memory addresses mapping */

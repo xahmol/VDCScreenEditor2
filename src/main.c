@@ -12,7 +12,7 @@ Code and resources from others used:
 
     https://github.com/drmortalwombat/oscar64
 
-    Many thanks also to https://github.com/drmortalwombat to provide extrordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
+    Many thanks also to https://github.com/drmortalwombat to provide extraordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
 
 -   C128 Programmers Reference Guide: For the basic VDC register routines and VDC code inspiration
     http://www.zimmers.net/anonftp/pub/cbm/manuals/c128/C128_Programmers_Reference_Guide.pdf
@@ -387,7 +387,7 @@ void loadoverlay(char overlay_select)
 {
     // Load memory overlay with given number
 
-    // Returns if overlay allready active
+    // Returns if overlay already active
     if (overlay_select != overlay_active)
     {
         overlay_active = overlay_select;
@@ -1660,7 +1660,7 @@ char import_dialogue(char mode, const char *message)
 
         if (!mode)
         {
-            vdc_prints(21, yc++, "Includes load addres at first 2 bytes?");
+            vdc_prints(21, yc++, "Includes load address at first 2 bytes?");
             importvars.loadaddr = menu_pulldown(25, yc, VDC_MENU_YESNO, 0);
             vdc_prints(21, yc++, pulldown_titles[VDC_MENU_YESNO][importvars.loadaddr - 1]);
 
@@ -2064,7 +2064,7 @@ int main(void)
             plotcursor();
             break;
 
-        // Character eddit mode
+        // Character edit mode
         case 'e':
             loadoverlay(4);
             chareditor();

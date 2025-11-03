@@ -13,7 +13,7 @@ Code and resources from others used:
 
     https://github.com/drmortalwombat/oscar64
 
-    Many thanks also to https://github.com/drmortalwombat to provide extrordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
+    Many thanks also to https://github.com/drmortalwombat to provide extraordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
 
 -   Screens used in the demo made with my own VDC Screen Editor.
 
@@ -77,9 +77,9 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 // Define
 // Set these for menubar and pulldown menu dimensions
 #define VDC_MENUBAR_MAXOPTIONS 5  // Number of options in main menu bar
-#define VDC_MENUBAR_MAXLENGTH 12  // Maxiumum length of main menu bar option names
+#define VDC_MENUBAR_MAXLENGTH 12  // Maximum length of main menu bar option names
 #define VDC_PULLDOWN_NUMBER 8     // Number of pull down menus defined
-#define VDC_PULLDOWN_MAXOPTIONS 6 // Maximum number of options for pull down meus
+#define VDC_PULLDOWN_MAXOPTIONS 6 // Maximum number of options for pull down menus
 #define VDC_PULLDOWN_MAXLENGTH 16 // Maximum length of pull down menu option names
 
 // Set default colours and styles to use

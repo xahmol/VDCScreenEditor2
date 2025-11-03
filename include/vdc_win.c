@@ -13,7 +13,7 @@ Code and resources from others used:
 
     https://github.com/drmortalwombat/oscar64
 
-    Many thanks also to https://github.com/drmortalwombat to provide extrordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
+    Many thanks also to https://github.com/drmortalwombat to provide extraordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
 
 -   Screens used in the demo made with my own VDC Screen Editor.
 
@@ -266,7 +266,7 @@ static inline char p2s(char ch)
 }
 
 static inline char s2p(char ch)
-// Screencode to PETSCII converion
+// Screencode to PETSCII conversion
 {
 	return ch ^ s2pmap[ch >> 5];
 }
@@ -1140,7 +1140,7 @@ void vdcwin_win_free()
 
 void vdcwin_viewport_init(struct VDCViewport *vp, char sourcebank, char *sourcebase, unsigned sourcewidth, unsigned sourceheight, unsigned viewwidth, unsigned viewheight, char viewsx, char viewsy)
 // Initialize a viewport of screen data in memory
-// Inpuut: Viewport struct to use, source bank and basem source dimensions, view window start coord and dimensions
+// Input: Viewport struct to use, source bank and basem source dimensions, view window start coord and dimensions
 {
 	vp->sourcebank = sourcebank;
 	vp->sourcebase = sourcebase;
@@ -1155,7 +1155,7 @@ void vdcwin_cpy_viewport(struct VDCViewport *viewport)
 // Function to copy a viewport on the source screen map to the VDC
 // Input: Initialised viewport struct
 {
-	// Charachters
+	// Characters
 	unsigned vdcbase = viewport->view.sp;
 	char *address = viewport->sourcebase + (viewport->sourceyoffset * viewport->sourcewidth) + viewport->sourcexoffset;
 

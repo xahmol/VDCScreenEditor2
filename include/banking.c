@@ -13,7 +13,7 @@ Code and resources from others used:
 
     https://github.com/drmortalwombat/oscar64
 
-    Many thanks also to https://github.com/drmortalwombat to provide extrordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
+    Many thanks also to https://github.com/drmortalwombat to provide extraordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
 
 -   Screens used in the demo made with my own VDC Screen Editor.
 
@@ -107,7 +107,7 @@ struct Directory cwd;
 char getcurrentdevice()
 // Return last used device number for IO operations. Default on 8 if still zero.
 {
-	// Feading zeropage address containg current device number ($BA)
+	// Feading zeropage address containing current device number ($BA)
 	char curunit = *(char *)0xba;
 
 	// Default on 8 if still zero
@@ -141,7 +141,7 @@ void bnk_init()
 	// Set 8Kb shared memory size
 	// So set MMU Ram Configuration Register at:
 	// - bit 0-1:   %10 for 8 KB common RAM
-	// - bit 2-3:   %01 for bootom of RAM bank 0 is common
+	// - bit 2-3:   %01 for bottom of RAM bank 0 is common
 	// - bit 7:     $0 for VIC RAM in bank 0
 	xmmu.rcr = 0x06;
 
@@ -151,12 +151,12 @@ void bnk_init()
 }
 
 void bnk_exit()
-// Retsore to default situtation for shared memory
+// Retsore to default situation for shared memory
 {
 	// Set 8Kb shared memory size
 	// So set MMU Ram Configuration Register at:
 	// - bit 0-1:   %00 for 1 KB common RAM
-	// - bit 2-3:   %01 for bootom of RAM bank 0 is common
+	// - bit 2-3:   %01 for bottom of RAM bank 0 is common
 	// - bit 7:     $0 for VIC RAM in bank 0
 	xmmu.rcr = 0x04;
 }
@@ -272,7 +272,7 @@ void bnk_cpyfromvdc(char dcr, volatile char *dp, unsigned vdcsrc, unsigned size)
 
 void bnk_redef_charset(unsigned vdcdest, char scr, volatile char *sp, unsigned size)
 // Function to copy charset definition from normal memory to VDC
-// Input: Source normal memory address and bank config where charset defintion resides,
+// Input: Source normal memory address and bank config where charset definition resides,
 //		  Destination address in VDC memory,
 //		  Numbers of characters to redefine.
 // Takes charset definition of 8 bytes per character as input.
@@ -321,7 +321,7 @@ void freeDir()
 }
 
 void dir_close(char lfn)
-// Closse a directory opened for reading
+// Close a directory opened for reading
 {
     // Reset channels
     krnio_clrchn();
@@ -374,7 +374,7 @@ char dir_open(char lfn, unsigned char device)
         }
     }
 
-    // Return error code or 0 on succcess
+    // Return error code or 0 on success
     return error;
 }
 
@@ -768,14 +768,14 @@ bool bnk_load(char device, char bank, const char *start, const char *fname)
 bool bnk_save(char device, char bank, const char *start, const char *end, const char *fname)
 // Save from the specified bank
 {
-	char succes;
+	char success;
 	krnio_setbnk(bank, 0);
 	krnio_setnam(fname);
 
-	succes = krnio_save(device, start, end);
+	success = krnio_save(device, start, end);
 
 	krnio_setbnk(0, 0);
-	return succes;
+	return success;
 }
 
 int bnk_io_read(char fnum, char cr, char * data, int num)

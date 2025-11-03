@@ -13,7 +13,7 @@ Code and resources from others used:
 
 	https://github.com/drmortalwombat/oscar64
 
-	Many thanks also to https://github.com/drmortalwombat to provide extrordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
+	Many thanks also to https://github.com/drmortalwombat to provide extraordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
 
 -   Screens used in the demo made with my own VDC Screen Editor.
 
@@ -256,7 +256,7 @@ static inline char p2s(char ch)
 }
 
 static inline char s2p(char ch)
-// Screencode to PETSCII converion
+// Screencode to PETSCII conversion
 {
 	return ch ^ s2pmap[ch >> 5];
 }
@@ -935,7 +935,7 @@ void vdcwin_printwrap(struct VDCWin *win, const char *str)
 
 void vdcwin_viewport_init(struct VDCViewport *vp, char *sourcebase, unsigned sourcewidth, unsigned sourceheight, unsigned viewwidth, unsigned viewheight, char viewsx, char viewsy)
 // Initialize a viewport of screen data in memory
-// Inpuut: Viewport struct to use and base source dimensions, view window start coord and dimensions
+// Input: Viewport struct to use and base source dimensions, view window start coord and dimensions
 {
 	vp->sourcebase = sourcebase;
 	vp->sourcewidth = sourcewidth;
@@ -949,7 +949,7 @@ void vdcwin_cpy_viewport(struct VDCViewport *viewport)
 // Function to copy a viewport on the source screen map to the VDC
 // Input: Initialised viewport struct
 {
-	// Charachters
+	// Characters
 	unsigned vdcbase = viewport->view.sp;
 	char *address = viewport->sourcebase + (viewport->sourceyoffset * viewport->sourcewidth) + viewport->sourcexoffset;
 
@@ -1012,7 +1012,7 @@ void vdcwin_viewportscroll(struct VDCViewport *viewport, char direction)
 }
 
 char vdc_softscroll_init(struct VDCSoftScrollSettings *settings, char mode)
-// Initialisize virtual screen for softscroll. Returns 1 on succes, 0 in fail
+// Initialisize virtual screen for softscroll. Returns 1 on success, 0 in fail
 {
 	unsigned vdcsize = settings->width * settings->height;
 	unsigned sourcesize = vdcsize + vdcsize + 48;
@@ -1033,7 +1033,7 @@ char vdc_softscroll_init(struct VDCSoftScrollSettings *settings, char mode)
 	vdc_state.disp_skip = settings->width - vdc_state.width;
 	vdc_set_multab();
 
-	// Set up virtual sceen and copy contents to it
+	// Set up virtual screen and copy contents to it
 	vdc_cls();
 	vdc_set_charset_address(vdc_state.char_std);
 	vdc_restore_charsets();

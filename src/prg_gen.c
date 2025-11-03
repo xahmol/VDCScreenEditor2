@@ -12,7 +12,7 @@ Code and resources from others used:
 
     https://github.com/drmortalwombat/oscar64
 
-    Many thanks also to https://github.com/drmortalwombat to provide extrordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
+    Many thanks also to https://github.com/drmortalwombat to provide extraordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
 
 -   C128 Programmers Reference Guide: For the basic VDC register routines and VDC code inspiration
     http://www.zimmers.net/anonftp/pub/cbm/manuals/c128/C128_Programmers_Reference_Guide.pdf
@@ -71,7 +71,7 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "vdcwin_nobnk.h"
 #include "bank_minimal.h"
 
-// Viewer data addess. Align with the address of the view struct in view.c
+// Viewer data address. Align with the address of the view struct in view.c
 #define VIEW 0x1c80
 #define BASICSTART 0x1c01
 #define MEMSTART 0x4600
@@ -387,7 +387,7 @@ void freeDir()
 }
 
 void dir_close(char lfn)
-// Closse a directory opened for reading
+// Close a directory opened for reading
 {
     // Reset channels
     krnio_clrchn();
@@ -440,7 +440,7 @@ char dir_open(char lfn, unsigned char device)
         }
     }
 
-    // Return error code or 0 on succcess
+    // Return error code or 0 on success
     return error;
 }
 

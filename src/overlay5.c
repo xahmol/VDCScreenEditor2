@@ -12,7 +12,7 @@ Code and resources from others used:
 
     https://github.com/drmortalwombat/oscar64
 
-    Many thanks also to https://github.com/drmortalwombat to provide extrordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
+    Many thanks also to https://github.com/drmortalwombat to provide extraordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
 
 -   C128 Programmers Reference Guide: For the basic VDC register routines and VDC code inspiration
     http://www.zimmers.net/anonftp/pub/cbm/manuals/c128/C128_Programmers_Reference_Guide.pdf
@@ -106,7 +106,7 @@ char importread(char device, const char *filename)
     // Open file and return status
     status = krnio_open(1, device, 2);
 
-    // If open is succesful, read contents
+    // If open is successful, read contents
     if (status)
     {
         // Skip loadddress if asked

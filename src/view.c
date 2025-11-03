@@ -12,7 +12,7 @@ Code and resources from others used:
 
     https://github.com/drmortalwombat/oscar64
 
-    Many thanks also to https://github.com/drmortalwombat to provide extrordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
+    Many thanks also to https://github.com/drmortalwombat to provide extraordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
 
 -   C128 Programmers Reference Guide: For the basic VDC register routines and VDC code inspiration
     http://www.zimmers.net/anonftp/pub/cbm/manuals/c128/C128_Programmers_Reference_Guide.pdf
@@ -119,7 +119,7 @@ void check_charsets()
 }
 
 char right_check()
-// Check right boundery
+// Check right boundary
 {
     if (softscroll.hscroll > 5)
     {
@@ -132,7 +132,7 @@ char right_check()
 }
 
 char down_check()
-// Check down boundery
+// Check down boundary
 {
     if (softscroll.vscroll == 6)
     {
@@ -145,7 +145,7 @@ char down_check()
 }
 
 char left_check()
-// Check right boundery
+// Check right boundary
 {
     if (softscroll.hscroll == softscroll.hscroll_def)
     {
@@ -158,7 +158,7 @@ char left_check()
 }
 
 char up_check()
-// Check down boundery
+// Check down boundary
 {
     if (softscroll.vscroll == 0)
     {

@@ -50,16 +50,16 @@ Commodore 128 80 column screen editor - version 2
 Version v20-20240611-1354:
 - Bugfix release:
     - SOLVED: Saving charactersets crashes the program
-    - SOLVED: If placing chararcters after prefiled filename extra characters are added.
+    - SOLVED: If placing characters after prefiled filename extra characters are added.
 
 Version v20-20240421-1404:
 - First release of v2 version of VDCSE
 - Completely rebuild using the Oscar64 compiler (previously CC65)
 - Added support for multiple VDC text screen modes, including 80x50 (ideal for C64 PETSCII art aspect ratio). NB: Needs a C128 with 64KB VDC RAM to have still also room for swap VDC memory.
 - Added import and export functions: Import of both raw screen data in PRG files, or BBS Petscii code sequences in SEQ format export to SEQ format. SEQ format can be a.o. used to import from and export to other PETSCII editors like Petmate 9.
-- Import functions include a VIC to VDC colour converter. Which is obviously a comprimise as VDC has only one color as alternative for the VIC pairs Orange/Brown (both convert to VDC Dark Yellow) and Light Grey/Medium Grey (both convert to VDC Light Grey), and the other colours have different hues on VDC than on VIC (for example light red from a pink like hue on VIC to red on VDC)
+- Import functions include a VIC to VDC colour converter. Which is obviously a compromise as VDC has only one color as alternative for the VIC pairs Orange/Brown (both convert to VDC Dark Yellow) and Light Grey/Medium Grey (both convert to VDC Light Grey), and the other colours have different hues on VDC than on VIC (for example light red from a pink like hue on VIC to red on VDC)
 - Import can be done to any given coordinate in the existing project, canvas is automatically enlarged if needed to make it fit.
-- VDCSE2PRG program generator now supports all screensizes that fit in memory and supports the different screenmodes. Features scrolling for sizes bigger than the screensize: smooth scrolling on 64 KB VDC RAM equiped machine and per char vertical scroll (no horizontal scroll) with 16 KB VDC. Project files can now be selected using a filebrowser.
+- VDCSE2PRG program generator now supports all screensizes that fit in memory and supports the different screenmodes. Features scrolling for sizes bigger than the screensize: smooth scrolling on 64 KB VDC RAM equipped machine and per char vertical scroll (no horizontal scroll) with 16 KB VDC. Project files can now be selected using a filebrowser.
 - Many smaller refinements and bugfixes
 
 Version v099-20220324-1527:
@@ -69,7 +69,7 @@ Version v099-20220324-1527:
 - Statusbar shows present mode, co-ordinates, plot screencode (visual and as hexcode), plot color (visual and as number) and shows REV UND BLI ALT if these attributes (reverse, underline, blink and alternate charset) are enabled, shows nothing if disabled. Also hints at F8 for help.
 - Added Try mode: pressing T shows the present selected character as plotted without cursor blinking. Pressing space in this mode plots the character for real, any other character cancels and returns without plotting.
 - Tweaked pulldown menus so that the cyan also is visible different from yellow on a monochrome monitor. Added a minus to show the actual selection to also be able to distinguish selected option without needing the colors.
-- Added cancel option in all load and save dialogues by pressing ESC or STOP on devide ID or filename input
+- Added cancel option in all load and save dialogues by pressing ESC or STOP on device ID or filename input
 - Small change: title screen shows load progress
 
 Version v090-20220309-1618:
@@ -202,7 +202,7 @@ Press these keys in main mode for editing:
 
 *Moving cursor*
 
-Press the **cursor keys** to move the cursor around the screen. If the canvas size is bigger than the 80x25 screensize, the sreen will scroll on reaching the edges.
+Press the **cursor keys** to move the cursor around the screen. If the canvas size is bigger than the 80x25 screensize, the screen will scroll on reaching the edges.
 
 Pressing **HOME** will return the cursor to the upper left position.
 
@@ -262,7 +262,7 @@ From left to right, this status bar shows:
 - X,Y: X and Y co-ordinates of the cursor (co-ordinates of the large full screen, and not only the visible screen, if a larger screen than 80 by 25 characters is selected)
 - Char: the present selected character to plot, first as actual visual character, then as screencode number in hexadecimal
 - Color: the present selected color to plot, first as actual visual color, then as color number
-- Atrributes: this shows the enabled attributes, REV for Reverse, UND for Underline, BLI for Blink and ALT for Alternate character set. If the abbreviation is shown, the corresponding attribute is enabled, else disabled.
+- Attributes: this shows the enabled attributes, REV for Reverse, UND for Underline, BLI for Blink and ALT for Alternate character set. If the abbreviation is shown, the corresponding attribute is enabled, else disabled.
 - Reference that F8 gives you the help screen
 
 The status bar auto hides if the cursor is moved to the lowest visible line on the screen, and pops up again (if enabled in the first place) when the cursor moves up.
@@ -339,7 +339,7 @@ Similar to clear, but this will fill the canvas with the present selected [scree
 
 ![File menu](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20File%20menu.png?raw=true)
 
-In general: pressing **ESC** or **STOP** on any devide ID or filename input dialogue cancels the file operation.
+In general: pressing **ESC** or **STOP** on any device ID or filename input dialogue cancels the file operation.
 
 *Save screen*
 
@@ -433,7 +433,7 @@ Pick Both, Chars or Color for importing resp. both text and attributes from the 
 
 Pick Yes or No from the pulldown menu to indicate ifthe colour data in the file to import is coded for VIC colours. If selected yes, the VIC coded colours will be converted to VDC colours.
 
-**NB: The colour conversion is a comprimise** as VDC has only one color as alternative for the VIC pairs Orange/Brown (both convert to VDC Dark Yellow) and Light Grey/Medium Grey (both convert to VDC Light Grey), and the other colours have different hues on VDC than on VIC (for example light red from a pink like hue on VIC to red on VDC)
+**NB: The colour conversion is a compromise** as VDC has only one color as alternative for the VIC pairs Orange/Brown (both convert to VDC Dark Yellow) and Light Grey/Medium Grey (both convert to VDC Light Grey), and the other colours have different hues on VDC than on VIC (for example light red from a pink like hue on VIC to red on VDC)
 
 ***Uppercase charset?**
 
@@ -441,7 +441,7 @@ In case VIC colour conversion is selected, the dialogue also asks if the importe
 
 ***Enter offset char to colour***
 
-Enter the offset in bytes between the text and attribute data in the file to be imported. Note that only files with first text, and then attribute data are suppported.
+Enter the offset in bytes between the text and attribute data in the file to be imported. Note that only files with first text, and then attribute data are supported.
 
 Enter 0 if the attribute data is directly after the text data, but enter the offset if there is a gap between the two in the file.
 
@@ -611,7 +611,7 @@ Press the **cursor keys** to move the cursor around the grid. You can move over 
 
 *Selecting character*
 
-Press **SPACE** or **ENTER** to select the hightlighted characters as new character to plot with. This leaves the palette mode.
+Press **SPACE** or **ENTER** to select the highlighted characters as new character to plot with. This leaves the palette mode.
 
 *Storing to a favorite slot*
 
@@ -793,12 +793,12 @@ Leave Color write mode by pressing **ESC** or **STOP**. **F8** will show a help 
 VDCSE2PRG is a separate utility to create an executable program file for the C128 of a VDCSE project. All screenmodes, redefined charsets and all screensizes are supported, only limit is that data for the screen and charsets combined must fit in 31.232 bytes (approx. 30 kilobytes).
 
 The generated executable program supports:
-- All screenmodes supoorted by VDCSE2
+- All screenmodes supported by VDCSE2
 - All screensizes, also smaller or bigger than the screensize of the selected screenmode and redefined charsets, as long as it fits in the designated 30 kilobytes target memory
-- If the screen is larger than the screensize of the selected screen mode, automated scrolling is supoorted. Note that smooth scroll in both the vertical as horizontal direction is only supoorted on 64 KB VDC RAM machines, on 16 KB VDC RAM machines only vertical per char scroll is supported.
+- If the screen is larger than the screensize of the selected screen mode, automated scrolling is supported. Note that smooth scroll in both the vertical as horizontal direction is only supported on 64 KB VDC RAM machines, on 16 KB VDC RAM machines only vertical per char scroll is supported.
 - The generated program will detect VDC RAM size automatically and choose the proper scroll mode if needed (or exit with a message if horizontal scrolling would be needed given the screensize, while only 16 KB VDC RAM is available.)
 
-This is a seperate utility which can not be started from the VDCSE main program but has to be started seperately by loading the VDCSE2PRG file from disk with for example RUN"VDCSE2PRG",U(device number).
+This is a separate utility which can not be started from the VDCSE main program but has to be started separately by loading the VDCSE2PRG file from disk with for example RUN"VDCSE2PRG",U(device number).
 
 Running this program first gives a filebrowser to select the VDCSE project file to base the generated program on. The browser filters to show only project files, pick the desired one using the filebrowser interface.
 
@@ -913,7 +913,7 @@ Code and resources from others used:
 
     https://github.com/drmortalwombat/oscar64
 
-    Many thanks also to https://github.com/drmortalwombat to provide extrordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
+    Many thanks also to https://github.com/drmortalwombat to provide extraordinary support and tips for making this and adapting Oscar64 to my needs faster than I could ask it.
 
 -   C128 Programmers Reference Guide: For the basic VDC register routines and VDC code inspiration
     http://www.zimmers.net/anonftp/pub/cbm/manuals/c128/C128_Programmers_Reference_Guide.pdf
