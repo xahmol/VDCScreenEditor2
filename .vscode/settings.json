@@ -1,24 +1,5 @@
 {
     "files.associations": {
-        "array": "c",
-        "string_view": "c",
-        "initializer_list": "c",
-        "utility": "c",
-        "vdc_softscroll.h": "c",
-        "vdc.h": "c",
-        "mmu.h": "c",
-        "conio.h": "c",
-        "petscii.h": "c",
-        "stdlib.h": "c",
-        "vdc_core.h": "c",
-        "peekpoke.h": "c",
-        "overlay2.h": "c",
-        "system_error": "c",
-        "vdcwin_nobnk.h": "c",
-        "bank_minimal.h": "c",
-        "cia.h": "c",
-        "string": "c",
-        "string.h": "c",
-        "defines.h": "c"
+        "**/*.h": "c"
     }
 }
