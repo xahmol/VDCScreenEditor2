@@ -227,6 +227,13 @@ char dosCommand(const char lfn, const char drive, const char sec_addr, const cha
         return krnio_status();
     }
 
+    if (res < 2 ||
+        !isdigit((unsigned char)DOSstatus[0]) ||
+        !isdigit((unsigned char)DOSstatus[1]))
+    {
+        return krnio_status();
+    }
+
     return (DOSstatus[0] - 48) * 10 + DOSstatus[1] - 48;
 }
 
@@ -255,7 +262,9 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
 {
 
     char c;
-    char idx = strlen(str);
+    unsigned char idx = strlen(str);
+    unsigned char len;
+    unsigned char scan;
 
     if (idx)
     {
@@ -286,12 +295,12 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
                 vdcwin_cursor_toggle(&fullscreen);
                 --idx;
                 vdc_printc(xpos + idx, ypos, CH_SPACE, mc_menupopup);
-                for (c = idx; 1; ++c)
+                for (scan = idx; 1; ++scan)
                 {
-                    char b = str[c + 1];
-                    str[c] = b;
+                    char b = str[scan + 1];
+                    str[scan] = b;
 
-                    vdc_printc(xpos + c, ypos, b ? pet2screen(b) : CH_SPACE, mc_menupopup);
+                    vdc_printc(xpos + scan, ypos, b ? pet2screen(b) : CH_SPACE, mc_menupopup);
                     if (b == 0)
                     {
                         break;
@@ -303,19 +312,18 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
             break;
 
         case CH_INS:
-            c = strlen(str);
-            if (c < size && c > 0 && idx < c)
+            len = strlen(str);
+            if (len < size && len > 0 && idx < len)
             {
                 vdcwin_cursor_toggle(&fullscreen);
-                ++c;
-                while (c >= idx)
+                while (1)
                 {
-                    str[c + 1] = str[c];
-                    if (c == 0)
+                    str[len + 1] = str[len];
+                    if (len == idx)
                     {
                         break;
                     }
-                    --c;
+                    --len;
                 }
                 str[idx] = ' ';
                 vdc_prints(xpos, ypos, str);
@@ -345,7 +353,7 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
             break;
 
         default:
-            if (isprint(c) && idx < size)
+            if (isprint((unsigned char)c) && idx < size)
             {
                 char flag = (str[idx] == 0);
                 str[idx] = c;
@@ -356,7 +364,7 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
                 vdcwin_cursor_toggle(&fullscreen);
                 if (flag)
                 {
-                    str[idx + 1] = 0;
+                    str[idx] = 0;
                 }
                 break;
             }
@@ -449,6 +457,8 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
 {
     char b, len;
     char i = 0;
+    char type_known = 0;
+    char quote_end = 0;
 
     // check that device is ready
     b = krnio_chrin();
@@ -521,6 +531,11 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
         break;
     }
 
+    if (len < 3)
+    {
+        return 3;
+    }
+
     // parse file name
 
     // skip until first "
@@ -529,74 +544,90 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
         // do nothing
     }
 
+    if (i == sizeof(linebuffer))
+    {
+        return 3;
+    }
+
     // copy filename, until " or max size
     b = 0;
     for (++i; i < sizeof(linebuffer) && linebuffer[i] != '"' && b < 16; ++i)
     {
         l_dirent->name[b++] = linebuffer[i];
     }
+    quote_end = i;
 
     // check file type
     if (X('p', 'r', 'g'))
     {
         l_dirent->type = CBM_T_PRG;
+        type_known = 1;
     }
     else if (X('s', 'e', 'q'))
     {
         l_dirent->type = CBM_T_SEQ;
+        type_known = 1;
     }
     else if (X('u', 's', 'r'))
     {
         l_dirent->type = CBM_T_USR;
+        type_known = 1;
     }
     else if (X('d', 'e', 'l'))
     {
         l_dirent->type = CBM_T_DEL;
+        type_known = 1;
     }
     else if (X('r', 'e', 'l'))
     {
         l_dirent->type = CBM_T_REL;
+        type_known = 1;
     }
     else if (X('c', 'b', 'm'))
     {
         l_dirent->type = CBM_T_CBM;
+        type_known = 1;
     }
     else if (X('d', 'i', 'r'))
     {
         l_dirent->type = CBM_T_DIR;
+        type_known = 1;
     }
     else if (X('v', 'r', 'p'))
     {
         l_dirent->type = CBM_T_VRP;
+        type_known = 1;
     }
     else if (X('l', 'n', 'k'))
     {
         l_dirent->type = CBM_T_LNK;
+        type_known = 1;
     }
-    else
+
+    if (!type_known)
     {
         // parse header
         l_dirent->type = CBM_T_HEADER;
 
         // skip one character which should be "
-        if (linebuffer[i] == '"')
+        if (quote_end < sizeof(linebuffer) && linebuffer[quote_end] == '"')
         {
-            ++i;
+            ++quote_end;
         }
         // skip one character which should be space
-        if (linebuffer[i] == ' ')
+        if (quote_end < sizeof(linebuffer) && linebuffer[quote_end] == ' ')
         {
-            ++i;
+            ++quote_end;
         }
 
         // copy disk ID
         for (b = 0; b < DISK_ID_LEN; ++b)
         {
-            if (linebuffer[i])
+            if (quote_end < sizeof(linebuffer) && linebuffer[quote_end])
             {
-                disk_id_buf[b] = linebuffer[i];
+                disk_id_buf[b] = linebuffer[quote_end];
             }
-            i++;
+            ++quote_end;
         }
         disk_id_buf[b] = 0;
 
@@ -617,7 +648,15 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
     }
 
     // parse read-only
-    l_dirent->access = (linebuffer[i - 4] == 0x3C) ? CBM_A_RO : CBM_A_RW;
+    l_dirent->access = CBM_A_RW;
+    for (i = quote_end + 1; i < len; ++i)
+    {
+        if (linebuffer[i] == 0x3C)
+        {
+            l_dirent->access = CBM_A_RO;
+            break;
+        }
+    }
 
     return 0;
 }
@@ -1245,21 +1284,29 @@ int main(void)
     {
         error_message();
     }
-    charsetchanged[0] = projbuffer[0];
-    charsetchanged[1] = projbuffer[1];
-    view.width = projbuffer[4] * 256 + projbuffer[5];
-    view.height = projbuffer[6] * 256 + projbuffer[7];
-    view.background = projbuffer[10];
-    view.mode = projbuffer[22];
-    view.screensize = view.width * view.height;
-    totalscreensize = (view.screensize * 2) + 48;
+    charsetchanged[0] = projbuffer[0] ? 1 : 0;
+    charsetchanged[1] = projbuffer[1] ? 1 : 0;
+    view.width = ((unsigned char)projbuffer[4] << 8) | (unsigned char)projbuffer[5];
+    view.height = ((unsigned char)projbuffer[6] << 8) | (unsigned char)projbuffer[7];
+    view.background = (unsigned char)projbuffer[10];
+    view.mode = (unsigned char)projbuffer[22];
+    view.screensize = SCREENMAP_DATA_BYTES(view.width, view.height);
+    totalscreensize = SCREENMAP_STORAGE_BYTES(view.width, view.height);
+
+    if (!view.width ||
+        !view.height ||
+        totalscreensize > ((unsigned long)MEMMAX - (unsigned long)MEMSTART + 1UL) ||
+        view.mode > VDC_TEXT_80x60_NTSC)
+    {
+        error_message();
+    }
 
     // Strip .proj extension
     filename[strlen(filename) - 5] = 0;
 
     // Calculate screen address
     address = (char *)MEMSTART;
-    if (address + totalscreensize > (char *)MEMMAX)
+    if ((unsigned long)address + totalscreensize > (unsigned long)MEMMAX + 1UL)
     {
         too_big();
     }
@@ -1269,7 +1316,7 @@ int main(void)
     // Calculate std charset address if needed
     if (charsetchanged[0])
     {
-        if (address + 0x0800 > (char *)MEMMAX)
+        if ((unsigned long)address + 0x0800UL > (unsigned long)MEMMAX + 1UL)
         {
             too_big();
         }
@@ -1280,7 +1327,7 @@ int main(void)
     // Calculate alt charset address if needed
     if (charsetchanged[1])
     {
-        if (address + 0x0800 > (char *)MEMMAX)
+        if ((unsigned long)address + 0x0800UL > (unsigned long)MEMMAX + 1UL)
         {
             too_big();
         }

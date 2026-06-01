@@ -113,7 +113,7 @@ void loadscreenmap()
     textInput(21, 11, buffer, 3);
     newheight = (unsigned)strtol(buffer, &ptrend, 10);
 
-    if ((newwidth * newheight * 2) + 48 > maxsize)
+    if (SCREENMAP_STORAGE_BYTES(newwidth, newheight) > maxsize)
     {
         vdc_prints(21, 12, "New size unsupported. Press key.");
         getch();
@@ -280,6 +280,12 @@ void loadproject()
 {
     char projbuffer[23];
     char oldcharchanged[2];
+    unsigned new_screen_col;
+    unsigned new_screen_row;
+    unsigned new_sourcewidth;
+    unsigned new_sourceheight;
+    unsigned new_screentotal;
+    unsigned new_mode;
     memset(projbuffer, 0, 23);
 
     if (!filepicker(1))
@@ -297,31 +303,49 @@ void loadproject()
         return;
     }
 
+    new_screen_col = (unsigned char)projbuffer[2];
+    new_screen_row = (unsigned char)projbuffer[3];
+    new_sourcewidth = ((unsigned char)projbuffer[4] << 8) | (unsigned char)projbuffer[5];
+    new_sourceheight = ((unsigned char)projbuffer[6] << 8) | (unsigned char)projbuffer[7];
+    new_mode = (unsigned char)projbuffer[22];
+    new_screentotal = SCREENMAP_DATA_BYTES(new_sourcewidth, new_sourceheight);
+
+    if (!new_sourcewidth ||
+        !new_sourceheight ||
+        new_screen_col >= new_sourcewidth ||
+        new_screen_row >= new_sourceheight ||
+        SCREENMAP_STORAGE_BYTES(new_sourcewidth, new_sourceheight) > (unsigned long)(MEMORYLIMIT - SCREENMAPBASE) ||
+        new_mode > VDC_TEXT_80x60_NTSC)
+    {
+        menu_messagepopup("Invalid project file.");
+        return;
+    }
+
     oldcharchanged[0] = charsetchanged[0];
     oldcharchanged[1] = charsetchanged[1];
-    charsetchanged[0] = projbuffer[0];
-    charsetchanged[1] = projbuffer[1];
-    screen_col = projbuffer[2];
-    screen_row = projbuffer[3];
-    canvas.sourcewidth = projbuffer[4] * 256 + projbuffer[5];
-    canvas.sourceheight = projbuffer[6] * 256 + projbuffer[7];
-    screentotal = projbuffer[8] * 256 + projbuffer[9];
-    screenbackground = projbuffer[10];
+    charsetchanged[0] = projbuffer[0] ? 1 : 0;
+    charsetchanged[1] = projbuffer[1] ? 1 : 0;
+    screen_col = new_screen_col;
+    screen_row = new_screen_row;
+    canvas.sourcewidth = new_sourcewidth;
+    canvas.sourceheight = new_sourceheight;
+    screentotal = new_screentotal;
+    screenbackground = (unsigned char)projbuffer[10];
     vdc_bgcolor(screenbackground);
-    mc_mb_normal = projbuffer[11];
-    mc_mb_select = projbuffer[12];
-    mc_pd_normal = projbuffer[13];
-    mc_pd_select = projbuffer[14];
-    mc_menupopup = projbuffer[15];
-    plotscreencode = projbuffer[16];
-    plotcolor = projbuffer[17];
-    plotreverse = projbuffer[18];
-    plotunderline = projbuffer[19];
-    plotblink = projbuffer[20];
-    plotaltchar = projbuffer[21];
-    if (projbuffer[22] != vdc_state.mode)
+    mc_mb_normal = (unsigned char)projbuffer[11];
+    mc_mb_select = (unsigned char)projbuffer[12];
+    mc_pd_normal = (unsigned char)projbuffer[13];
+    mc_pd_select = (unsigned char)projbuffer[14];
+    mc_menupopup = (unsigned char)projbuffer[15];
+    plotscreencode = (unsigned char)projbuffer[16];
+    plotcolor = (unsigned char)projbuffer[17];
+    plotreverse = (unsigned char)projbuffer[18];
+    plotunderline = (unsigned char)projbuffer[19];
+    plotblink = (unsigned char)projbuffer[20];
+    plotaltchar = (unsigned char)projbuffer[21];
+    if (new_mode != vdc_state.mode)
     {
-        vdc_set_mode(projbuffer[22]);
+        vdc_set_mode(new_mode);
     }
     updatecanvas();
 

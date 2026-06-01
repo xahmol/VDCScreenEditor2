@@ -1039,10 +1039,15 @@ bool vdcwin_win_new(char border, char xpos, char ypos, char width, char height)
 	}
 
 	// Calculate needed memory and return if insufficient memory left
-	size = width * height * 2;
-	if (winCfg.memactive + size > winCfg.membase + winCfg.memsize - 2)
 	{
-		return false;
+		unsigned long needed = (unsigned long)iwidth * (unsigned long)iheight * 2UL;
+		unsigned long limit = (unsigned long)winCfg.membase + (unsigned long)winCfg.memsize - 2UL;
+		if (needed > 0xffffUL ||
+			(unsigned long)winCfg.memactive + needed > limit)
+		{
+			return false;
+		}
+		size = needed;
 	}
 
 	// Check if not at window maximum

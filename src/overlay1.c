@@ -655,7 +655,7 @@ void resizewidth()
         newwidth = (unsigned)strtol(buffer, &ptrend, 10);
     }
 
-    if ((newwidth * canvas.sourceheight * 2) + 48 > maxsize || !newwidth)
+    if (!newwidth || SCREENMAP_STORAGE_BYTES(newwidth, canvas.sourceheight) > maxsize)
     {
         vdc_prints(21, 11, "New size unsupported. Press key.");
         getch();
@@ -733,7 +733,7 @@ void resizeheight()
     unsigned maxsize = MEMORYLIMIT - SCREENMAPBASE;
     char areyousure = 0;
     char sizechanged = 0;
-    char y;
+    unsigned y;
     char *ptrend;
 
     vdc_state.text_attr = mc_menupopup;
@@ -750,7 +750,7 @@ void resizeheight()
         newheight = (unsigned)strtol(buffer, &ptrend, 10);
     }
 
-    if ((newheight * canvas.sourcewidth * 2) + 48 > maxsize || !newheight)
+    if (!newheight || SCREENMAP_STORAGE_BYTES(canvas.sourcewidth, newheight) > maxsize)
     {
         vdc_prints(21, 11, "New size unsupported. Press key.");
         getch();

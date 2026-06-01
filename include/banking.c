@@ -383,6 +383,8 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
 {
     char b, len;
     char i = 0;
+    char type_known = 0;
+    char quote_end = 0;
 
     // check that device is ready
     b = krnio_chrin();
@@ -455,6 +457,11 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
         break;
     }
 
+    if (len < 3)
+    {
+        return 3;
+    }
+
     // parse file name
 
     // skip until first "
@@ -463,74 +470,90 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
         // do nothing
     }
 
+    if (i == sizeof(linebuffer))
+    {
+        return 3;
+    }
+
     // copy filename, until " or max size
     b = 0;
     for (++i; i < sizeof(linebuffer) && linebuffer[i] != '"' && b < 16; ++i)
     {
         l_dirent->name[b++] = linebuffer[i];
     }
+    quote_end = i;
 
     // check file type
     if (X('p', 'r', 'g'))
     {
         l_dirent->type = CBM_T_PRG;
+        type_known = 1;
     }
     else if (X('s', 'e', 'q'))
     {
         l_dirent->type = CBM_T_SEQ;
+        type_known = 1;
     }
     else if (X('u', 's', 'r'))
     {
         l_dirent->type = CBM_T_USR;
+        type_known = 1;
     }
     else if (X('d', 'e', 'l'))
     {
         l_dirent->type = CBM_T_DEL;
+        type_known = 1;
     }
     else if (X('r', 'e', 'l'))
     {
         l_dirent->type = CBM_T_REL;
+        type_known = 1;
     }
     else if (X('c', 'b', 'm'))
     {
         l_dirent->type = CBM_T_CBM;
+        type_known = 1;
     }
     else if (X('d', 'i', 'r'))
     {
         l_dirent->type = CBM_T_DIR;
+        type_known = 1;
     }
     else if (X('v', 'r', 'p'))
     {
         l_dirent->type = CBM_T_VRP;
+        type_known = 1;
     }
     else if (X('l', 'n', 'k'))
     {
         l_dirent->type = CBM_T_LNK;
+        type_known = 1;
     }
-    else
+
+    if (!type_known)
     {
         // parse header
         l_dirent->type = CBM_T_HEADER;
 
         // skip one character which should be "
-        if (linebuffer[i] == '"')
+        if (quote_end < sizeof(linebuffer) && linebuffer[quote_end] == '"')
         {
-            ++i;
+            ++quote_end;
         }
         // skip one character which should be space
-        if (linebuffer[i] == ' ')
+        if (quote_end < sizeof(linebuffer) && linebuffer[quote_end] == ' ')
         {
-            ++i;
+            ++quote_end;
         }
 
         // copy disk ID
         for (b = 0; b < DISK_ID_LEN; ++b)
         {
-            if (linebuffer[i])
+            if (quote_end < sizeof(linebuffer) && linebuffer[quote_end])
             {
-                disk_id_buf[b] = linebuffer[i];
+                disk_id_buf[b] = linebuffer[quote_end];
             }
-            i++;
+            ++quote_end;
         }
         disk_id_buf[b] = 0;
 
@@ -551,7 +574,15 @@ char dir_readentry(const char lfn, struct DirEntry *l_dirent)
     }
 
     // parse read-only
-    l_dirent->access = (linebuffer[i - 4] == 0x3C) ? CBM_A_RO : CBM_A_RW;
+    l_dirent->access = CBM_A_RW;
+    for (i = quote_end + 1; i < len; ++i)
+    {
+        if (linebuffer[i] == 0x3C)
+        {
+            l_dirent->access = CBM_A_RO;
+            break;
+        }
+    }
 
     return 0;
 }

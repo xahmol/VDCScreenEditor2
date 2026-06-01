@@ -24,6 +24,11 @@
 #define OVERLAYSIZE 0x1400 // Overlay size (align with config)
 #define OVERLAYLOAD 0xAC00 // Overlay load address (align with config=0xC000-OVERLAYSIZE)
 
+#define SCREENMAP_SIGNATURE_BYTES 48UL
+#define SCREENMAP_DATA_BYTES(width, height) ((unsigned long)(width) * (unsigned long)(height))
+#define SCREENMAP_STORAGE_BYTES(width, height) ((SCREENMAP_DATA_BYTES((width), (height)) * 2UL) + SCREENMAP_SIGNATURE_BYTES)
+#define UNDO_BUFFER_BYTES(width, height, redoroompresent) (SCREENMAP_DATA_BYTES((width), (height)) * (2UL + (2UL * (unsigned long)(redoroompresent))))
+
 struct OverlayStruct
 {
     char bank;
@@ -41,10 +46,10 @@ extern char undo_redopossible;
 struct UndoStruct
 {
     unsigned address;
-    char ystart;
-    char xstart;
-    char height;
-    char width;
+    unsigned ystart;
+    unsigned xstart;
+    unsigned height;
+    unsigned width;
     char redopresent;
 };
 extern struct UndoStruct Undo[41];

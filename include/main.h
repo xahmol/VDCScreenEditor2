@@ -15,7 +15,7 @@ void screenmapplot(char row, char col, char screencode, char attribute);
 void placesignature();
 void screenmapfill(char screencode, char attribute);
 void cursormove(char left, char right, char up, char down);
-void undo_new(char row, char col, char width, char height);
+void undo_new(unsigned row, unsigned col, unsigned width, unsigned height);
 void undo_performundo();
 void undo_escapeundo();
 void undo_performredo();

@@ -124,6 +124,43 @@ char buffer[81];
 char version[22];
 
 // Generic routines
+static char nextdeviceid(char device)
+{
+    return (device >= MAXDEVID) ? 8 : device + 1;
+}
+
+static char prevdeviceid(char device)
+{
+    return (device <= 8) ? MAXDEVID : device - 1;
+}
+
+static char findactivedevice(char startdevice, char forward)
+{
+    char attempts;
+    char device = startdevice;
+
+    for (attempts = 0; attempts <= (MAXDEVID - 8); attempts++)
+    {
+        if (bnk_iec_active(device))
+        {
+            targetdevice = device;
+            return 1;
+        }
+        device = forward ? nextdeviceid(device) : prevdeviceid(device);
+    }
+    return 0;
+}
+
+static void shownoactivedevice(char ypos)
+{
+    vdc_state.text_attr = mc_menupopup;
+    vdc_prints(21, ypos + 1, "No active IEC device found.");
+    vdc_prints(21, ypos + 2, "Press key.");
+    getch();
+    vdc_clear(20, ypos + 1, CH_SPACE, 40, 2);
+}
+
+// Generic routines
 char dosCommand(const char lfn, const char drive, const char sec_addr, const char *cmd)
 // Send DOS command - extended
 {
@@ -165,6 +202,13 @@ char dosCommand(const char lfn, const char drive, const char sec_addr, const cha
         return krnio_status();
     }
 
+    if (res < 2 ||
+        !isdigit((unsigned char)DOSstatus[0]) ||
+        !isdigit((unsigned char)DOSstatus[1]))
+    {
+        return krnio_status();
+    }
+
     return (DOSstatus[0] - 48) * 10 + DOSstatus[1] - 48;
 }
 
@@ -193,7 +237,9 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
 {
 
     char c;
-    char idx = strlen(str);
+    unsigned char idx = strlen(str);
+    unsigned char len;
+    unsigned char scan;
     char flag = 0;
 
     if (idx)
@@ -225,12 +271,12 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
                 vdcwin_cursor_toggle(&canvas.view);
                 --idx;
                 vdc_printc(xpos + idx, ypos, CH_SPACE, mc_menupopup);
-                for (c = idx; 1; ++c)
+                for (scan = idx; 1; ++scan)
                 {
-                    char b = str[c + 1];
-                    str[c] = b;
+                    char b = str[scan + 1];
+                    str[scan] = b;
 
-                    vdc_printc(xpos + c, ypos, b ? pet2screen(b) : CH_SPACE, mc_menupopup);
+                    vdc_printc(xpos + scan, ypos, b ? pet2screen(b) : CH_SPACE, mc_menupopup);
                     if (b == 0)
                     {
                         break;
@@ -242,19 +288,18 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
             break;
 
         case CH_INS:
-            c = strlen(str);
-            if (c < size && c > 0 && idx < c)
+            len = strlen(str);
+            if (len < size && len > 0 && idx < len)
             {
                 vdcwin_cursor_toggle(&canvas.view);
-                ++c;
-                while (c >= idx)
+                while (1)
                 {
-                    str[c + 1] = str[c];
-                    if (c == 0)
+                    str[len + 1] = str[len];
+                    if (len == idx)
                     {
                         break;
                     }
-                    --c;
+                    --len;
                 }
                 str[idx] = ' ';
                 vdc_prints(xpos, ypos, str);
@@ -284,7 +329,7 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
             break;
 
         default:
-            if (isprint(c) && idx < size)
+            if (isprint((unsigned char)c) && idx < size)
             {
                 flag = str[idx];
                 str[idx] = c;
@@ -295,7 +340,7 @@ signed textInput(char xpos, char ypos, char *str, unsigned char size)
                 vdcwin_cursor_toggle(&canvas.view);
                 if (!flag)
                 {
-                    str[idx + 1] = 0;
+                    str[idx] = 0;
                 }
                 break;
             }
@@ -691,12 +736,14 @@ void resetcursor()
 
 // Functions for undo system
 
-void undo_new(char row, char col, char width, char height)
+void undo_new(unsigned row, unsigned col, unsigned width, unsigned height)
 {
     // Function to create a new undo buffer position
 
-    char y;
+    unsigned y;
     char redoroompresent = 1;
+    unsigned long undoaddress_next;
+    unsigned long undo_bytes = UNDO_BUFFER_BYTES(width, height, 1);
 
     if (undo_redopossible > 0)
     {
@@ -712,14 +759,17 @@ void undo_new(char row, char col, char width, char height)
     {
         undonumber = 1;
     }
-    if (undoaddress + (width * height * 4) < undoaddress)
+    undoaddress_next = (unsigned long)undoaddress + undo_bytes;
+    if (undoaddress_next > 0x10000UL)
     {
         undonumber = 1;
         undoaddress = vdc_state.extended;
+        undoaddress_next = (unsigned long)undoaddress + undo_bytes;
     }
-    if (undoaddress + (width * height * 4) > (0xffff - vdc_state.extended))
+    if (undoaddress_next > (0x10000UL - (unsigned long)vdc_state.extended))
     {
         redoroompresent = 0;
+        undo_bytes = UNDO_BUFFER_BYTES(width, height, 0);
     }
     for (y = 0; y < height; y++)
     {
@@ -740,14 +790,14 @@ void undo_new(char row, char col, char width, char height)
     Undo[undonumber - 1].width = width;
     Undo[undonumber - 1].height = height;
     Undo[undonumber - 1].redopresent = redoroompresent;
-    undoaddress += width * height * (2 + (2 * redoroompresent));
+    undoaddress = (unsigned)((unsigned long)undoaddress + undo_bytes);
 }
 
 void undo_performundo()
 {
     // Function to perform an undo if a filled undo slot is present
 
-    char y, row, col, width, height;
+    unsigned y, row, col, width, height;
 
     if (undo_undopossible > 0)
     {
@@ -817,7 +867,7 @@ void undo_performredo()
 {
     // Function to perform an redo if a filled redo slot is present
 
-    char y, row, col, width, height;
+    unsigned y, row, col, width, height;
 
     if (undo_redopossible > 0)
     {
@@ -1449,6 +1499,12 @@ char choosedeviceid(char ypos)
     vdc_prints(21, ypos + 2, "Change with + / - key, RET to select.");
     vdc_state.text_attr = mc_pd_select;
 
+    if (!findactivedevice(targetdevice, 1))
+    {
+        shownoactivedevice(ypos);
+        return 0;
+    }
+
     do
     {
         sprintf(linebuffer, "%2u", targetdevice);
@@ -1459,30 +1515,18 @@ char choosedeviceid(char ypos)
         switch (key)
         {
         case '+':
-            if (++targetdevice > MAXDEVID)
+            if (!findactivedevice(nextdeviceid(targetdevice), 1))
             {
-                targetdevice = 8;
-            }
-            while (!bnk_iec_active(targetdevice))
-            {
-                if (++targetdevice > MAXDEVID)
-                {
-                    targetdevice = 8;
-                }
+                shownoactivedevice(ypos);
+                vdc_state.text_attr = mc_pd_select;
             }
             break;
 
         case '-':
-            if (--targetdevice < 8)
+            if (!findactivedevice(prevdeviceid(targetdevice), 0))
             {
-                targetdevice = MAXDEVID;
-            }
-            while (!bnk_iec_active(targetdevice))
-            {
-                if (--targetdevice < 8)
-                {
-                    targetdevice = MAXDEVID;
-                }
+                shownoactivedevice(ypos);
+                vdc_state.text_attr = mc_pd_select;
             }
             break;
 
@@ -1611,7 +1655,7 @@ char import_dialogue(char mode, const char *message)
     newwidth = importvars.xpos + importvars.width;
     newheight = importvars.ypos + importvars.height;
 
-    if ((newwidth * newheight * 2) + 48 > maxsize)
+    if (SCREENMAP_STORAGE_BYTES(newwidth, newheight) > maxsize)
     {
         vdc_prints(21, yc, "New size unsupported. Press key.");
         getch();
