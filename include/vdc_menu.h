@@ -80,14 +80,26 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #define VDC_MENUBAR_MAXLENGTH 12  // Maxiumum length of main menu bar option names
 #define VDC_PULLDOWN_NUMBER 8     // Number of pull down menus defined
 #define VDC_PULLDOWN_MAXOPTIONS 6 // Maximum number of options for pull down meus
-#define VDC_PULLDOWN_MAXLENGTH 16 // Maximum length of pull down menu option names
+#define VDC_PULLDOWN_MAXLENGTH 17 // Maximum length of pull down menu option names
 
 // Set default colours and styles to use
 #define VDC_MENUBAR_HEADERCOL VDC_LGREEN + VDC_A_ALTCHAR + VDC_A_REVERSE // Header bar color
-#define VDC_PULLDOWN_BORFULL 0                                           // Set borderstyle for separate pulldown
-#define VDC_PULLDOWN_BORTOP 0                                            // Set borderstyle for main menu pulldowns
-#define VDC_PULLDOWN_SELECTCH CH_MINUS                                   // Set char before selected option
-#define VDC_POPUP_BORDER 0                                               // Default pop-up border style
+#define VDC_PULLDOWN_SELECTCH CH_MINUS                                    // Set char before selected option
+
+// Define VDC_MENU_BORDERS to enable box-drawing character borders on menus and popups.
+// Leave undefined for no borders (required when the user can reload custom charsets).
+// Can also be set via compiler flag: -dVDC_MENU_BORDERS
+// #define VDC_MENU_BORDERS
+
+#ifdef VDC_MENU_BORDERS
+  #define VDC_PULLDOWN_BORFULL WIN_BOR_ALL
+  #define VDC_PULLDOWN_BORTOP  WIN_BOR_NOTOP
+  #define VDC_POPUP_BORDER     WIN_BOR_ALL
+#else
+  #define VDC_PULLDOWN_BORFULL 0
+  #define VDC_PULLDOWN_BORTOP  0
+  #define VDC_POPUP_BORDER     0
+#endif
 #define VDC_MENU_YESNO 7                                                 // Number for Yes No pull down menu
 
 // Function prototypes
@@ -99,6 +111,7 @@ char menu_main();
 char menu_areyousure(const char *message);
 void menu_fileerrormessage();
 void menu_messagepopup(const char *message);
+char menu_option_select(const char *message, char menunumber);
 
 // Variables
 struct VDCMenuBar

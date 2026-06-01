@@ -387,3 +387,23 @@ void menu_messagepopup(const char *message)
     vdcwin_win_free();
     vdc_state.text_attr = old_attr;
 }
+
+char menu_option_select(const char *message, char menunumber)
+// Show popup with message header and a pulldown menu for selection.
+// Returns pulldown result (1-N selected, 0 if cancelled with ESC).
+{
+    char choice;
+    char old_attr = vdc_state.text_attr;
+    char pd_height = pulldown_options[menunumber];
+    char pd_width = strlen(pulldown_titles[menunumber][0]) + 2;
+
+    vdc_state.text_attr = mc_menupopup;
+    // Outer window: 4 cols wider than pulldown (1 col margin each side + pulldown offset),
+    // 4 rows taller (1 for message, 1 blank row, border rows for inner pulldown).
+    vdcwin_win_new(VDC_POPUP_BORDER, 8, 8, pd_width + 4, pd_height + 4);
+    vdc_prints(10, 9, message);
+    choice = menu_pulldown(10, 11, menunumber, 1);
+    vdcwin_win_free();
+    vdc_state.text_attr = old_attr;
+    return choice;
+}

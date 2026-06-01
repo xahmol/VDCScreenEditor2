@@ -566,8 +566,8 @@ void export_seq()
     char status = 0;
     char overwrite, screencode, attr, ch;
     unsigned escapeflag, x, y;
-    struct ATTRVALS attr_present;
-    struct ATTRVALS attr_new;
+    struct ATTRVALS attr_present = {0};
+    struct ATTRVALS attr_new = {0};
 
     escapeflag = chooseidandfilename("Save screen", 15);
 

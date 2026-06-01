@@ -1,3 +1,13 @@
+# Local deployment config — never commit
+.env
+
+# Build outputs
+build/
+
+# Release ZIPs generated in project root
+vdcse_v20-*.zip
+.zip
+
 # Prerequisites
 *.d
 

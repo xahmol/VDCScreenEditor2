@@ -17,6 +17,8 @@
         "vdcwin_nobnk.h": "c",
         "bank_minimal.h": "c",
         "cia.h": "c",
-        "string": "c"
+        "string": "c",
+        "string.h": "c",
+        "defines.h": "c"
     }
 }
