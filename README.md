@@ -1,7 +1,7 @@
 # VDC Screen Editor 2
-Commodore 128 80 column screen editor - version 2
+Commodore 128 80-column screen editor, version 2.
 
-## Contents:
+## Contents
 
 [Version history and download](#version-history-and-download)
 
@@ -42,10 +42,9 @@ Commodore 128 80 column screen editor - version 2
 [Credits](#credits)
 
 
- ![VDCSE Title Screen](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Titlescreen.png?raw=true)
+ ![VDCSE Title Screen](screenshots/VDCSE2_Titlescreen.png)
 
 ## Version history and download
-([Back to contents](#contents))
 
 [Link to latest build](https://github.com/xahmol/VDCScreenEditor2/raw/main/vdcse_v20-20240611-1354.zip)
 
@@ -100,7 +99,6 @@ Version 090-20210922-2251:
 - First released beta version
 
 ## Building from source
-([Back to contents](#contents))
 
 ### Prerequisites
 
@@ -117,7 +115,7 @@ The compiler is expected at `/home/xahmol/oscar64/bin/oscar64`. Edit the `CC` va
 
 Create a `.env` file in the project root to configure deployment to your Ultimate II+. This file is gitignored and will never be committed:
 
-```
+```ini
 ULTIP1 = 192.168.1.xx       # IP of your primary Ultimate II+
 # ULTIP2 = 192.168.1.yy    # optional second machine
 ```
@@ -140,7 +138,6 @@ The Makefile constructs the FTP path as `ftp://$(ULTIP1)/usb1/temp/`. Override `
 | `make docs` | Regenerate `README.pdf` from `README.md` (requires pandoc) |
 
 ## Introduction
-([Back to contents](#contents))
 
 VDC Screen Editor v2 is an editor to create text based screens for the Commodore 128 VDC 80 column mode. It fully supports using user defined character sets and allows the use of two 256 character character sets at the same time.
 
@@ -161,7 +158,6 @@ Main features of the program:
 - Import from PRG screen memory dumps and import from and export to SEQ PETSCII sequences.
 
 ## Start program
-([Back to contents](#contents))
 
 Mount the VDCSE disk image. Choose the .D64, .D71 or .D81 image depending on what is supported on the hardware or emulator you use. The program will run the same from all three images, but the .D71 and especially the .D81 will be providing faster load times and more available free storage space for your screens if you want to save your work in this same image. The disk can be mounted from any valid device ID number.
 
@@ -199,11 +195,10 @@ All other files are supplied demo files:
 Leave the title screen by pressing any key.
 
 ## Main mode
-([Back to contents](#contents))
 
 After the title screen, the program starts in this mode. At start the screen shows this:
 
-![Screen in main mode](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20empty%20start%20screen.png?raw=true)
+![Screen in main mode](screenshots/VDCSE2_empty_start_screen.png)
 
 Only a blinking cursor with the presently selected [screencode](https://sta.c64.org/cbm64scr.html) and attributes is visible.
 
@@ -296,7 +291,7 @@ Press **F8** to show a help screen with all keyboard commands for this mode.
 ## Statusbar
 If enabled, the statusbar is plotted as this at the lowest line of the screen:
 
-![Status bar](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20statusbar.png?raw=true)
+![Status bar](screenshots/VDCSE2_statusbar.png)
 
 From left to right, this status bar shows:
 
@@ -312,11 +307,10 @@ The status bar auto hides if the cursor is moved to the lowest visible line on t
 Pressing **F6** toggles statusbar visibility in every mode.
 
 ## Main menu
-([Back to contents](#contents))
 
 From [main mode](#main-mode), press **F1** to go to the main menu. The following menu will pop up:
 
-![VDCSE Main Menu](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Main%20menu.png?raw=true)
+![VDCSE Main Menu](screenshots/VDCSE2_Main_menu.png)
 
 (NB: Note that if your design uses a changed alternate character set, the program will load the standard system font and you design might temporarily look incorrect. This will be restored on exiting the main menu. Also, the colors of the main menu and the highlight colors might differ if you have chosen a non-black background color, to ensure visibility of the menus).
 
@@ -331,7 +325,7 @@ Navigation in this menu is performed by the following keys:
 
 **_Screen menu_**
 
-![Screen menu](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20menu.png?raw=true)
+![Screen menu](screenshots/VDCSE2_Screen_menu.png)
 
 *Width: Resize width*
 
@@ -341,7 +335,7 @@ Note that with shrinking the width you might loose data, as all characters right
 
 NB: NO UNDO IS AVAILABLE FOR THIS, so if you confirm shrinking the size, all lost data is lost irretrievably.
 
-![Resize width](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20menu%20-%20width.png?raw=true)
+![Resize width](screenshots/VDCSE2_Screen_menu_-_width.png)
 
 *Height: Resize height*
 
@@ -349,7 +343,7 @@ Similar to resize width, with this option you can resize the height in the same 
 
 Also here: on shrinking you might loose data, which is lost if you confirm.
 
-![Resize height](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20menu%20-%20height.png?raw=true)
+![Resize height](screenshots/VDCSE2_Screen_menu_-_height.png)
 
 *Background: Change background color*
 
@@ -357,17 +351,17 @@ Select the background color. Note that if the chosen color is not black or grey,
 
 The color can be selected with the **+** and **-** keys to increase resp. decrease the color value. The background color will change directly accordingly. Press **ENTER** to accept the new color, or **ESC** or **STOP** to cancel.
 
-![Change background color](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20menu%20-%20bgcolor.png?raw=true)
+![Change background color](screenshots/VDCSE2_Screen_menu_-_bgcolor.png)
 
 *Screenmode: Change application screen mode*
 
 Select the screen mode. You can choose between 80x25, 80x50 and 80x70 in PAL, or 80x25, 80x50 and 80x60 for NTSC. Note that only 80x25 is supported on 16 KB VDC RAM machines, in that case selecting the other options will do nothing.
 
-![Change screen mode](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20menu%20-%20screenmode.png?raw=true)
+![Change screen mode](screenshots/VDCSE2_Screen_menu_-_screenmode.png)
 
 Example of the application interface in PAL 80x50:
 
-![80x50 mode interface example](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%2080x50%20mode%20example.png?raw=true)
+![80x50 mode interface example](screenshots/VDCSE2_80x50_mode_example.png)
 
 *Clear: Clear the canvas*
 
@@ -379,7 +373,7 @@ Similar to clear, but this will fill the canvas with the present selected [scree
 
 **_File menu_**
 
-![File menu](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20File%20menu.png?raw=true)
+![File menu](screenshots/VDCSE2_File_menu.png)
 
 In general: pressing **ESC** or **STOP** on any devide ID or filename input dialogue cancels the file operation.
 
@@ -389,11 +383,11 @@ This option saves the present canvas to disk.
 
 First the device ID number is asked of the device to save to (should be between 8 and 30 and pointing to an active disk system with that ID number). Choose the ID by increasing or decreasing the ID number with the **+** or **-** keys, confirm the ID with **RETURN**.
 
-![Choose drive ID](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20File%20menu%20-%20choose%20drive%20ID.png?raw=true)
+![Choose drive ID](screenshots/VDCSE2_File_menu_-_choose_drive_ID.png)
 
 Then the filename is asked (max 15 characters in length).
 
-![Choose filename](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20File%20menu%20-%20enter%20filemame.png?raw=true)
+![Choose filename](screenshots/VDCSE2_File_menu_-_enter_filemame.png)
 
 If a file with that name is already existing, confirmation is asked. Confirming will delete the old file before saving the new file.
 
@@ -405,7 +399,7 @@ With this option you can load a screen from disk.
 
 First pick the file to load with the file picker interface.
 
-![File picker](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20file%20picker.png?raw=true)
+![File picker](screenshots/VDCSE2_file_picker.png)
 
 Keyboard commands in this interface:
 
@@ -421,13 +415,13 @@ Keyboard commands in this interface:
 
 After that enter the screen dimensions of the screen to load.
 
-![Load screen](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20load%20screen.png?raw=true)
+![Load screen](screenshots/VDCSE2_load_screen.png)
 
 *Save project*
 
 Similar to save screen, but with this option also the canvas metadata (width, height, present cursor position etc.) and the character sets if altered will be saved. Maximum filename length is now 10 to allow for an .xxxx suffix as it will save up to four files: filename.proj for the metadata, filename.scrn for the screen data, filename.chr1 for the standard charset and filename.chr2 for the alternate charset.
 
-![Save project](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20save%20project.png?raw=true)
+![Save project](screenshots/VDCSE2_save_project.png)
 
 *Load project*
 Loads a project: the metadata, the screen and the charsets..
@@ -436,7 +430,7 @@ As the canvas width and height is now read from the metadata, no user input on c
 
 **_Charset: Load, save or restore character sets_**
 
-![Charset menu](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Charset%20menu.png?raw=true)
+![Charset menu](screenshots/VDCSE2_Charset_menu.png)
 
 In this menu you can select the options to Load or Save character sets. Select the options standard to load or save the standard character sets, or alternate for alternate character set.
 Dialogue of these options is similar to the screen save and load options: enter device ID and filename.
@@ -447,19 +441,19 @@ The menu also has the option Reset charsets. This restores the charsets to the d
 
 In this menu the import and export options can be selected.
 
-![Imp/Export menu](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20import%20export%20menu.png?raw=true)
+![Imp/Export menu](screenshots/VDCSE2_import_export_menu.png)
 
 *Import PRG*
 
 Use this option to import raw screen data from a PRG type file.
 
-![Import PRG dialogue 1](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20PRG%20export%20dialogue%201.png?raw=true)
+![Import PRG dialogue 1](screenshots/VDCSE2_PRG_export_dialogue_1.png)
 
 In the first screen of the Import PRG dialogue, enter the screen dimensions of the screen to be imported (width and height), plus the target co-ordinates in the present project this screen needs to be imported at. Defaults are set on the present canvas dimensions and the present cursor location.
 
 If needed given the import screen dimensions and target co-ordinates, the canvas will be automatically enlarged to make the imported screen fit.
 
-![Import PRG dialogue 2](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20PRG%20export%20dialogue%202.png?raw=true)
+![Import PRG dialogue 2](screenshots/VDCSE2_PRG_export_dialogue_2.png)
 
 In the second screen of the Import PRG dialogue these questions are asked:
 
@@ -500,7 +494,7 @@ Use this option to import a PETSCII code sequence file, typically used for BBSse
 
 The first screen of the Import SEQ dialogue is exactly the same as for PRG import: enter the screen dimensions of the screen to be imported (width and height), plus the target co-ordinates in the present project this screen needs to be imported at. Defaults are set on the present canvas dimensions and the present cursor location.
 
-![Import SEQ dialogue 2](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20SEQ%20export%20dialogue.png?raw=true)
+![Import SEQ dialogue 2](screenshots/VDCSE2_SEQ_export_dialogue.png)
 
 
 In the second screen of the Import SEQ dialogue these questions are asked:
@@ -527,17 +521,17 @@ Depending on the available VDC memory size two or three options are available in
 
 *Menu with 16 KiB VDC memory:*
 
-![Information menu 16KiB VDC](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20Information%2016k.png?raw=true)
+![Information menu 16KiB VDC](screenshots/VDCSE2_Screen_Information_16k.png)
 
 *Menu with 64 KiB VDC memory:*
 
-![Information menu 64KiB VDC](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Screen%20Information%2064k.png?raw=true)
+![Information menu 64KiB VDC](screenshots/VDCSE2_Screen_Information_64k.png)
 
 *Information*
 
 This option shows a popup with version information.
 
-![Information](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20credits.png?raw=true)
+![Information](screenshots/VDCSE2_credits.png)
 
 *Exit program*
 
@@ -547,12 +541,11 @@ With this option you can exit the program. NB: No confirmation will be asked and
 
 Only available if 64 KiB VDC memory is detected: This option toggles if the Undo system is enabled or not. Default is enabled, but if preferred for speed, Undo can be disabled here.
 
-## Character editor:
-([Back to contents](#contents))
+## Character editor
 
 Pressing **E** from the main mode will result in the character editor popping up, which looks like this:
 
-![Character editor](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Chaedit.png?raw=true)
+![Character editor](screenshots/VDCSE2_Chaedit.png)
 
 It shows a magnified grid of the bits in the present character. The header shows the screencode of the present character (in hex) and if the Standard (Std) or Alternate (Alt) character set is active. On the left of the grid the byte values of the 8 lines of the character are shown in hex.
 
@@ -624,14 +617,13 @@ Press **H** to edit the full present row of the grid by entering the hex value o
 
 Pressing **ESC** or **STOP** leaves the character mode and returns to main mode. **F8** will show a help screen with all keyboard commands of the character mode.
 
-## Palette mode:
-([Back to contents](#contents))
+## Palette mode
 
 Pressing **P** in the main mode starts the Palette mode. In this mode a character for plotting can be selected from the full set of the two character sets and the 10 favorite slots.
 
 A window like this appears:
 
-![Palette mode screenshot](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Palette.png?raw=true)
+![Palette mode screenshot](screenshots/VDCSE2_Palette.png)
 
 The window shows the 10 favorite slots as first line, below that the standard character set and below that the alternate character set.
 
@@ -665,7 +657,7 @@ Visual PETSCII mode is a mode in which the palette for the standard charset is m
 
 This looks like this:
 
-![Visual PETSCII palette](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20Palette%20Visual.png?raw=true)
+![Visual PETSCII palette](screenshots/VDCSE2_Palette_Visual.png)
 
 Pressing **V** toggles between normal and visual mode.
 
@@ -673,14 +665,13 @@ Pressing **V** toggles between normal and visual mode.
 
 Pressing **ESC** or **STOP** leaves the palette mode and returns to main mode. **F8** will show a help screen with all keyboard commands of the character mode.
 
-## Select mode:
-([Back to contents](#contents))
+## Select mode
 
 Pressing **S** in the main mode starts the Select mode.
 
 If enabled, the statusbar shows this on entering this mode:
 
-![Status bar in Select mode](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20statusbar%20Select.png?raw=true)
+![Status bar in Select mode](screenshots/VDCSE2_statusbar_Select.png)
 
 In this mode a selection can be made on which different operations can be performed as described below.
 
@@ -703,7 +694,7 @@ Ensure that the cursor is located at the desired upper left corner of the select
 
 The selection will be visually shown with plotting in the present selected screencode and attributes. It should look like this:
 
-![Select mode](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20select.png?raw=true)
+![Select mode](screenshots/VDCSE2_select.png)
 
 Accept the selection by pressing **RETURN**, cancel the selection by pressing **ESC**.
 
@@ -712,7 +703,7 @@ Accept the selection by pressing **RETURN**, cancel the selection by pressing **
 After accepting the selection, press **X**, **C**, **D**, **A** or **P** to choose an action, or press **ESC** or **STOP** to cancel.
 Statusbar (if enabled) shows this as prompter:
 
-![Statusbar Select Options](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20statusbar%20Select%20choose%20option.png?raw=true)
+![Statusbar Select Options](screenshots/VDCSE2_statusbar_Select_choose_option.png)
 
 *Cut and copy*
 
@@ -720,7 +711,7 @@ After pressing **X** for cut or **C** for copy, move cursor to the upper left co
 
 Statusbar (if enabled) displays Cut or Copy correspondingly, like:
 
-![Statusbar Cut or Copy](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2%20statusbar%20Select%20Copy.png?raw=true)
+![Statusbar Cut or Copy](screenshots/VDCSE2_statusbar_Select_Copy.png)
 
 *Delete*
 
@@ -734,8 +725,7 @@ Pressing **A** will change the attribute values of all characters in the selecte
 
 Leave selection mode by pressing **ESC** or **STOP**. Pressing **F8** at any time in this mode will provide a helpscreen with the key commands for this mode (not possible if the selection is grown but not yet accepted).
 
-## Move mode:
-([Back to contents](#contents))
+## Move mode
 
 Pressing **M** in the main mode starts the Move mode. Use this mode to scroll the present viewport in the desired direction by pressing the **Cursor keys**.
 
@@ -755,8 +745,7 @@ Accept with **RETURN**, cancel with **ESC** or **STOP**. Both will leave this mo
 |**F6**|Toggle statusbar visibility
 |**F8**|Help screen
 
-## Line and box mode:
-([Back to contents](#contents))
+## Line and box mode
 
 Pressing **L** in the main mode starts the Line and box mode. In this mode lines and boxes can be drawn, plotting with the present selected screencode and attribute value.
 
@@ -774,8 +763,7 @@ Accept with **RETURN**, cancel with **ESC** or **STOP**. Both will leave this mo
 |**F6**|Toggle statusbar visibility
 |**F8**|Help screen
 
-## Write mode:
-([Back to contents](#contents))
+## Write mode
 
 Pressing **W** in the main mode starts the Write mode. In this mode text can be freely entered by using the full keyboard, making text input way easier than selecting the appropriate screencodes one by one. The full keyboard is supported, as long as the characters entered are printable (which means: can be transferred from the input PETSCII value to a [screencode](https://sta.c64.org/cbm64scr.html). To be able to enter the full range of characters, pressing **SHIFT** or **C=** with a supported key is possible.
 
@@ -804,8 +792,7 @@ Leave Write mode by pressing **ESC** or **STOP**. **F8** will show a help screen
 |**F8**|Help screen
 |**Other keys**|Plot corresponding character (if printable)
 
-## Color write mode:
-([Back to contents](#contents))
+## Color write mode
 
 Pressing **C** in the main mode starts the Color write mode. In this mode you can conveniently edit colors in the screen by entering the [color value](#color-value-reference) of the desired color by pressing the key with the corresponding hex value of that color value (so **0-9** and **A-F**).
 
@@ -830,7 +817,6 @@ Leave Color write mode by pressing **ESC** or **STOP**. **F8** will show a help 
 |**F8**|Help screen
 
 ## VDCSE2PRG utility
-([Back to contents](#contents))
 
 VDCSE2PRG is a separate utility to create an executable program file for the C128 of a VDCSE project. All screenmodes, redefined charsets and all screensizes are supported, only limit is that data for the screen and charsets combined must fit in 31.232 bytes (approx. 30 kilobytes).
 
@@ -844,15 +830,15 @@ This is a seperate utility which can not be started from the VDCSE main program 
 
 Running this program first gives a filebrowser to select the VDCSE project file to base the generated program on. The browser filters to show only project files, pick the desired one using the filebrowser interface.
 
-![VDCSE2PRG select file](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2PRG%20-%20filepick.png?raw=true)
+![VDCSE2PRG select file](screenshots/VDCSE2PRG_-_filepick.png)
 
 If the selected project fits in the destination memory available, next step is to enter the destination file name. If the file already does exist, confirmation is asked. NB: If Yes is chosen the old file with that name will be deleted.
 
-![VDCSE2PRG enter destination filename](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2PRG%20-%20dest%20filemame.png?raw=true)
+![VDCSE2PRG enter destination filename](screenshots/VDCSE2PRG_-_dest_filemame.png)
 
 After this the ulitily will create and save the viewer program. This gives output as this:
 
-![VDCSE2PRG processing](https://github.com/xahmol/VDCScreenEditor2/blob/main/screenshots/VDCSE2PRG%20-%20processing.png?raw=true)
+![VDCSE2PRG processing](screenshots/VDCSE2PRG_-_processing.png)
 
 Press any key to exit the generator.
 
@@ -867,8 +853,7 @@ $4600-$C000 Room for screens and charsets: first screen, then charsets if redefi
 
 The file view.c in the src dir of this repository shows the C source code used for the Oscar64 compiler, this can also be used as base for own viewers or demos.
 
-## Color value reference:
-([Back to contents](#contents))
+## Color value reference
 
 |Color|Decimal|Color write key|Write mode key|
 |---|--:|--:|---|
@@ -889,8 +874,7 @@ The file view.c in the src dir of this repository shows the C source code used f
 |Light Grey|14|E|**C= + 8**
 |White|15|F|**CONTROL+2**
 
-## Attribute code reference:
-([Back to contents](#contents))
+## Attribute code reference
 
 The VDC chip uses a byte per character position with the following meaning of the bits in that byte (for character mode):
 
@@ -916,7 +900,6 @@ Example:
 Note that in VDCSE calculation of these attribute codes by yourselves is not necessary, the program will do so for you given the selected attributes and color. In memory however this is how the codes are stored.
 
 ## File format reference
-([Back to contents](#contents))
 
 As both the character data as the attribute data needs to be stored, a screen takes width times height times 2 bytes in storage. A padding of 48 bytes is used to separate character and attribute data in order to be able to load a standard 80x25 screen for both character and attribute data in one go at the default VDC memory position of $0000 for text and $0800 for attributes.
 
@@ -937,7 +920,6 @@ For screensizes greater than 80x25 this would translate to:
 |(Width * Height)+48|Start of attribute data using VDC [attribute codes](#attribute-code-reference).
 
 ## Credits
-([Back to contents](#contents))
 
 VDC Screen Editor
 
@@ -945,7 +927,7 @@ Screen editor for the C128 80 column mode
 
 Written in 2024 by Xander Mol
 
-https://github.com/xahmol/VDCScreenEdit
+https://github.com/xahmol/VDCScreenEditor2
 
 https://www.idreamtin8bits.com/
 
@@ -968,7 +950,7 @@ Code and resources from others used:
     https://github.com/xlar54/ultimateii-dos-lib/blob/master/src/samples/screen_utility.c
 
 -   DevDef: Commodore 128 Assembly - Part 3: The 80-column (8563) chip
-    https://devdef.blogspot.com/2018/03/commodore-128-assembly-part-3-80-column.html
+    https://fightingcomputers.nl/Projects/Commodore-128/Commodore-128-assembly---Part-3
 
 -   Tips and Tricks for C128: VDC
     http://commodore128.mirkosoft.sk/vdc.html
@@ -1019,5 +1001,3 @@ Credits for PETSCII art samples bundled:
 The code can be used freely as long as you retain a notice describing original source and author.
 
 THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
-
-([Back to contents](#contents))

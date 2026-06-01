@@ -167,9 +167,9 @@ d81:	bootsect.bin
 # Install: sudo apt install pandoc texlive-xetex
 docs: README.pdf
 
-README.pdf: README.md
+README.pdf: README.md pandoc-defaults.yaml
 	@if which pandoc >/dev/null 2>&1; then \
-		pandoc README.md -o README.pdf; \
+		pandoc --defaults=pandoc-defaults.yaml README.md -o README.pdf; \
 	else \
 		echo "WARNING: pandoc not found -- README.pdf not updated (install: sudo apt install pandoc texlive-xetex)"; \
 	fi

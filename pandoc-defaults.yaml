@@ -1,0 +1,12 @@
+from: gfm
+standalone: true
+pdf-engine: xelatex
+number-sections: false
+variables:
+  geometry: margin=2cm
+  colorlinks: true
+  linkcolor: blue
+  urlcolor: blue
+  mainfont: Arimo
+  sansfont: Arimo
+  monofont: Liberation Mono
