@@ -92,7 +92,7 @@ char importread(char device, const char *filename)
     char line;
     unsigned offbyte;
     char *address;
-    char loadaddressbuf[1];
+    char loadaddressbuf[2];
     char yc = 8;
     unsigned x, y;
     char attr;
