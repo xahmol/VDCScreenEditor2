@@ -1604,7 +1604,7 @@ char checkiffileexists(char *filetocheck, unsigned char id)
 }
 
 char import_dialogue(char mode, const char *message)
-// Dialogue for import functions. Mode 0 = PRG, mode 2 = SEQ
+// Dialogue for import functions. Mode 0 = PRG, mode 2 = C64 SEQ, mode 3 = VDC SEQ
 {
     unsigned newwidth, newheight, y;
     unsigned maxsize = MEMORYLIMIT - SCREENMAPBASE;
@@ -1615,9 +1615,12 @@ char import_dialogue(char mode, const char *message)
     importvars.xpos = screen_col + canvas.sourcexoffset;
     importvars.ypos = screen_row + canvas.sourceyoffset;
     importvars.offset = 48;
+    importvars.width = (mode == IMPORT_DIALOGUE_SEQ_C64) ? 40 : 80;
+    importvars.height = 25;
+    importvars.uppercase = 1;
 
     // Pick file to import
-    if (!filepicker(mode))
+    if (!filepicker((mode == IMPORT_DIALOGUE_PRG) ? 0 : 2))
     {
         return 0;
     }
@@ -1632,12 +1635,12 @@ char import_dialogue(char mode, const char *message)
 
     // Ask to inout import parameters
     vdc_prints(21, yc++, "Enter import width:");
-    sprintf(buffer, "%u", canvas.sourcewidth);
+    sprintf(buffer, "%u", importvars.width);
     textInput(21, yc++, buffer, 3);
     importvars.width = (unsigned)strtol(buffer, &ptrend, 10);
 
     vdc_prints(21, yc++, "Enter import height:");
-    sprintf(buffer, "%u", canvas.sourceheight);
+    sprintf(buffer, "%u", importvars.height);
     textInput(21, yc++, buffer, 3);
     importvars.height = (unsigned)strtol(buffer, &ptrend, 10);
 
@@ -1702,7 +1705,7 @@ char import_dialogue(char mode, const char *message)
         vdc_clear(20, 8, CH_SPACE, 40, 10);
         yc = 8;
 
-        if (!mode)
+        if (mode == IMPORT_DIALOGUE_PRG)
         {
             vdc_prints(21, yc++, "Includes load addres at first 2 bytes?");
             importvars.loadaddr = menu_pulldown(25, yc, VDC_MENU_YESNO, 0);
@@ -1713,21 +1716,28 @@ char import_dialogue(char mode, const char *message)
             vdc_prints(21, yc++, pulldown_titles[6][importvars.content - 1]);
         }
 
-        if (mode == 2)
+        if (mode == IMPORT_DIALOGUE_SEQ_C64 || mode == IMPORT_DIALOGUE_SEQ_VDC)
         {
             vdc_prints(21, yc++, "Ignore CLS / Clear?");
             importvars.cls = menu_pulldown(25, yc, VDC_MENU_YESNO, 0);
             vdc_prints(21, yc++, pulldown_titles[VDC_MENU_YESNO][importvars.cls - 1]);
         }
 
-        if (importvars.content != 2 || mode == 2)
+        if (mode == IMPORT_DIALOGUE_PRG && importvars.content != 2)
         {
             vdc_prints(21, yc++, "Convert VIC colours?");
             importvars.convert = menu_pulldown(25, yc, VDC_MENU_YESNO, 0);
             vdc_prints(21, yc++, pulldown_titles[VDC_MENU_YESNO][importvars.convert - 1]);
         }
 
-        if (importvars.content == 2 || importvars.convert == 1)
+        if (mode == IMPORT_DIALOGUE_SEQ_C64)
+        {
+            vdc_prints(21, yc++, "Convert VIC colours?");
+            importvars.convert = menu_pulldown(25, yc, VDC_MENU_YESNO, 0);
+            vdc_prints(21, yc++, pulldown_titles[VDC_MENU_YESNO][importvars.convert - 1]);
+        }
+
+        if (mode == IMPORT_DIALOGUE_SEQ_C64 || mode == IMPORT_DIALOGUE_PRG && (importvars.content == 2 || importvars.convert == 1))
         {
             vdc_prints(21, yc++, "Uppercase charset?   ");
             importvars.uppercase = menu_pulldown(25, yc, VDC_MENU_YESNO, 0);
@@ -1875,12 +1885,22 @@ void mainmenuloop()
 
         case 42:
             loadoverlay(6);
-            import_seq();
+            import_seq_c64();
             break;
 
         case 43:
             loadoverlay(6);
-            export_seq();
+            import_seq_vdc();
+            break;
+
+        case 44:
+            loadoverlay(6);
+            export_seq_c64();
+            break;
+
+        case 45:
+            loadoverlay(6);
+            export_seq_vdc();
             break;
 
         case 51:

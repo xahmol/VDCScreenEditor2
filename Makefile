@@ -88,6 +88,7 @@ ASSETS     = -write $(MAIN)petv.prg $(MAIN)petv -write $(VIEW).prg $(VIEW)
 SCREENS    = -write $(MAIN)tscr.prg $(MAIN)tscr -write $(MAIN)hsc1.prg $(MAIN)hsc1 -write $(MAIN)hsc2.prg $(MAIN)hsc2 -write $(MAIN)hsc3.prg $(MAIN)hsc3 -write $(MAIN)hsc4.prg $(MAIN)hsc4
 SAMPLESPROJ = -write loveisdrug.proj.prg loveisdrug.proj -write loveisdrug.scrn.prg loveisdrug.scrn -write bcc2024.proj.prg bcc2024.proj -write bcc2024.scrn.prg bcc2024.scrn -write fjaeld24.proj.prg fjaeld24.proj -write fjaeld24.scrn.prg fjaeld24.scrn -write vf7-v2.proj.prg vf7-v2.proj -write vf7-v2.scrn.prg vf7-v2.scrn
 SAMPLESRAW  = -write loveisthedrugraw.prg loveisthedrugraw -write fullackraw.prg fullackraw -write moneyislandraw.prg moneyislandraw -write morbosezraw.prg morbosezraw -write arcadevenusraw.prg arcadevenusraw -write drakardemonerraw.prg drakardemonerraw -write greatescaperaw.prg greatescaperaw -write aquamanraw.prg aquamanraw -write umlautraw.prg umlautraw -write vf7-v2raw.prg vf7-v2raw -write vf7-v2-80x50.seq vf7-v2-80x50,s
+SAMPLESSEQ  = -write vdc_color-bars_test.seq vdc-colors,s -write idi8b-vdc.seq idi8b-vdc,s -write vic-uc_color-bars_test.seq vicuc-colors,s -write vic-lc_color-bars_test.seq viclc-colors,s
 SAMPLESOWN  = -write ludo.proj.prg ludo.proj -write ludo.scrn.prg ludo.scrn -write ludo.chrs.prg ludo.chrs -write ludo.chra.prg ludo.chra -write careers.proj.prg careers.proj -write careers.scrn.prg careers.scrn -write careers.chrs.prg careers.chrs -write careers.chra.prg careers.chra -write carmscr.proj.prg carmscr.proj -write carmscr.scrn.prg carmscr.scrn -write carmscr.chrs.prg carmscr.chrs -write carmscr.chra.prg carmscr.chra -write roundfont.proj.prg roundfont.proj -write roundfont.scrn.prg roundfont.scrn -write oscardemo.proj.prg oscardemo.proj -write oscardemo.scrn.prg oscardemo.scrn
 
 # Deployment to Ultimate II+
@@ -150,7 +151,7 @@ d71:	bootsect.bin
 	c1541 -cd build/ -attach $(MAIN).d71 $(OVERLAYS)
 	c1541 -cd build/ -attach $(MAIN).d71 $(ASSETS)
 	c1541 -cd build/ -attach $(MAIN).d71 $(SCREENS)
-	c1541 -cd build/ -attach $(MAIN).d71 $(SAMPLESPROJ) $(SAMPLESRAW) $(SAMPLESOWN)
+	c1541 -cd build/ -attach $(MAIN).d71 $(SAMPLESPROJ) $(SAMPLESRAW) $(SAMPLESSEQ) $(SAMPLESOWN)
 
 d81:	bootsect.bin
 	c1541 -cd build/ -format "vdcse,xm" d81 $(MAIN).d81
@@ -161,7 +162,7 @@ d81:	bootsect.bin
 	c1541 -cd build/ -attach $(MAIN).d81 $(OVERLAYS)
 	c1541 -cd build/ -attach $(MAIN).d81 $(ASSETS)
 	c1541 -cd build/ -attach $(MAIN).d81 $(SCREENS)
-	c1541 -cd build/ -attach $(MAIN).d81 $(SAMPLESPROJ) $(SAMPLESRAW) $(SAMPLESOWN)
+	c1541 -cd build/ -attach $(MAIN).d81 $(SAMPLESPROJ) $(SAMPLESRAW) $(SAMPLESSEQ) $(SAMPLESOWN)
 
 # Regenerate README.pdf from README.md (requires pandoc).
 # Install: sudo apt install pandoc texlive-xetex

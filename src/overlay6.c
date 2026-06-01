@@ -98,6 +98,29 @@ struct ATTRVALS
     char alt;
 };
 
+struct SEQSAVEDSTATE
+{
+    char showbar;
+    char plotscreencode;
+    char plotcolor;
+    char plotblink;
+    char plotunderline;
+    char plotreverse;
+    char plotaltchar;
+    unsigned screencol;
+    unsigned screenrow;
+    char xoff;
+    char yoff;
+};
+
+static const unsigned char c64_seq_color_control[16] = {0x90, 0x05, 0x1c, 0x9f, 0x9c, 0x1e, 0x1f, 0x9e, 0x81, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b};
+static const unsigned char vdc_seq_color_control[16] = {0x90, 0x05, 0x1c, 0x9f, 0x9c, 0x1e, 0x1f, 0x9e, 0x81, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b};
+static const unsigned char vdc_to_vic_color[16] = {0, 11, 6, 14, 5, 13, 3, 3, 2, 10, 4, 4, 8, 7, 15, 1};
+static volatile unsigned char seq_escapepending;
+static volatile unsigned char seq_rawcharpending;
+
+static void seq_normalize_cell(unsigned char *screencode, unsigned char *attr);
+
 void rebase()
 // Rebase viewport pos based on import coords
 {
@@ -223,245 +246,312 @@ void seqimport_move(char left, char right, char up, char down)
     }
 }
 
-void decode_controlcode(char ch)
-// Decode PETSCII chars and control codes and perform output based on code
+static void seqimport_save_state(struct SEQSAVEDSTATE *savedstate)
+{
+    savedstate->showbar = showbar;
+    savedstate->plotscreencode = plotscreencode;
+    savedstate->plotcolor = plotcolor;
+    savedstate->plotblink = plotblink;
+    savedstate->plotunderline = plotunderline;
+    savedstate->plotreverse = plotreverse;
+    savedstate->plotaltchar = plotaltchar;
+    savedstate->screencol = screen_col;
+    savedstate->screenrow = screen_row;
+    savedstate->xoff = canvas.sourcexoffset;
+    savedstate->yoff = canvas.sourceyoffset;
+}
+
+static void seqimport_restore_state(const struct SEQSAVEDSTATE *savedstate)
+{
+    showbar = savedstate->showbar;
+    plotscreencode = savedstate->plotscreencode;
+    plotcolor = savedstate->plotcolor;
+    plotblink = savedstate->plotblink;
+    plotunderline = savedstate->plotunderline;
+    plotreverse = savedstate->plotreverse;
+    plotaltchar = savedstate->plotaltchar;
+    screen_col = savedstate->screencol;
+    screen_row = savedstate->screenrow;
+    canvas.sourcexoffset = savedstate->xoff;
+    canvas.sourceyoffset = savedstate->yoff;
+}
+
+static void seqimport_plot_byte(unsigned char screencode)
+{
+    plotscreencode = screencode;
+    screenmapplot(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
+    vdc_printc(screen_col, screen_row, bnk_readb(BNK_1_FULL, screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
+    seqimport_move(0, 1, 0, 0);
+}
+
+static void seqimport_clear_region(void)
+{
+    unsigned y;
+
+    for (y = 0; y < importvars.height; ++y)
+    {
+        bnk_memset(BNK_1_FULL, screenmap_screenaddr(importvars.ypos + y, importvars.xpos, canvas.sourcewidth), CH_SPACE, importvars.width);
+        bnk_memset(BNK_1_FULL, screenmap_attraddr(importvars.ypos + y, importvars.xpos, canvas.sourcewidth, canvas.sourceheight), VDC_WHITE, importvars.width);
+    }
+}
+
+static void seqimport_plot_raw_vdc_byte(unsigned char screencode)
+{
+    plotscreencode = screencode;
+    screenmapplot(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
+    vdc_printc(screen_col, screen_row, bnk_readb(BNK_1_FULL, screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
+    seqimport_move(0, 1, 0, 0);
+}
+
+static char seq_decode_printable(unsigned char ch, unsigned char *screencode)
+{
+    if ((ch >= 0x20) && (ch < 0x40))
+    {
+        *screencode = ch;
+        return 1;
+    }
+    if ((ch >= 0x40) && (ch <= 0x5f))
+    {
+        *screencode = ch - 0x40;
+        return 1;
+    }
+    if ((ch >= 0x60) && (ch <= 0x7f))
+    {
+        *screencode = ch - 0x20;
+        return 1;
+    }
+    if ((ch >= 0xa0) && (ch <= 0xbf))
+    {
+        *screencode = ch - 0x40;
+        return 1;
+    }
+    if ((ch >= 0xc0) && (ch <= 0xfe))
+    {
+        *screencode = ch - 0x80;
+        return 1;
+    }
+    if (ch == 0xff)
+    {
+        *screencode = 0x5e;
+        return 1;
+    }
+
+    return 0;
+}
+
+static char decode_c64_seq_color(unsigned char ch)
 {
     switch (ch)
     {
-    // 	Underline On
+    case 0x05:
+        plotcolor = VDC_WHITE;
+        return 1;
+    case 0x1c:
+        plotcolor = VDC_DRED;
+        return 1;
+    case 0x1e:
+        plotcolor = VDC_DGREEN;
+        return 1;
+    case 0x1f:
+        plotcolor = VDC_DBLUE;
+        return 1;
+    case 0x81:
+        plotcolor = (importvars.convert != 1) ? VDC_DPURPLE : VDC_DYELLOW;
+        return 1;
+    case 0x90:
+        plotcolor = VDC_BLACK;
+        return 1;
+    case 0x95:
+        plotcolor = VDC_DYELLOW;
+        return 1;
+    case 0x96:
+        plotcolor = VDC_LRED;
+        return 1;
+    case 0x97:
+        plotcolor = (importvars.convert != 1) ? VDC_DCYAN : VDC_DGREY;
+        return 1;
+    case 0x98:
+        plotcolor = (importvars.convert != 1) ? VDC_DGREY : VDC_LGREY;
+        return 1;
+    case 0x99:
+        plotcolor = VDC_LGREEN;
+        return 1;
+    case 0x9a:
+        plotcolor = VDC_LBLUE;
+        return 1;
+    case 0x9b:
+        plotcolor = VDC_LGREY;
+        return 1;
+    case 0x9c:
+        plotcolor = (importvars.convert != 1) ? VDC_LPURPLE : VDC_DPURPLE;
+        return 1;
+    case 0x9e:
+        plotcolor = VDC_LYELLOW;
+        return 1;
+    case 0x9f:
+        plotcolor = VDC_LCYAN;
+        return 1;
+    default:
+        return 0;
+    }
+}
+
+static char decode_vdc_seq_color(unsigned char ch)
+{
+    unsigned idx;
+
+    for (idx = 0; idx < sizeof(vdc_to_vic_color); ++idx)
+    {
+        if (vdc_seq_color_control[idx] == ch)
+        {
+            plotcolor = idx;
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+static void seqimport_reset_decode_state(void)
+{
+    seq_escapepending = 0;
+    seq_rawcharpending = 0;
+}
+
+static void decode_seq_byte(unsigned char ch, char seqmode)
+{
+    unsigned char screencode;
+
+    if (seqmode == SEQ_MODE_VDC && seq_rawcharpending)
+    {
+        seq_rawcharpending = 0;
+        seqimport_plot_raw_vdc_byte(ch);
+        return;
+    }
+
+    if (seqmode == SEQ_MODE_VDC && seq_escapepending)
+    {
+        seq_escapepending = 0;
+        switch (ch)
+        {
+        case 'I':
+            plotunderline = 1;
+            return;
+        case 'J':
+            plotunderline = 0;
+            return;
+        case 'O':
+            plotblink = 1;
+            return;
+        case 'P':
+            plotblink = 0;
+            return;
+        case 'V':
+            seq_rawcharpending = 1;
+            return;
+        default:
+            return;
+        }
+    }
+
+    if ((seqmode == SEQ_MODE_C64 && decode_c64_seq_color(ch)) || (seqmode == SEQ_MODE_VDC && decode_vdc_seq_color(ch)))
+    {
+        return;
+    }
+
+    switch (ch)
+    {
     case 0x02:
         plotunderline = 1;
         break;
-
-    // 	Set text color to White
-    case 0x05:
-        plotcolor = VDC_WHITE;
-        break;
-
-    // Line Feed / Return
     case 0x0a:
     case 0x0d:
     case 0x8d:
         importvars.xc = 0;
-        if (importvars.yc < importvars.height)
+        if (importvars.yc < (importvars.height - 1))
         {
             importvars.yc++;
         }
         rebase();
         break;
-
-    // Switch to lower case
     case 0x0e:
         plotaltchar = 1;
         break;
-
-    // Flash On
     case 0x0f:
         plotblink = 1;
         break;
-
-    // Cursor Down
     case 0x11:
         seqimport_move(0, 0, 0, 1);
         break;
-
-    // Reverse On
     case 0x12:
         plotreverse = 1;
         break;
-
-    // Cursor Home
     case 0x13:
         importvars.xc = 0;
         importvars.yc = 0;
         rebase();
         break;
-
-    // Delete
     case 0x14:
         seqimport_move(1, 0, 0, 0);
         screenmapplot(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, CH_SPACE, VDC_WHITE);
         break;
-
-    // 	Set text color to Red
-    case 0x1c:
-        plotcolor = VDC_DRED;
+    case 0x1b:
+        if (seqmode == SEQ_MODE_VDC)
+        {
+            seq_escapepending = 1;
+        }
         break;
-
-    // Cursor Right
     case 0x1d:
         seqimport_move(0, 1, 0, 0);
         break;
-
-    // 	Set text color to Green
-    case 0x1e:
-        plotcolor = VDC_DGREEN;
-        break;
-
-    // 	Set text color to Blue
-    case 0x1f:
-        plotcolor = VDC_DBLUE;
-        break;
-
-    // 	Set text color to Dark Purple (or convert VIC Orange)
-    case 0x81:
-        plotcolor = (importvars.convert != 1) ? VDC_DPURPLE : VDC_DYELLOW;
-        break;
-
-    // 	Underline Off
     case 0x82:
         plotunderline = 0;
         break;
-
-    // Switch to upper case
     case 0x8e:
         plotaltchar = 0;
         break;
-
-    // Flash On
     case 0x8f:
         plotblink = 0;
         break;
-
-    // 	Set text color to Black
-    case 0x90:
-        plotcolor = VDC_BLACK;
-        break;
-
-    // Cursor Up
     case 0x91:
         seqimport_move(0, 0, 1, 0);
         break;
-
-    // Reverse Off
     case 0x92:
         plotreverse = 0;
         break;
-
-    // Clear
     case 0x93:
-        // Should clear be ignored? If no perform clear
         if (importvars.cls != 1)
         {
-            for (char y = 0; y < importvars.width; y++)
-            {
-                bnk_memset(BNK_1_FULL, screenmap_screenaddr(importvars.ypos + y, importvars.xpos, canvas.sourcewidth), CH_SPACE, importvars.width);
-                bnk_memset(BNK_1_FULL, screenmap_attraddr(importvars.ypos + y, importvars.xpos, canvas.sourcewidth, canvas.sourceheight), CH_SPACE, importvars.width);
-            }
+            seqimport_clear_region();
         }
         importvars.xc = 0;
         importvars.yc = 0;
         rebase();
         break;
-
-    // 	Set text color to Dark Yellow
-    case 0x95:
-        plotcolor = VDC_DYELLOW;
-        break;
-
-    // 	Set text color to Light Red
-    case 0x96:
-        plotcolor = VDC_LRED;
-        break;
-
-    // 	Set text color to Dark Cyan (or convert VIC Dark Grey)
-    case 0x97:
-        plotcolor = (importvars.convert != 1) ? VDC_DCYAN : VDC_DGREY;
-        break;
-
-    // 	Set text color to Dark Grey (or convert VIC Medium Grey)
-    case 0x98:
-        plotcolor = (importvars.convert != 1) ? VDC_DGREY : VDC_LGREY;
-        break;
-
-    // 	Set text color to Light Green
-    case 0x99:
-        plotcolor = VDC_LGREEN;
-        break;
-
-    // 	Set text color to Light Blue
-    case 0x9a:
-        plotcolor = VDC_LBLUE;
-        break;
-
-    // 	Set text color to Light Gray
-    case 0x9b:
-        plotcolor = VDC_LGREY;
-        break;
-
-    // 	Set text color to Light Purple ((or convert VIC Purple)
-    case 0x9c:
-        plotcolor = (importvars.convert != 1) ? VDC_LPURPLE : VDC_DPURPLE;
-        break;
-
-    // Cursor Left
     case 0x9d:
         seqimport_move(1, 0, 0, 0);
         break;
-
-    // 	Set text color to Light Yellow
-    case 0x9e:
-        plotcolor = VDC_LYELLOW;
-        break;
-
-    // 	Set text color to Light Cyan
-    case 0x9f:
-        plotcolor = VDC_LCYAN;
-        break;
-
     default:
-        if ((ch >= 0x20) && (ch < 0x40))
+        if (seq_decode_printable(ch, &screencode))
         {
-            plotscreencode = ch;
+            seqimport_plot_byte(screencode);
         }
-        if ((ch >= 0x40) && (ch <= 0x5f))
-        {
-            plotscreencode = ch - 0x40;
-        }
-        if ((ch >= 0x60) && (ch <= 0x7f))
-        {
-            plotscreencode = ch - 0x20;
-        }
-        if ((ch >= 0xa0) && (ch <= 0xbf))
-        {
-            plotscreencode = ch - 0x40;
-        }
-        if ((ch >= 0xc0) && (ch <= 0xfe))
-        {
-            plotscreencode = ch - 0x80;
-        }
-        if (ch == 0xff)
-        {
-            plotscreencode = 0x5e;
-        }
-        screenmapplot(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
-        vdc_printc(screen_col, screen_row, bnk_readb(BNK_1_FULL, screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
-        seqimport_move(0, 1, 0, 0);
         break;
     }
 }
 
-void import_seq()
+static void import_seq_mode(char seqmode, const char *title)
 {
     char error = 0;
     char status = 0;
-    char ch;
-    char oldshowbar = showbar;
-    char oldplotscreencode = plotscreencode;
-    char oldplorcolor = plotcolor;
-    char oldplotblink = plotblink;
-    char oldplotunderline = plotunderline;
-    char oldplotreverse = plotreverse;
-    char oldplotaltchar = plotaltchar;
-    char oldscreencol = screen_col;
-    char oldscreenrow = screen_row;
-    char oldxoff = canvas.sourcexoffset;
-    char oldyoff = canvas.sourcexoffset;
+    unsigned char ch;
+    struct SEQSAVEDSTATE savedstate;
 
-    showbar = 0;
-
-    if (import_dialogue(2, "Import SEQ"))
+    if (import_dialogue((seqmode == SEQ_MODE_C64) ? IMPORT_DIALOGUE_SEQ_C64 : IMPORT_DIALOGUE_SEQ_VDC, title))
     {
+        seqimport_save_state(&savedstate);
+        showbar = 0;
+
         // Create undo option
         if (undoenabled == 1)
         {
@@ -480,10 +570,11 @@ void import_seq()
         // Set default plot values
         plotscreencode = CH_SPACE;
         plotreverse = 0;
-        plotaltchar = (importvars.uppercase == 1) ? 0 : 1;
+        plotaltchar = (seqmode == SEQ_MODE_VDC || importvars.uppercase == 1) ? 0 : 1;
         plotblink = 0;
         plotcolor = VDC_WHITE;
         plotunderline = 0;
+        seqimport_reset_decode_state();
         rebase();
 
         // Set bank and name
@@ -497,54 +588,33 @@ void import_seq()
         // If open is succesful, read contents
         if (status)
         {
-            // Open file for inout
-            if (krnio_chkin(1))
+            do
             {
-                // Read chars until EOF or error
-                do
+                error = krnio_read(1, buffer, 64);
+                ch = krnio_status();
+                if (error)
                 {
-                    ch = krnio_chrin();
-                    error = krnio_status();
-                    // If no error or error message is EOF for last char, decode read char
-                    if (error == KRNIO_OK || error == KRNIO_EOF)
+                    for (unsigned i = 0; i < error; ++i)
                     {
-                        // Debug
-                        // sprintf(linebuffer,"Char: %2x Xpos,Ypos: %3u,%3u Xc,Yc: %3u,%3u Error: %2x",ch,importvars.xpos,importvars.ypos,importvars.xc,importvars.yc,error);
-                        // vdc_prints(0,vdc_state.height-1,linebuffer);
-
-                        // Print char
-                        decode_controlcode(ch);
+                        decode_seq_byte((unsigned char)buffer[i], seqmode);
                     }
-                } while (error == KRNIO_OK);
-
-                // Close file
-                krnio_clrchn();
-                krnio_close(1);
-
-                // Show error message if error is not end of file
-                if (error != KRNIO_EOF)
-                {
-                    menu_fileerrormessage();
                 }
-            }
-            else
+            } while (ch == KRNIO_OK);
+
+            // Close file
+            krnio_close(1);
+
+            // Show error message if error is not end of file
+            if (ch != KRNIO_EOF)
             {
-                krnio_close(1);
                 menu_fileerrormessage();
             }
         }
 
+        seqimport_reset_decode_state();
+
         // Restore menu and statusbbars
-        showbar = oldshowbar;
-        plotscreencode = oldplotscreencode;
-        plotcolor = oldplorcolor;
-        plotblink = oldplotblink;
-        plotunderline = oldplotunderline;
-        plotreverse = oldplotreverse;
-        screen_col = oldscreencol;
-        screen_row = oldscreenrow;
-        canvas.sourcexoffset = oldxoff;
-        canvas.sourcexoffset = oldyoff;
+        seqimport_restore_state(&savedstate);
 
         // Show new viewport data
         placesignature();
@@ -559,15 +629,241 @@ void import_seq()
     }
 }
 
-void export_seq()
+static unsigned char seq_map_screencode_to_petscii(unsigned char screencode)
 {
-    static char seqcolor[16] = {0x90, 0x98, 0x1f, 0x9a, 0x1e, 0x99, 0x97, 0x9f, 0x1c, 0x96, 0x9c, 0x9c, 0x95, 0x9e, 0x9b, 0x05};
+    if (screencode <= 0x1f)
+    {
+        return screencode + 0x40;
+    }
+    if (screencode >= 0x40 && screencode <= 0x5d)
+    {
+        return screencode + 0x80;
+    }
+    if (screencode == 0x5e)
+    {
+        return 0xff;
+    }
+    if (screencode == 0x5f || screencode == 0x95)
+    {
+        return 0xdf;
+    }
+    if (screencode >= 0x60 && screencode <= 0x7f)
+    {
+        return screencode + 0x40;
+    }
+    if (screencode >= 0x80 && screencode <= 0xbf)
+    {
+        return screencode - 0x80;
+    }
+    if (screencode >= 0xc0)
+    {
+        return screencode - 0x40;
+    }
+
+    return screencode;
+}
+
+static char seq_is_color_control_byte(unsigned char byte)
+{
+    unsigned idx;
+
+    for (idx = 0; idx < sizeof(c64_seq_color_control); ++idx)
+    {
+        if (c64_seq_color_control[idx] == byte)
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+static char seq_is_structural_control_byte(unsigned char byte)
+{
+    switch (byte)
+    {
+    case 0x02:
+    case 0x07:
+    case 0x0d:
+    case 0x0e:
+    case 0x0f:
+    case 0x11:
+    case 0x12:
+    case 0x13:
+    case 0x14:
+    case 0x1b:
+    case 0x1d:
+    case 0x82:
+    case 0x8d:
+    case 0x8e:
+    case 0x8f:
+    case 0x91:
+    case 0x92:
+    case 0x93:
+    case 0x9d:
+        return 1;
+    default:
+        return 0;
+    }
+}
+
+static char seq_can_write_vdc_code_direct(unsigned char screencode)
+{
+    unsigned char seqbyte = seq_map_screencode_to_petscii(screencode);
+    unsigned char decoded;
+
+    if (seq_is_color_control_byte(seqbyte) || seq_is_structural_control_byte(seqbyte))
+    {
+        return 0;
+    }
+
+    return seq_decode_printable(seqbyte, &decoded) && decoded == screencode;
+}
+
+static char seq_write_byte(unsigned char byte)
+{
+    krnio_chrout(byte);
+    return krnio_status();
+}
+
+static char seq_emit_toggle(char enable, unsigned char onbyte, unsigned char offbyte)
+{
+    return seq_write_byte(enable ? onbyte : offbyte);
+}
+
+static char seq_emit_vdc_escape(unsigned char command)
+{
+    char error = seq_write_byte(CH_ESC);
+    if (error)
+    {
+        return error;
+    }
+
+    return seq_write_byte(command);
+}
+
+static char seq_emit_attributes(struct ATTRVALS *attr_present, unsigned char attr, char seqmode, char firstcell)
+{
+    char error;
+    struct ATTRVALS attr_new;
+
+    attr_new.color = attr & 0x0f;
+    attr_new.alt = attr & VDC_A_ALTCHAR;
+    attr_new.blink = attr & VDC_A_BLINK;
+    attr_new.reverse = attr & VDC_A_REVERSE;
+    attr_new.underline = attr & VDC_A_UNDERLINE;
+
+    if (firstcell)
+    {
+        error = seq_write_byte(CH_CLEAR);
+        if (error)
+        {
+            return error;
+        }
+    }
+
+    if (firstcell || attr_new.color != attr_present->color)
+    {
+        attr_present->color = attr_new.color;
+        error = seq_write_byte((seqmode == SEQ_MODE_VDC) ? vdc_seq_color_control[(unsigned char)attr_present->color] : c64_seq_color_control[vdc_to_vic_color[(unsigned char)attr_present->color]]);
+        if (error)
+        {
+            return error;
+        }
+    }
+
+    if (firstcell || attr_new.alt != attr_present->alt)
+    {
+        attr_present->alt = attr_new.alt;
+        error = seq_emit_toggle(attr_present->alt, 0x0e, 0x8e);
+        if (error)
+        {
+            return error;
+        }
+    }
+
+    if (seqmode == SEQ_MODE_VDC)
+    {
+        if (firstcell || attr_new.underline != attr_present->underline)
+        {
+            attr_present->underline = attr_new.underline;
+            error = seq_emit_vdc_escape(attr_present->underline ? 'I' : 'J');
+            if (error)
+            {
+                return error;
+            }
+        }
+
+        if (firstcell || attr_new.blink != attr_present->blink)
+        {
+            attr_present->blink = attr_new.blink;
+            error = seq_emit_vdc_escape(attr_present->blink ? 'O' : 'P');
+            if (error)
+            {
+                return error;
+            }
+        }
+    }
+
+    if (firstcell || attr_new.reverse != attr_present->reverse)
+    {
+        attr_present->reverse = attr_new.reverse;
+        error = seq_emit_toggle(attr_present->reverse, 0x12, 0x92);
+        if (error)
+        {
+            return error;
+        }
+    }
+
+    *attr_present = attr_new;
+    return 0;
+}
+
+static void seq_normalize_cell(unsigned char *screencode, unsigned char *attr)
+{
+    if (*screencode > 0x7f)
+    {
+        *screencode -= 0x80;
+        *attr ^= VDC_A_REVERSE;
+    }
+}
+
+static char seq_emit_char(unsigned char screencode, unsigned char attr, char seqmode)
+{
+    char error;
+
+    if (seqmode == SEQ_MODE_VDC)
+    {
+        if (seq_can_write_vdc_code_direct(screencode))
+        {
+            return seq_write_byte(seq_map_screencode_to_petscii(screencode));
+        }
+
+        error = seq_emit_vdc_escape('V');
+        if (error)
+        {
+            return error;
+        }
+        return seq_write_byte(screencode);
+    }
+
+    return seq_write_byte(seq_map_screencode_to_petscii(screencode));
+}
+
+static char seq_emit_rowbreak(char reverse)
+{
+    return seq_write_byte(reverse ? 0x0d : 0x8d);
+}
+
+static void export_seq_mode(char seqmode)
+{
     char error = 0;
     char status = 0;
-    char overwrite, screencode, attr, ch;
+    unsigned char overwrite;
+    unsigned char screencode;
+    unsigned char attr;
     unsigned escapeflag, x, y;
     struct ATTRVALS attr_present = {0};
-    struct ATTRVALS attr_new = {0};
 
     escapeflag = chooseidandfilename("Save screen", 15);
 
@@ -612,104 +908,33 @@ void export_seq()
                         // Obtain screen code and attribute for coordinate
                         screencode = bnk_readb(BNK_1_FULL, screenmap_screenaddr(y, x, canvas.sourcewidth));
                         attr = bnk_readb(BNK_1_FULL, screenmap_attraddr(y, x, canvas.sourcewidth, canvas.sourceheight));
-
-                        // Is it a reverse screen code bigger than 0xa0?
-                        if (screencode > 0x7f)
+                        if (seqmode == SEQ_MODE_C64)
                         {
-                            screencode -= 0x80;
-                            attr ^= VDC_A_REVERSE;
+                            seq_normalize_cell(&screencode, &attr);
                         }
 
-                        // Convert screencode to PETSCII
-                        ch = 0x20;
-                        if (screencode < 0x20)
+                        error = seq_emit_attributes(&attr_present, attr, seqmode, x == 0 && y == 0);
+                        if (error)
                         {
-                            ch = screencode + 0x40;
-                        }
-                        if (screencode > 0x1f && screencode < 0x40)
-                        {
-                            ch = screencode;
-                        }
-                        if (screencode > 0x3f && screencode < 0x5e)
-                        {
-                            ch = screencode + 0x80;
-                        }
-                        if (screencode == 0x5e)
-                        {
-                            ch = 0xff;
-                        }
-                        if (screencode == 0x5f)
-                        {
-                            ch = 0xdf;
-                        }
-                        if (screencode > 0x5f && screencode < 0x80)
-                        {
-                            ch = screencode + 0x40;
+                            krnio_clrchn();
+                            krnio_close(1);
+                            menu_fileerrormessage();
+                            return;
                         }
 
-                        // Output control codes on attribute changes
-                        if (x == 0 && y == 0)
+                        error = seq_emit_char(screencode, attr, seqmode);
+                        if (error)
                         {
-                            attr_present.color = attr & 0x0f;
-                            attr_present.alt = attr & VDC_A_ALTCHAR;
-                            attr_present.blink = attr & VDC_A_BLINK;
-                            attr_present.reverse = attr & VDC_A_REVERSE;
-                            attr_present.underline = attr & VDC_A_UNDERLINE;
-                            krnio_chrout(0x93);                                   // Clear
-                            krnio_chrout(seqcolor[attr_present.color]);           // Color
-                            krnio_chrout((attr_present.alt) ? 0x0e : 0x8e);       // Case
-                            krnio_chrout((attr_present.underline) ? 0x02 : 0x82); // Underline
-                            krnio_chrout((attr_present.reverse) ? 0x12 : 0x92);   // Reverse
-                            krnio_chrout((attr_present.blink) ? 0x0f : 0x8f);     // Flash
+                            krnio_clrchn();
+                            krnio_close(1);
+                            menu_fileerrormessage();
+                            return;
                         }
-                        else
-                        {
-                            attr_new.color = attr & 0x0f;
-                            attr_new.alt = attr & VDC_A_ALTCHAR;
-                            attr_new.blink = attr & VDC_A_BLINK;
-                            attr_new.reverse = attr & VDC_A_REVERSE;
-                            attr_new.underline = attr & VDC_A_UNDERLINE;
+                    }
 
-                            // Color change?
-                            if (attr_new.color != attr_present.color)
-                            {
-                                attr_present.color = attr_new.color;
-                                krnio_chrout(seqcolor[attr_present.color]);
-                            }
-
-                            // Case change?
-                            if (attr_new.alt != attr_present.alt)
-                            {
-                                attr_present.alt = attr_new.alt;
-                                krnio_chrout((attr_present.alt) ? 0x0e : 0x8e);
-                            }
-
-                            // Underline change?
-                            if (attr_new.underline != attr_present.underline)
-                            {
-                                attr_present.underline = attr_new.underline;
-                                krnio_chrout((attr_present.underline) ? 0x02 : 0x82);
-                            }
-
-                            // Reverse change?
-                            if (attr_new.reverse != attr_present.reverse)
-                            {
-                                attr_present.reverse = attr_new.reverse;
-                                krnio_chrout((attr_present.reverse) ? 0x12 : 0x92);
-                            }
-
-                            // Flash change?
-                            if (attr_new.blink != attr_present.blink)
-                            {
-                                attr_present.blink = attr_new.blink;
-                                krnio_chrout((attr_present.blink) ? 0x0f : 0x8f);
-                            }
-                        }
-
-                        krnio_chrout(ch);
-
-                        // Check for errors
-                        error = krnio_status();
+                    if (seqmode == SEQ_MODE_C64 && y < canvas.sourceheight - 1)
+                    {
+                        error = seq_emit_rowbreak(attr_present.reverse);
                         if (error)
                         {
                             krnio_clrchn();
@@ -739,6 +964,26 @@ void export_seq()
     }
 
     vdcwin_win_free();
+}
+
+void import_seq_c64()
+{
+    import_seq_mode(SEQ_MODE_C64, "Import C64 SEQ");
+}
+
+void import_seq_vdc()
+{
+    import_seq_mode(SEQ_MODE_VDC, "Import VDC SEQ");
+}
+
+void export_seq_c64()
+{
+    export_seq_mode(SEQ_MODE_C64);
+}
+
+void export_seq_vdc()
+{
+    export_seq_mode(SEQ_MODE_VDC);
 }
 
 #pragma code(code)

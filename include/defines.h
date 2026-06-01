@@ -72,6 +72,13 @@ struct IMPORTVARS
 };
 extern struct IMPORTVARS importvars;
 
+#define IMPORT_DIALOGUE_PRG 0
+#define IMPORT_DIALOGUE_SEQ_C64 2
+#define IMPORT_DIALOGUE_SEQ_VDC 3
+
+#define SEQ_MODE_C64 0
+#define SEQ_MODE_VDC 1
+
 // Global variables
 extern char bootdevice;
 extern char DOSstatus[40];

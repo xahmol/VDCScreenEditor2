@@ -80,7 +80,7 @@ struct VDCMenuBar menubar = {
     {0, 0, 0, 0, 0},
     0};
 
-char pulldown_options[VDC_PULLDOWN_NUMBER] = {6, 4, 5, 3, 2, 6, 3, 2};
+char pulldown_options[VDC_PULLDOWN_NUMBER] = {6, 4, 5, 5, 2, 6, 3, 2};
 char pulldown_titles[VDC_PULLDOWN_NUMBER][VDC_PULLDOWN_MAXOPTIONS][VDC_PULLDOWN_MAXLENGTH] = {
     {"Width:      80 ",
      "Height:     25 ",
@@ -98,8 +98,10 @@ char pulldown_titles[VDC_PULLDOWN_NUMBER][VDC_PULLDOWN_MAXOPTIONS][VDC_PULLDOWN_
      "Save alternate ",
      "Reset charsets "},
     {"Import PRG     ",
-     "Import SEQ     ",
-     "Export SEQ     "},
+     "Import C64 SEQ ",
+     "Import VDC SEQ ",
+     "Export C64 SEQ ",
+     "Export VDC SEQ "},
     {"Version/credits",
      "Exit program   "},
     {"PAL  80x25",
