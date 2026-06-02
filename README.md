@@ -919,6 +919,22 @@ For screensizes greater than 80x25 this would translate to:
 |Width * Height|Start of 48 byte padding. This is used to place a VDCSE version signature
 |(Width * Height)+48|Start of attribute data using VDC [attribute codes](#attribute-code-reference).
 
+### c128 VDC SEQ (Petmate 9) summary
+
+VDCSE supports the Petmate 9 extended PETSCII SEQ format used by some BBS tools and editors. A full, annotated summary is included in c128vdc-seq.md (root). Key points:
+
+- ESC sequences are case-sensitive: ESC (0x1B) followed by an uppercase ASCII command byte.
+- ESC V (0x1B 0x56): Raw-data marker — used to encode "unsafe" bytes. Follows with raw VDC character/attribute bytes.
+- ESC I (0x1B 0x49) / ESC J (0x1B 0x4A): Underline ON / OFF.
+- ESC O (0x1B 0x4F) / ESC P (0x1B 0x50): Blink ON / OFF.
+- Petmate color indices map to SEQ bytes; VDCSE converts these indices to VDC attribute bytes (see c128vdc-seq.md for mapping and collision rules).
+
+Notes for importers/exporters:
+- Use explicit hex constants (not char literals) for ASCII command bytes to avoid accidental case/locale mismatches.
+- ESC V is used when emitting bytes that would otherwise collide with control codes; importer recognizes and decodes these into raw VDC bytes.
+
+See c128vdc-seq.md in this repository and the original PetMate 9 source for full details and examples.
+
 ## Credits
 
 VDC Screen Editor
@@ -971,8 +987,8 @@ Code and resources from others used:
 
 -   Original windowing system code on Commodore 128 by unknown author.
 
--   PetMate 9 source code by Wbochar: For SEQ import and export code
-    https://github.com/wbochar/petmate9
+-   PetMate 9 (Wbochar) — SEQ import/export inspiration and VDC SEQ format reference. See GitHub: https://github.com/wbochar/petmate9 (use latest PM9 release).
+    See c128vdc-seq.md in this repository for a summarized spec and examples.
 
 -   Tested using real hardware (C128D and C128DCR) plus VICE.
 
