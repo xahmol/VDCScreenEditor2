@@ -118,6 +118,11 @@ static const unsigned char vdc_seq_color_control[16] = {0x90, 0x05, 0x1c, 0x9f, 
 static const unsigned char vdc_to_vic_color[16] = {0, 11, 6, 14, 5, 13, 3, 3, 2, 10, 4, 4, 8, 7, 15, 1};
 static volatile unsigned char seq_escapepending;
 static volatile unsigned char seq_rawcharpending;
+#define SEQ_VDC_ESC_UNDERLINE_ON 0x49
+#define SEQ_VDC_ESC_UNDERLINE_OFF 0x4a
+#define SEQ_VDC_ESC_BLINK_ON 0x4f
+#define SEQ_VDC_ESC_BLINK_OFF 0x50
+#define SEQ_VDC_ESC_RAW 0x56
 
 static void seq_normalize_cell(unsigned char *screencode, unsigned char *attr);
 
@@ -434,19 +439,19 @@ static void decode_seq_byte(unsigned char ch, char seqmode)
         seq_escapepending = 0;
         switch (ch)
         {
-        case 'I':
+        case SEQ_VDC_ESC_UNDERLINE_ON:
             plotunderline = 1;
             return;
-        case 'J':
+        case SEQ_VDC_ESC_UNDERLINE_OFF:
             plotunderline = 0;
             return;
-        case 'O':
+        case SEQ_VDC_ESC_BLINK_ON:
             plotblink = 1;
             return;
-        case 'P':
+        case SEQ_VDC_ESC_BLINK_OFF:
             plotblink = 0;
             return;
-        case 'V':
+        case SEQ_VDC_ESC_RAW:
             seq_rawcharpending = 1;
             return;
         default:
@@ -787,7 +792,7 @@ static char seq_emit_attributes(struct ATTRVALS *attr_present, unsigned char att
         if (firstcell || attr_new.underline != attr_present->underline)
         {
             attr_present->underline = attr_new.underline;
-            error = seq_emit_vdc_escape(attr_present->underline ? 'I' : 'J');
+            error = seq_emit_vdc_escape(attr_present->underline ? SEQ_VDC_ESC_UNDERLINE_ON : SEQ_VDC_ESC_UNDERLINE_OFF);
             if (error)
             {
                 return error;
@@ -797,7 +802,7 @@ static char seq_emit_attributes(struct ATTRVALS *attr_present, unsigned char att
         if (firstcell || attr_new.blink != attr_present->blink)
         {
             attr_present->blink = attr_new.blink;
-            error = seq_emit_vdc_escape(attr_present->blink ? 'O' : 'P');
+            error = seq_emit_vdc_escape(attr_present->blink ? SEQ_VDC_ESC_BLINK_ON : SEQ_VDC_ESC_BLINK_OFF);
             if (error)
             {
                 return error;
@@ -839,7 +844,7 @@ static char seq_emit_char(unsigned char screencode, unsigned char attr, char seq
             return seq_write_byte(seq_map_screencode_to_petscii(screencode));
         }
 
-        error = seq_emit_vdc_escape('V');
+        error = seq_emit_vdc_escape(SEQ_VDC_ESC_RAW);
         if (error)
         {
             return error;
