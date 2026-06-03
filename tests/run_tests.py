@@ -43,7 +43,17 @@ ALL_TESTS = [
 
 
 def launch_vice(image: str, port: int) -> subprocess.Popen:
-    """Launch x128 with remote monitor enabled and autostart the test image."""
+    """Launch x128 with remote monitor, loading symbols via -moncommands.
+
+    Uses -initbreak reset + -moncommands (same as make vice-debug) instead of
+    -autostart.  This avoids a WSL2/WSLg issue where -autostart combined with
+    an active remote-monitor TCP connection blocks X11 keyboard delivery to
+    the VICE window.
+
+    setup.mon loads the symbol file (activating break 5577) and then sends 'g'
+    to start the C128 boot sequence from the disk image.  Python connects
+    after a short wait and enables warp mode to speed up disk loading.
+    """
     vice_cmd = os.environ.get("VICE_CMD", "x128")
     args = [
         vice_cmd,
@@ -52,9 +62,12 @@ def launch_vice(image: str, port: int) -> subprocess.Popen:
         "-monlogname", "build/monitor_test.log",
         "-monlog",
         "-keepmonopen",
-        # Autostart the test disk image; no -moncommands here — Python
-        # loads the symbol file explicitly after connecting.
-        "-autostart", image,
+        # Break at reset so -moncommands runs before the CPU starts.
+        "-initbreak", "reset",
+        # setup.mon loads the symbol file (ll) and resumes (g).
+        # Symbols include 'break 5577' which VICE auto-activates.
+        "-moncommands", "tests/setup.mon",
+        image,
     ]
     print(f"Launching: {' '.join(args)}")
     # Redirect VICE's own stdout/stderr to a log file so they don't pollute
@@ -91,13 +104,9 @@ def run_all(image: str, symbols: str, port: int) -> bool:
         print("Warp mode off — vdcse should be at the title screen now.")
         time.sleep(1.0)   # let the last few frames render at normal speed
 
-        # Load the Oscar64 symbol file so labels like .mainmenuloop are
-        # available and 'break 5577' (the overlay6 test hook) is activated.
-        if symbols and os.path.exists(symbols):
-            print(f"Loading symbols: {symbols}")
-            mon.load_symbols(symbols)
-        else:
-            print("WARNING: no symbol file loaded — some tests may fail")
+        # Symbols (including 'break 5577') were loaded by setup.mon at
+        # VICE startup.  No need to load them again here.
+        print("Symbols loaded by setup.mon at startup (break 5577 active).")
 
         for test_fn in ALL_TESTS:
             name = test_fn.__name__

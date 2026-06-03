@@ -2,102 +2,103 @@
 Project save + load roundtrip test.
 
 Semi-automated: the test captures memory snapshots and verifies byte-equality;
-the user performs the menu navigation in the VICE window.
-
-This exercises overlay3.c's project I/O code paths.
+the user performs the menu navigation in the VICE window following popup
+instructions that appear above the VICE window.
 
 Timing note:
-  The breakpoint() hooks added to overlay3.c compile to NOP instructions in
-  the overlay code (0xAC00 range) but Oscar64 does NOT emit 'break' entries in
-  the .lbl file for overlay-address breakpoints (multiple overlays overlap at
-  the same address range, making them ambiguous to VICE).
+  The breakpoint() hooks in overlay3.c compile to NOP instructions in the
+  overlay code (0xAC00 range) but Oscar64 does NOT emit 'break' entries in
+  the .lbl file for overlay-address breakpoints (multiple overlays share the
+  same address range, making them ambiguous to VICE).
 
   Because overlay3 operations do NOT produce a VICE break notification, this
-  test uses time.sleep() to wait for disk operations to complete.  The user
-  is told to wait a moment before confirming each step.
+  test uses wait_user_confirm() (blocking popup) to let the user signal when
+  each disk operation is complete.
 
 Menu navigation reference:
-  File menu is the 2nd header (F1, then RIGHT x1 from the home position).
-    Item 1: Save screen  (no DOWN needed)
-    Item 2: Load screen  (DOWN x1)
-    Item 3: Save project (DOWN x2) → choice 23
-    Item 4: Load project (DOWN x3) → choice 24
+  File menu is the 2nd header:
+    F1 → RIGHT ×1 → RETURN   (open File pulldown)
+    Item 1 highlighted = Save screen
+    DOWN ×2 → Save project   (choice 23)
+    DOWN ×3 → Load project   (choice 24)
+
+  Imp/Export (4th header):
+    F1 → RIGHT ×3 → RETURN → DOWN ×2 → RETURN   (Import VDC SEQ)
 """
 
 import time
-from vice_monitor import ViceMonitor, PETSCII
+from vice_monitor import ViceMonitor, PETSCII, DEFAULT_PORT
+from test_ui import show_info, wait_user_confirm
 
 SCREENMAPBASE = 0x5800
 SCREEN_BYTES  = 80 * 25 * 2    # screencodes + attribute bytes
 
-# Allow time for disk I/O through VICE emulation after user confirms.
-DISK_OP_WAIT = 3.0
-
-
-def _wait_user_manual(step_label: str, steps: str):
-    """Print manual-action instructions and wait for the user to press Enter."""
-    print()
-    print(f"  *** MANUAL ACTION REQUIRED — Step: {step_label} ***")
-    for line in steps.strip().splitlines():
-        print(f"    {line}")
-    input("  Press ENTER here when done: ")
+DISK_OP_WAIT = 3.0   # extra sleep after user confirms disk operation
 
 
 def _wait_user_import(mon: ViceMonitor, steps: str, timeout: float = 120) -> int:
-    """Instructions + wait for break 5577 (overlay6 import)."""
-    print()
-    print("  *** MANUAL ACTION REQUIRED ***")
-    for line in steps.strip().splitlines():
-        print(f"    {line}")
-    print(f"  Waiting up to {timeout:.0f}s for break 5577 to confirm completion...")
-    return mon.wait_for_break(timeout=timeout)
+    """Show instructions, disconnect monitor (WSL2 fix), poll for break 5577."""
+    show_info(steps, title="Do in VICE — then wait for test to continue")
+    print(f"  Waiting up to {timeout:.0f}s for break 5577 …")
+    return mon.wait_for_break_interactive(timeout=timeout)
 
 
 def test_project_save_reload(mon: ViceMonitor):
     """Save project then reload it — screen map must be byte-identical."""
 
-    # Step 1: Import a reference VDC SEQ to populate the canvas
+    # ── Step 1: Import a reference VDC SEQ to populate the canvas ──
     addr = _wait_user_import(mon,
         """\
-F1 → RIGHT x3 → DOWN x2 → RETURN   (Import VDC SEQ)
-Type: vdc-colors  RETURN
-RETURN x5  (accept defaults)""")
+F1 → RIGHT ×3 → RETURN → DOWN ×2 → RETURN   (Import VDC SEQ)
+  — file browser — navigate to VDC-COLORS → RETURN
+RETURN ×5   (accept defaults)""")
     assert addr > 0, "Reference import: break 5577 never fired"
 
-    # Step 2: Capture before-snapshot
     before = mon.read_bank1(SCREENMAPBASE, SCREEN_BYTES)
     assert any(b != 0x20 for b in before[:80]), \
         "Reference import produced a blank canvas"
     mon.cont()
     time.sleep(0.5)
 
-    # Step 3: Save project (overlay3 — no break, user confirms + sleep)
-    _wait_user_manual("3 of 5 — Save project",
+    # ── Step 3: Save project ──
+    # Disconnect monitor so physical keyboard works in VICE (WSL2 fix).
+    mon.disconnect()
+    wait_user_confirm(
         """\
-F1 → RIGHT x1 → DOWN x2 → RETURN   (Save project)
-Type: testprj  RETURN
-Wait for the save to complete (status bar message disappears).""")
+F1 → RIGHT ×1 → RETURN → DOWN ×2 → RETURN   (Save project)
+  — save dialog — accept device with RETURN
+  Type filename:  testprj   then RETURN
+  If 'file exists?' appears: RETURN to confirm overwrite
+  Wait for the save to complete (status bar message disappears).""",
+        title="Save project — click OK when save is complete")
     time.sleep(DISK_OP_WAIT)
 
-    # Step 4: Overwrite canvas with a different SEQ
+    # ── Step 4: Overwrite canvas with a different SEQ ──
+    # wait_for_break_interactive reconnects automatically.
     addr = _wait_user_import(mon,
         """\
-F1 → RIGHT x3 → DOWN x2 → RETURN   (Import VDC SEQ)
-Type: idi8b-vdc  RETURN
-RETURN x5  (accept defaults)""")
+F1 → RIGHT ×3 → RETURN → DOWN ×2 → RETURN   (Import VDC SEQ)
+  — file browser — navigate to IDI8B-VDC → RETURN
+RETURN ×5   (accept defaults)""")
     assert addr > 0, "Canvas overwrite import: break 5577 never fired"
     mon.cont()
     time.sleep(0.5)
 
-    # Step 5: Reload the saved project (overlay3 — no break, user confirms + sleep)
-    _wait_user_manual("5 of 5 — Load project",
+    # ── Step 5: Reload the saved project ──
+    # Disconnect monitor so physical keyboard works in VICE (WSL2 fix).
+    mon.disconnect()
+    wait_user_confirm(
         """\
-F1 → RIGHT x1 → DOWN x3 → RETURN   (Load project)
-Type: testprj.proj  RETURN
-Wait for the load to complete (canvas redraws).""")
+F1 → RIGHT ×1 → RETURN → DOWN ×3 → RETURN   (Load project)
+  — file browser (shows .proj files only) —
+  Navigate to TESTPRJ.PROJ → RETURN
+  Wait for the load to complete (canvas redraws).""",
+        title="Load project — click OK when load is complete")
     time.sleep(DISK_OP_WAIT)
 
-    # Step 6: Capture after-snapshot and compare
+    # ── Step 6: Capture after-snapshot and compare ──
+    # Reconnect monitor to read Bank 1 memory.
+    mon.connect(port=DEFAULT_PORT)
     after = mon.read_bank1(SCREENMAPBASE, SCREEN_BYTES)
 
     assert len(before) == len(after), \
