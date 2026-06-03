@@ -27,13 +27,18 @@ SCREENMAPBASE = 0x5800
 SCREEN_BYTES  = 80 * 25 * 2    # screencodes + attribute bytes for 80×25
 
 
-def _wait_user(mon: ViceMonitor, step_label: str, steps: str,
-               timeout: float = 120) -> None:
-    """Read flag, show instructions, disconnect and poll until flag changes."""
+def _wait_user(mon: ViceMonitor, step_label: str, steps: str) -> None:
+    """Read flag, disconnect (VICE keyboard works), block on Enter, reconnect and verify."""
     initial = mon.read_completion_flag()
-    show_info(steps, title=f"Step {step_label} — Do in VICE then wait")
-    print(f"  Waiting up to {timeout:.0f}s for completion flag …")
-    mon.wait_completion_flag(initial, timeout=timeout)
+    mon.disconnect()
+    show_info(steps, title=f"Step {step_label} — Do in VICE, then press ENTER here")
+    input("  Press ENTER when the operation is complete: ")
+    mon.connect()
+    new_flag = mon.read_completion_flag()
+    assert new_flag != initial, (
+        f"Completion flag unchanged ({initial:#04x}) — "
+        "did the overlay6 operation complete?"
+    )
 
 
 def test_seq_export_reimport_roundtrip(mon: ViceMonitor):

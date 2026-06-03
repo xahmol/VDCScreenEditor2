@@ -44,16 +44,23 @@ SCREENMAPBASE = 0x5800
 SCREEN_WIDTH  = 80
 
 
-def _wait_user_import(mon: ViceMonitor, steps: str, timeout: float = 120) -> None:
+def _wait_user_import(mon: ViceMonitor, steps: str) -> None:
     """
-    Read the completion flag, show instructions, then disconnect and poll
-    until the flag byte changes (overlay6 increments it on completion).
-    Returns with the monitor connected and CPU halted for memory reads.
+    Read completion flag, disconnect (so VICE keyboard works on WSL2),
+    show instructions, block until user presses ENTER, then reconnect and
+    verify the flag changed (overlay6 increments it on completion).
+    After return: monitor is connected, CPU running.
     """
     initial = mon.read_completion_flag()
-    show_info(steps, title="Do in VICE — then wait for test to continue")
-    print(f"  Waiting up to {timeout:.0f}s for completion flag …")
-    mon.wait_completion_flag(initial, timeout=timeout)
+    mon.disconnect()          # release socket → VICE keyboard unblocked
+    show_info(steps, title="Do in VICE — then press ENTER in this terminal")
+    input("  Press ENTER when the operation is complete: ")
+    mon.connect()             # reconnect to read memory and verify
+    new_flag = mon.read_completion_flag()
+    assert new_flag != initial, (
+        f"Completion flag at $03FA unchanged ({initial:#04x}) — "
+        "did the overlay6 operation complete?"
+    )
 
 
 def test_seq_import_vdc(mon: ViceMonitor):
@@ -63,17 +70,18 @@ def test_seq_import_vdc(mon: ViceMonitor):
     Disk filename: 'vdc-colors'.
     """
     steps = """\
-F1                    open main menu bar
-RIGHT ×3              navigate to Imp/Export (4th header)
-RETURN                open Imp/Export pulldown
-DOWN ×2               reach Import VDC SEQ (3rd item)
-RETURN                select Import VDC SEQ
-  — file browser opens —
-Navigate to 'VDC-COLORS' and press RETURN to select
-  — import dialog —
-RETURN ×5             accept width / height / X / Y / cls defaults"""
+F1              open main menu bar
+RIGHT ×3        navigate to Imp/Export (4th header)
+RETURN          open Imp/Export pulldown
+DOWN ×2         reach Import VDC SEQ (3rd item)
+RETURN          select → file browser opens (shows SEQ files)
+  File browser: cursor starts on VF7-V2-80X50 (1st SEQ file)
+  DOWN          move to VDC-COLORS (2nd SEQ file)
+  RETURN        select VDC-COLORS
+  Import dialog:
+  RETURN ×5     accept width / height / X / Y / cls defaults"""
 
-    _wait_user_import(mon, steps)   # returns with CPU halted, monitor connected
+    _wait_user_import(mon, steps)
 
     row0 = mon.read_bank1(SCREENMAPBASE, SCREEN_WIDTH)
     assert len(row0) == SCREEN_WIDTH, \
@@ -92,17 +100,18 @@ def test_seq_import_c64(mon: ViceMonitor):
     Disk filename: 'vicuc-colors'.
     """
     steps = """\
-F1                    open main menu bar
-RIGHT ×3              navigate to Imp/Export (4th header)
-RETURN                open Imp/Export pulldown
-DOWN ×1               reach Import C64 SEQ (2nd item)
-RETURN                select Import C64 SEQ
-  — file browser opens —
-Navigate to 'VICUC-COLORS' and press RETURN to select
-  — import dialog —
-RETURN ×7             accept width / height / X / Y / cls / convert / uppercase defaults"""
+F1              open main menu bar
+RIGHT ×3        navigate to Imp/Export (4th header)
+RETURN          open Imp/Export pulldown
+DOWN ×1         reach Import C64 SEQ (2nd item)
+RETURN          select → file browser opens (shows SEQ files)
+  File browser: cursor starts on VF7-V2-80X50 (1st SEQ file)
+  DOWN ×3       move to VICUC-COLORS (4th SEQ file)
+  RETURN        select VICUC-COLORS
+  Import dialog:
+  RETURN ×7     accept width / height / X / Y / cls / convert / uppercase defaults"""
 
-    _wait_user_import(mon, steps)   # returns with CPU halted, monitor connected
+    _wait_user_import(mon, steps)
 
     row0 = mon.read_bank1(SCREENMAPBASE, SCREEN_WIDTH)
     assert len(row0) == SCREEN_WIDTH, \
