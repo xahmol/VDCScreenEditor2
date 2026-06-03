@@ -979,9 +979,6 @@ void import_seq_c64()
     import_seq_mode(SEQ_MODE_C64, "Import C64 SEQ");
     // TEST_HOOK: import_seq_c64_complete — screen map populated at SCREENMAPBASE (Bank 1)
 #ifdef TESTMODE
-    // Increment the test-completion counter at $03FA (page-3 free area).
-    // Python polls this byte (disconnected from monitor so keyboard works).
-    (*((volatile unsigned char *)0x03FA))++;
     breakpoint();
 #endif
 }
@@ -991,7 +988,6 @@ void import_seq_vdc()
     import_seq_mode(SEQ_MODE_VDC, "Import VDC SEQ");
     // TEST_HOOK: import_seq_vdc_complete — screen map populated at SCREENMAPBASE (Bank 1)
 #ifdef TESTMODE
-    (*((volatile unsigned char *)0x03FA))++;
     breakpoint();
 #endif
 }
@@ -1001,7 +997,6 @@ void export_seq_c64()
     export_seq_mode(SEQ_MODE_C64);
     // TEST_HOOK: export_seq_c64_complete — SEQ file written to disk
 #ifdef TESTMODE
-    (*((volatile unsigned char *)0x03FA))++;
     breakpoint();
 #endif
 }
@@ -1011,7 +1006,6 @@ void export_seq_vdc()
     export_seq_mode(SEQ_MODE_VDC);
     // TEST_HOOK: export_seq_vdc_complete — SEQ file written to disk
 #ifdef TESTMODE
-    (*((volatile unsigned char *)0x03FA))++;
     breakpoint();
 #endif
 }

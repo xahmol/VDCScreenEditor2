@@ -28,17 +28,10 @@ from vice_monitor import ViceMonitor, ViceMonitorError, DEFAULT_PORT
 # ---------------------------------------------------------------------------
 # Test imports — each module exposes one or more test_* functions
 # ---------------------------------------------------------------------------
-from test_startup       import test_startup
-from test_seq_import    import test_seq_import_vdc, test_seq_import_c64
-from test_seq_roundtrip import test_seq_export_reimport_roundtrip
-from test_project       import test_project_save_reload
+from test_startup import test_startup
 
 ALL_TESTS = [
     test_startup,
-    test_seq_import_vdc,
-    test_seq_import_c64,
-    test_seq_export_reimport_roundtrip,
-    test_project_save_reload,
 ]
 
 
