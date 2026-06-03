@@ -551,6 +551,22 @@ See [C++ Template Library (opp/)](#c-template-library-opp) for available contain
 
 ### Types (`stdint.h`, `c64/types.h`)
 
+**Oscar64 type sizes and signedness (6502 target):**
+
+| Type | Size | Signedness |
+|---|---|---|
+| `char` | 8-bit | **unsigned** — Oscar64 default; unlike ISO C! |
+| `signed char` / `sbyte` | 8-bit | signed |
+| `unsigned char` / `byte` | 8-bit | unsigned |
+| `int` | 16-bit | signed |
+| `unsigned int` / `word` | 16-bit | unsigned |
+| `long` | 32-bit | signed |
+| `unsigned long` / `dword` | 32-bit | unsigned |
+| `intptr_t` | 16-bit | signed (= `int`) |
+| `uintptr_t` | 16-bit | unsigned (= `unsigned int`) |
+
+**Key gotcha:** `char` is unsigned by default in Oscar64. Loops like `for (char x = 0; x < 255; x++)` correctly iterate 255 times (x = 0..254). Code that stores PETSCII values (0–255) in plain `char` is safe. Use `signed char` or `sbyte` for values that must go negative.
+
 ```c
 // stdint.h — portable types
 int8_t   uint8_t

@@ -47,7 +47,11 @@ The compiler is at `/home/xahmol/oscar64/bin/oscar64`. Common flags: `-i=include
 
 Disk image manipulation uses `c1541` (VICE tool). Distribution ZIPs are created automatically by `make all`.
 
-## Architecture
+## Architecture Reference
+
+Full architecture documentation — memory maps, file formats, overlay system, VDC attribute layout, banking layer API, and global state table — is in **[ARCHITECTURE.md](ARCHITECTURE.md)**. Consult it before making changes to memory layout, file I/O, or screen map handling.
+
+## Architecture Summary
 
 ### Three Executables
 

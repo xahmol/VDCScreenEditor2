@@ -2,6 +2,11 @@
 
 ## Overview
 
+This document describes the VDC SEQ file format as implemented by **Petmate 9** (the
+TypeScript/Electron screen editor). It serves as the interoperability reference for
+VDCSE2's own `src/overlay6.c` implementation, which follows the same format to ensure
+files produced by either tool are compatible.
+
 The C128 VDC SEQ format is a binary sequential file (`.seq`) that encodes 80-column VDC
 screen content using PETSCII-style control bytes. It is designed to be loadable on a
 real C128 (or in emulators) and played back via BASIC or machine code that streams the
@@ -11,7 +16,7 @@ Petmate extends the standard PETSCII SEQ format in several ways to support the e
 attributes the VDC hardware provides (underline, blink, alternate charset). Those
 extensions are documented below.
 
-Relevant source files:
+**Petmate 9 source files (TypeScript):**
 - `src/utils/exporters/seq.ts` — `saveSEQ` / `convertToSEQ`
 - `src/utils/importers/seq2petscii.ts` — `loadSeq` / `loadSeqAdvanced`
 - `src/utils/vdcAttr.ts` — VDC attribute byte constants and helpers
