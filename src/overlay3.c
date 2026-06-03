@@ -94,9 +94,16 @@ void loadscreenmap()
     unsigned maxsize = MEMORYLIMIT - SCREENMAPBASE;
     char *ptrend;
 
-    if (!filepicker(0))
     {
-        return;
+        char _fp;
+        vdc_state.text_attr = mc_menupopup;
+        vdcwin_win_new(VDC_POPUP_BORDER, DIRX, DIRY, DIRW, DIRH + 6);
+        _fp = filepicker(0);
+        vdcwin_win_free();
+        if (!_fp)
+        {
+            return;
+        }
     }
 
     vdc_state.text_attr = mc_menupopup;
@@ -303,9 +310,16 @@ void loadproject()
     unsigned new_mode;
     memset(projbuffer, 0, 23);
 
-    if (!filepicker(1))
     {
-        return;
+        char _fp;
+        vdc_state.text_attr = mc_menupopup;
+        vdcwin_win_new(VDC_POPUP_BORDER, DIRX, DIRY, DIRW, DIRH + 6);
+        _fp = filepicker(1);
+        vdcwin_win_free();
+        if (!_fp)
+        {
+            return;
+        }
     }
 
     // Strip .proj extension
@@ -417,9 +431,16 @@ void loadcharset(char stdoralt)
 {
     char *charsetaddress;
 
-    if (!filepicker(0))
     {
-        return;
+        char _fp;
+        vdc_state.text_attr = mc_menupopup;
+        vdcwin_win_new(VDC_POPUP_BORDER, DIRX, DIRY, DIRW, DIRH + 6);
+        _fp = filepicker(0);
+        vdcwin_win_free();
+        if (!_fp)
+        {
+            return;
+        }
     }
 
     charsetaddress = (stdoralt == 0) ? (char *)CHARSETNORMAL : (char *)CHARSETALTERNATE;

@@ -116,11 +116,10 @@ struct SEQSAVEDSTATE
     char yoff;
 };
 
-static const unsigned char c64_seq_color_control[16] = {0x90, 0x05, 0x1c, 0x9f, 0x9c, 0x1e, 0x1f, 0x9e, 0x81, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b};
-static const unsigned char vdc_seq_color_control[16] = {0x90, 0x05, 0x1c, 0x9f, 0x9c, 0x1e, 0x1f, 0x9e, 0x81, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b};
+static const unsigned char seq_color_control[16] = {0x90, 0x05, 0x1c, 0x9f, 0x9c, 0x1e, 0x1f, 0x9e, 0x81, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b};
 static const unsigned char vdc_to_vic_color[16] = {0, 11, 6, 14, 5, 13, 3, 3, 2, 10, 4, 4, 8, 7, 15, 1};
-static volatile unsigned char seq_escapepending;
-static volatile unsigned char seq_rawcharpending;
+static unsigned char seq_escapepending;
+static unsigned char seq_rawcharpending;
 #define SEQ_VDC_ESC_UNDERLINE_ON 0x49
 #define SEQ_VDC_ESC_UNDERLINE_OFF 0x4a
 #define SEQ_VDC_ESC_BLINK_ON 0x4f
@@ -305,10 +304,7 @@ static void seqimport_clear_region(void)
 
 static void seqimport_plot_raw_vdc_byte(unsigned char screencode)
 {
-    plotscreencode = screencode;
-    screenmapplot(screen_row + canvas.sourceyoffset, screen_col + canvas.sourcexoffset, plotscreencode, VDC_Attribute(plotcolor, plotblink, plotunderline, plotreverse, plotaltchar));
-    vdc_printc(screen_col, screen_row, bnk_readb(BNK_1_FULL, screenmap_screenaddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth)), bnk_readb(BNK_1_FULL, screenmap_attraddr(canvas.sourceyoffset + screen_row, canvas.sourcexoffset + screen_col, canvas.sourcewidth, canvas.sourceheight)));
-    seqimport_move(0, 1, 0, 0);
+    seqimport_plot_byte(screencode);
 }
 
 static char seq_decode_printable(unsigned char ch, unsigned char *screencode)
@@ -408,9 +404,9 @@ static char decode_vdc_seq_color(unsigned char ch)
 {
     unsigned idx;
 
-    for (idx = 0; idx < sizeof(vdc_to_vic_color); ++idx)
+    for (idx = 0; idx < sizeof(seq_color_control); ++idx)
     {
-        if (vdc_seq_color_control[idx] == ch)
+        if (seq_color_control[idx] == ch)
         {
             plotcolor = idx;
             return 1;
@@ -675,9 +671,9 @@ static char seq_is_color_control_byte(unsigned char byte)
 {
     unsigned idx;
 
-    for (idx = 0; idx < sizeof(c64_seq_color_control); ++idx)
+    for (idx = 0; idx < sizeof(seq_color_control); ++idx)
     {
-        if (c64_seq_color_control[idx] == byte)
+        if (seq_color_control[idx] == byte)
         {
             return 1;
         }
@@ -773,7 +769,7 @@ static char seq_emit_attributes(struct ATTRVALS *attr_present, unsigned char att
     if (firstcell || attr_new.color != attr_present->color)
     {
         attr_present->color = attr_new.color;
-        error = seq_write_byte((seqmode == SEQ_MODE_VDC) ? vdc_seq_color_control[(unsigned char)attr_present->color] : c64_seq_color_control[vdc_to_vic_color[(unsigned char)attr_present->color]]);
+        error = seq_write_byte((seqmode == SEQ_MODE_VDC) ? seq_color_control[(unsigned char)attr_present->color] : seq_color_control[vdc_to_vic_color[(unsigned char)attr_present->color]]);
         if (error)
         {
             return error;

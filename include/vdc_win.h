@@ -83,13 +83,7 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #define WIN_BOR_NOTOP 0x70 // All borders expect for top
 
 // Structs
-struct VDCWin
-{
-    char sx, sy, wx, wy;
-    char cx, cy;
-
-    unsigned sp, cp;
-};
+#include "vdcwin_types.h"
 struct VDCViewport
 {
     char sourcebank;

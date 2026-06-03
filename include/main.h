@@ -35,15 +35,8 @@ void hidestatusbar();
 void togglestatusbar();
 void showchareditfield(char stdoralt);
 void updatecanvas();
-char readDir(char device, char filter);
-void drawDirFrame(char device);
-void printElementPriv(const char ypos);
-void printDir(char device);
-void refreshDir(char device, char filter);
-void updateMenu(void);
 signed chooseidandfilename(const char *headertext, char maxlen);
 char checkiffileexists(char *filetocheck, unsigned char id);
-char filepicker(char filter);
 char import_dialogue(char mode, const char *message);
 
 #endif // __MAIN_H_

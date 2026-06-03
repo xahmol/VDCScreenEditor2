@@ -76,13 +76,7 @@ THE PROGRAMS ARE DISTRIBUTED IN THE HOPE THAT THEY WILL BE USEFUL, BUT WITHOUT A
 #define SCROLL_UP 0x08
 
 // Structs
-struct VDCWin
-{
-    char sx, sy, wx, wy;
-    char cx, cy;
-
-    unsigned sp, cp;
-};
+#include "vdcwin_types.h"
 struct VDCViewport
 {
     char *sourcebase;

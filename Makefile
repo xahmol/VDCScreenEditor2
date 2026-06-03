@@ -62,20 +62,20 @@ MAIN_SRCS = src/main.c \
             src/overlay1.c src/overlay2.c src/overlay3.c \
             src/overlay4.c src/overlay5.c src/overlay6.c \
             include/vdc_core.c include/vdc_win.c \
-            include/vdc_menu.c include/banking.c \
+            include/vdc_menu.c include/banking.c include/filebrowse.c \
             include/defines.h include/main.h \
             include/vdc_core.h include/vdc_win.h \
-            include/vdc_menu.h include/banking.h \
+            include/vdc_menu.h include/banking.h include/filebrowse.h \
             src/overlay1.h src/overlay2.h src/overlay3.h \
             src/overlay4.h src/overlay5.h src/overlay6.h \
             src/visualpetscii.h
 
 GEN_SRCS  = src/prg_gen.c \
             include/vdc_nobnk.c include/vdcwin_nobnk.c \
-            include/bank_minimal.c \
+            include/bank_minimal.c include/filebrowse.c \
             include/defines.h \
             include/vdc_nobnk.h include/vdcwin_nobnk.h \
-            include/bank_minimal.h
+            include/bank_minimal.h include/filebrowse.h
 
 VIEW_SRCS = src/view.c \
             include/vdc_nobnk.c include/vdcwin_nobnk.c \
