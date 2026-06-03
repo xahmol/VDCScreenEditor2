@@ -46,12 +46,12 @@ SCREEN_WIDTH  = 80
 
 def _wait_user_import(mon: ViceMonitor, steps: str, timeout: float = 120) -> int:
     """
-    Show instructions, disconnect from VICE monitor (so WSL2 keyboard works),
-    then poll until break 5577 fires.  Returns the break address.
+    Show instructions and wait for break 5577 (socket stays connected so
+    VICE delivers the break notification directly).
     """
     show_info(steps, title="Do in VICE — then wait for test to continue")
     print(f"  Waiting up to {timeout:.0f}s for break 5577 …")
-    addr = mon.wait_for_break_interactive(timeout=timeout)
+    addr = mon.wait_for_break(timeout=timeout)
     return addr
 
 

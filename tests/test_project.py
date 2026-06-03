@@ -27,7 +27,7 @@ Menu navigation reference:
 """
 
 import time
-from vice_monitor import ViceMonitor, PETSCII, DEFAULT_PORT
+from vice_monitor import ViceMonitor, PETSCII
 from test_ui import show_info, wait_user_confirm
 
 SCREENMAPBASE = 0x5800
@@ -37,10 +37,10 @@ DISK_OP_WAIT = 3.0   # extra sleep after user confirms disk operation
 
 
 def _wait_user_import(mon: ViceMonitor, steps: str, timeout: float = 120) -> int:
-    """Show instructions, disconnect monitor (WSL2 fix), poll for break 5577."""
+    """Show instructions and wait for break 5577 (socket stays connected)."""
     show_info(steps, title="Do in VICE — then wait for test to continue")
     print(f"  Waiting up to {timeout:.0f}s for break 5577 …")
-    return mon.wait_for_break_interactive(timeout=timeout)
+    return mon.wait_for_break(timeout=timeout)
 
 
 def test_project_save_reload(mon: ViceMonitor):
@@ -61,8 +61,6 @@ RETURN ×5   (accept defaults)""")
     time.sleep(0.5)
 
     # ── Step 3: Save project ──
-    # Disconnect monitor so physical keyboard works in VICE (WSL2 fix).
-    mon.disconnect()
     wait_user_confirm(
         """\
 F1 → RIGHT ×1 → RETURN → DOWN ×2 → RETURN   (Save project)
@@ -74,7 +72,6 @@ F1 → RIGHT ×1 → RETURN → DOWN ×2 → RETURN   (Save project)
     time.sleep(DISK_OP_WAIT)
 
     # ── Step 4: Overwrite canvas with a different SEQ ──
-    # wait_for_break_interactive reconnects automatically.
     addr = _wait_user_import(mon,
         """\
 F1 → RIGHT ×3 → RETURN → DOWN ×2 → RETURN   (Import VDC SEQ)
@@ -85,8 +82,6 @@ RETURN ×5   (accept defaults)""")
     time.sleep(0.5)
 
     # ── Step 5: Reload the saved project ──
-    # Disconnect monitor so physical keyboard works in VICE (WSL2 fix).
-    mon.disconnect()
     wait_user_confirm(
         """\
 F1 → RIGHT ×1 → RETURN → DOWN ×3 → RETURN   (Load project)
@@ -97,8 +92,6 @@ F1 → RIGHT ×1 → RETURN → DOWN ×3 → RETURN   (Load project)
     time.sleep(DISK_OP_WAIT)
 
     # ── Step 6: Capture after-snapshot and compare ──
-    # Reconnect monitor to read Bank 1 memory.
-    mon.connect(port=DEFAULT_PORT)
     after = mon.read_bank1(SCREENMAPBASE, SCREEN_BYTES)
 
     assert len(before) == len(after), \

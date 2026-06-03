@@ -29,10 +29,10 @@ SCREEN_BYTES  = 80 * 25 * 2    # screencodes + attribute bytes for 80×25
 
 def _wait_user(mon: ViceMonitor, step_label: str, steps: str,
                timeout: float = 120) -> int:
-    """Show instructions, disconnect monitor (WSL2 fix), poll for break 5577."""
+    """Show instructions and wait for break 5577 (socket stays connected)."""
     show_info(steps, title=f"Step {step_label} — Do in VICE then wait")
     print(f"  Waiting up to {timeout:.0f}s for break 5577 …")
-    return mon.wait_for_break_interactive(timeout=timeout)
+    return mon.wait_for_break(timeout=timeout)
 
 
 def test_seq_export_reimport_roundtrip(mon: ViceMonitor):
