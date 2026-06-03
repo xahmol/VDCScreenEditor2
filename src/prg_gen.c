@@ -726,7 +726,7 @@ char readDir(char device, char filter)
 // Read the directory
 {
     char cnt = 0xff;
-    char ret, i;
+    char i;
 
     previous = (struct DirElement *)0;
 

@@ -112,14 +112,14 @@ void check_charsets()
     }
 
     // Check if alt charset has to be redefined
-    if (view.charstd)
+    if (view.charalt)
     {
         vdc_redef_charset(vdc_state.char_alt, view.charalt, 256);
     }
 }
 
 char right_check()
-// Check right boundery
+// Check right boundary
 {
     if (softscroll.hscroll > 5)
     {
@@ -132,7 +132,7 @@ char right_check()
 }
 
 char down_check()
-// Check down boundery
+// Check down boundary
 {
     if (softscroll.vscroll == 6)
     {
@@ -145,7 +145,7 @@ char down_check()
 }
 
 char left_check()
-// Check right boundery
+// Check left boundary
 {
     if (softscroll.hscroll == softscroll.hscroll_def)
     {
@@ -158,7 +158,7 @@ char left_check()
 }
 
 char up_check()
-// Check down boundery
+// Check up boundary
 {
     if (softscroll.vscroll == 0)
     {
@@ -170,7 +170,7 @@ char up_check()
     return 0;
 }
 
-void show_smooth_croll()
+void show_smooth_scroll()
 // Viewer with softscroll
 {
     vert_dir = (view.height > vdc_state.height) ? 1 : 0;
@@ -520,7 +520,7 @@ int main(void)
     {
         if (vdc_state.memextended)
         {
-            show_smooth_croll();
+            show_smooth_scroll();
         }
         else
         {

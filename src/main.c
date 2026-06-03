@@ -615,7 +615,7 @@ void placesignature()
     char x;
     char *address = (char *)(SCREENMAPBASE + (canvas.sourcewidth * canvas.sourceheight));
 
-    sprintf(versiontext, "VDC Screen Editor %s X.Mol ", VERSION);
+    snprintf(versiontext, sizeof(versiontext), "VDC Screen Editor %s X.Mol ", VERSION);
 
     for (x = 0; x < strlen(versiontext); x++)
     {

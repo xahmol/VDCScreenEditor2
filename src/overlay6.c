@@ -940,7 +940,7 @@ static void export_seq_mode(char seqmode)
                         }
                     }
 
-                    if (seqmode == SEQ_MODE_C64 && y < canvas.sourceheight - 1)
+                    if (seqmode == SEQ_MODE_C64 && y < canvas.sourceheight - 1 && (canvas.sourcewidth % 40) != 0)
                     {
                         error = seq_emit_rowbreak(attr_present.reverse);
                         if (error)
