@@ -46,7 +46,11 @@ Commodore 128 80-column screen editor, version 2.
 
 ## Version history and download
 
-[Link to latest build](https://github.com/xahmol/VDCScreenEditor2/raw/main/vdcse_v20-20240611-1354.zip)
+[Link to latest build](https://github.com/xahmol/VDCScreenEditor2/releases/download/v21/vdcse_v21-20260603-2213.zip)
+
+Version v21-20260603-2213:
+- Bugfix release:
+    - SOLVED: File browser showing no files found and mixed upper/lower case display after the shared file browser refactor. Root cause: `filebrowse.c` is a `#pragma compile` module and does not inherit the parent compilation unit's charmap; `#include <petscii.h>` was missing so character literals did not match the uppercase PETSCII bytes returned by the IEC bus.
 
 Version v20-20240611-1354:
 - Bugfix release:
