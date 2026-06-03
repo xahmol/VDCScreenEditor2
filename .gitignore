@@ -60,3 +60,4 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+tests/__pycache__/
