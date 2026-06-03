@@ -72,6 +72,9 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "vdc_menu.h"
 #include "main.h"
 #include "overlay3.h"
+#ifdef TESTMODE
+#include <oscar.h>
+#endif
 
 // Section and region for low memory area overlay
 #pragma overlay(vdcseovl3, 4)
@@ -140,6 +143,10 @@ void loadscreenmap()
             }
             undo_undopossible = 0;
             undo_redopossible = 0;
+            // TEST_HOOK: loadscreenmap_complete — screen map populated at SCREENMAPBASE (Bank 1)
+#ifdef TESTMODE
+            breakpoint();
+#endif
         }
     }
 }
@@ -174,6 +181,10 @@ void savescreenmap()
         {
             menu_fileerrormessage();
         }
+        // TEST_HOOK: savescreenmap_complete — screen map saved to disk
+#ifdef TESTMODE
+        breakpoint();
+#endif
     }
 }
 
@@ -272,6 +283,10 @@ void saveproject()
                 menu_fileerrormessage();
             }
         }
+        // TEST_HOOK: saveproject_complete — project files (.proj/.scrn/.chrs/.chra) written to disk
+#ifdef TESTMODE
+        breakpoint();
+#endif
     }
 }
 
@@ -390,6 +405,10 @@ void loadproject()
         bnk_load(targetdevice, 1, (char *)CHARSETALTERNATE, buffer);
         bnk_redef_charset(vdc_state.char_alt, BNK_1_FULL, (char *)CHARSETALTERNATE, 256);
     }
+    // TEST_HOOK: loadproject_complete — screen map and charsets loaded at SCREENMAPBASE (Bank 1)
+#ifdef TESTMODE
+    breakpoint();
+#endif
 }
 
 void loadcharset(char stdoralt)

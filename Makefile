@@ -27,6 +27,7 @@ CC = /home/xahmol/oscar64/bin/oscar64
 MAIN = vdcse
 GEN  = vdcse2prg
 VIEW = vdcse2prgvwc
+TESTPRG = vdcse_test
 
 # Build versioning
 VERSION_MAJOR     = 2
@@ -109,7 +110,7 @@ README = README.pdf
 ########################################
 
 .SUFFIXES:
-.PHONY: all clean deploy deploy2 check-deploy check-deploy2 docs vice
+.PHONY: all clean deploy deploy2 check-deploy check-deploy2 docs vice test-build test-d81 vice-debug test
 
 all: $(MAIN).prg $(GEN).prg $(VIEW).prg bootsect.bin d64 d71 d81 README.pdf $(ZIP)
 
@@ -205,3 +206,52 @@ deploy2: check-deploy2 $(MAIN).prg
 # Run software using VICE x128
 vice:
 	x128 build/$(MAIN).d81
+
+# ---------------------------------------------------------------------------
+# Test targets
+# ---------------------------------------------------------------------------
+# NOTE: test-build compiles with -g (VICE symbol labels) and -dTESTMODE
+# (breakpoint() hooks in overlays).  Oscar64 outputs overlay files using the
+# names from their #pragma overlay() directives (vdcseovl1.prg … vdcseovl6.prg),
+# so test-build OVERWRITES the standard overlays in build/.  Run 'make' to
+# restore standard overlays after running tests.
+
+# Debug/test build: adds VICE .lbl symbol file and TESTMODE breakpoints.
+test-build: $(MAIN_SRCS)
+	@$(MKDIR) build 2>$(NULLDEV) ; true
+	$(CC) $(CFLAGS) -g -dTESTMODE -n -o=build/$(TESTPRG).prg $(MAINSRC)
+
+# Test disk image: identical layout to d81 but using the TESTMODE binary.
+# Depends on bootsect.bin (which builds the standard binary and copies assets)
+# so all supporting files are in build/ before we assemble the test image.
+test-d81: bootsect.bin test-build
+	c1541 -cd build/ -format "vdcse,xm" d81 $(TESTPRG).d81
+	c1541 -cd build/ -attach $(TESTPRG).d81 -bwrite bootsect.bin 1 0
+	c1541 -cd build/ -attach $(TESTPRG).d81 -bpoke 40 1 16 $$27 %11111110
+	c1541 -cd build/ -attach $(TESTPRG).d81 -bam 1 1
+	c1541 -cd build/ -attach $(TESTPRG).d81 -write $(TESTPRG).prg vdcse -write $(GEN).prg $(GEN)
+	c1541 -cd build/ -attach $(TESTPRG).d81 $(OVERLAYS)
+	c1541 -cd build/ -attach $(TESTPRG).d81 $(ASSETS)
+	c1541 -cd build/ -attach $(TESTPRG).d81 $(SCREENS)
+	c1541 -cd build/ -attach $(TESTPRG).d81 $(SAMPLESPROJ) $(SAMPLESRAW) $(SAMPLESSEQ) $(SAMPLESOWN)
+
+# Interactive debug session: x128 with remote monitor + symbol file preloaded.
+# setup.mon is loaded at CPU reset (before the program starts), loads .lbl,
+# then resumes execution.  Connect with: nc 127.0.0.1 6510
+vice-debug: test-d81
+	x128 \
+	  -remotemonitor \
+	  -remotemonitoraddress 127.0.0.1:6510 \
+	  -initbreak reset \
+	  -moncommands tests/setup.mon \
+	  -monlogname build/monitor_debug.log \
+	  -monlog \
+	  -keepmonopen \
+	  build/$(TESTPRG).d81
+
+# Run the automated Python test suite.
+# No -monitorcommand here: Python loads symbols explicitly after connecting.
+test: test-d81
+	python3 tests/run_tests.py \
+	  --image build/$(TESTPRG).d81 \
+	  --symbols build/$(TESTPRG).lbl

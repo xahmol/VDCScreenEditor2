@@ -1,0 +1,18 @@
+; VICE monitor startup script — used by 'make vice-debug' for interactive debugging.
+; Loaded via -moncommands tests/setup.mon with -initbreak reset, so it runs
+; before the CPU starts and before the test program loads.
+;
+; Oscar64 -g writes into the .lbl file:
+;   al xxxx .symbol_name  — address labels for all C functions
+;   break xxxx            — auto-breakpoints at breakpoint() call sites
+;
+; Loading the .lbl file activates:
+;   'break 5577' — fires for all overlay6 operations (import/export SEQ).
+;   Oscar64 inlines the tiny overlay6 wrapper functions into mainmenuloop,
+;   so all four cases (42-45) converge to the NOP at $5577 before JMP $553e.
+;   Overlay3/5 breakpoints compile to NOPs in overlay code with no .lbl break
+;   entry; use 'break $553e' (mainmenuloop top) manually for those operations.
+;
+ll build/vdcse_test.lbl
+; Resume CPU execution (needed when launched with -monitorbreak reset)
+g

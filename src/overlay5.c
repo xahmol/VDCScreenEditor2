@@ -72,6 +72,9 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "vdc_menu.h"
 #include "main.h"
 #include "overlay5.h"
+#ifdef TESTMODE
+#include <oscar.h>
+#endif
 
 // Section and region for low memory area overlay
 #pragma overlay(vdcseovl5, 6)
@@ -278,8 +281,16 @@ void import_prg()
         {
             initstatusbar();
         }
+        // TEST_HOOK: import_prg_complete — screen map populated at SCREENMAPBASE (Bank 1)
+#ifdef TESTMODE
+        breakpoint();
+#endif
     }
 }
+
+// FUTURE_TEST_HOOK: main.c main loop top — for cursor/plot tests (add when needed)
+// FUTURE_TEST_HOOK: banking.c after overlay load — for overlay mechanism tests (add when needed)
+// FUTURE_TEST_HOOK: overlay4.c after charset edit — for character editor tests (add when needed)
 
 #pragma code(code)
 #pragma data(data)

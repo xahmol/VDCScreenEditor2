@@ -77,6 +77,9 @@ BUT WITHOUT ANY WARRANTY. USE THEM AT YOUR OWN RISK!
 #include "vdc_menu.h"
 #include "main.h"
 #include "overlay6.h"
+#ifdef TESTMODE
+#include <oscar.h>
+#endif
 
 // Section and region for low memory area overlay
 #pragma overlay(vdcseovl6, 7)
@@ -974,22 +977,39 @@ static void export_seq_mode(char seqmode)
 void import_seq_c64()
 {
     import_seq_mode(SEQ_MODE_C64, "Import C64 SEQ");
+    // TEST_HOOK: import_seq_c64_complete — screen map populated at SCREENMAPBASE (Bank 1)
+#ifdef TESTMODE
+    breakpoint();
+#endif
 }
 
 void import_seq_vdc()
 {
     import_seq_mode(SEQ_MODE_VDC, "Import VDC SEQ");
+    // TEST_HOOK: import_seq_vdc_complete — screen map populated at SCREENMAPBASE (Bank 1)
+#ifdef TESTMODE
+    breakpoint();
+#endif
 }
 
 void export_seq_c64()
 {
     export_seq_mode(SEQ_MODE_C64);
+    // TEST_HOOK: export_seq_c64_complete — SEQ file written to disk
+#ifdef TESTMODE
+    breakpoint();
+#endif
 }
 
 void export_seq_vdc()
 {
     export_seq_mode(SEQ_MODE_VDC);
+    // TEST_HOOK: export_seq_vdc_complete — SEQ file written to disk
+#ifdef TESTMODE
+    breakpoint();
+#endif
 }
+// FUTURE_TEST_HOOK: inside import_seq_mode after each row written — for partial-import tests
 
 #pragma code(code)
 #pragma data(data)
