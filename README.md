@@ -46,11 +46,41 @@ Commodore 128 80-column screen editor, version 2.
 
 ## Version history and download
 
-[Link to latest build](https://github.com/xahmol/VDCScreenEditor2/releases/download/v21/vdcse_v21-20260603-2213.zip)
+[Link to latest build](https://github.com/xahmol/VDCScreenEditor2/releases/download/v21/vdcse_v21-20260603-2228.zip)
 
-Version v21-20260603-2213:
-- Bugfix release:
-    - SOLVED: File browser showing no files found and mixed upper/lower case display after the shared file browser refactor. Root cause: `filebrowse.c` is a `#pragma compile` module and does not inherit the parent compilation unit's charmap; `#include <petscii.h>` was missing so character literals did not match the uppercase PETSCII bytes returned by the IEC bus.
+Version v21-20260603-2228:
+- SEQ import/export overhaul:
+    - Refactored to cleanly separate C64 and VDC SEQ modes throughout the import/export pipeline
+    - Full support for Petmate 9 ESC extension sequences: underline ON/OFF (`ESC I`/`ESC J`), blink ON/OFF (`ESC O`/`ESC P`), raw VDC data marker (`ESC V`)
+    - Save/restore of blink, underline, and alternate-charset plot state across nested SEQ imports so each import is independent
+    - SOLVED: C64 SEQ export emitted a spurious row-break byte when canvas width was a multiple of 40, producing an empty line between every row; auto-wrap already advances the cursor so the explicit return was redundant
+    - SOLVED: ESC sequence decode logic in VDC SEQ import had byte-overlap handling errors, causing incorrect character output after ESC sequences
+- File browser improvements:
+    - Shared `filebrowse.c`/`filebrowse.h` module extracted from `main.c` and `prg_gen.c`, removing ~1800 lines of duplication
+    - SOLVED: Oscar64 §12.1 compiler limitation — `for`/`continue` constructs in `dir_readentry` translated incorrectly; rewritten as `while` loops
+    - SOLVED: End-key (`e`) navigation reset `cwd.firstprinted` before the directory scan instead of after, causing incorrect display after pressing End in the file browser
+    - SOLVED: File browser showing no files found and mixed upper/lower case display after the shared file browser refactor. Root cause: `filebrowse.c` is a `#pragma compile` module and does not inherit the parent compilation unit's charmap; `#include <petscii.h>` was missing so character literals did not match the uppercase PETSCII bytes returned by the IEC bus
+    - SOLVED: `dir_readentry` could crash or corrupt state on malformed or too-short directory entries; added bounds checks before parsing
+- Other bugfixes:
+    - SOLVED: Project load did not properly restore alternate charset state — `charsetchanged[1]` was erroneously set to index `[0]` twice, so loading a project with no charsets left the alternate charset marked as unchanged
+    - SOLVED: View utility (`vdcse2prgvwc`) never reloaded the alternate charset — `check_charsets` tested `view.charstd` instead of `view.charalt` as the condition for alternate charset redefinition
+    - SOLVED: PRG import load-address buffer was 1 byte instead of 2, causing a buffer overrun on every PRG import
+    - `sprintf` replaced with `snprintf(sizeof)` in `placesignature` to prevent buffer overflow if the version string grows
+- `vdc_menu` improvements:
+    - New `menu_option_select()` function to programmatically set the highlighted option before opening a menu
+    - `VDC_PULLDOWN_MAXLENGTH` increased from 16 to 17 characters to give one character of slack
+    - Optional compile-time border mode: define `-dVDC_MENU_BORDERS` to draw box-drawing borders around menus (off by default to stay safe when charsets are redefined)
+- Makefile improvements:
+    - `.env` file for Ultimate II+ target IPs (`ULTIP1`/`ULTIP2`); URL constructed in Makefile so IPs are never committed to version control
+    - `check-deploy` / `check-deploy2` targets: ping the Ultimate II+ before attempting FTP upload
+    - `deploy2` target for optional second machine
+    - Full source dependency tracking (`MAIN_SRCS`, `GEN_SRCS`, `VIEW_SRCS`) covering all overlays and includes
+    - `docs` target regenerates `README.pdf` via pandoc (warns and skips if pandoc not installed)
+    - ZIP output placed in `build/` directory; `build/` created automatically in compile rules
+- Documentation:
+    - New `ARCHITECTURE.md`: complete memory maps, overlay system, VDC attribute layout, banking layer API, and global state table
+    - New `c128vdc-seq.md`: annotated reference for the C128 VDC SEQ / Petmate 9 extended format
+    - Expanded `README.md`: Building from source section with prerequisites, `.env` setup, and make target reference
 
 Version v20-20240611-1354:
 - Bugfix release:
