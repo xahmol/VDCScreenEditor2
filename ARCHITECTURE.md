@@ -4,6 +4,48 @@ This document describes the memory layout, file formats, overlay system, and dat
 
 ---
 
+## Table of Contents
+
+- [1. Executables](#1-executables)
+- [2. C128 Memory Map](#2-c128-memory-map)
+  - [Bank 0](#bank-0-cpu-default--what-0xaddr-normally-refers-to)
+  - [Bank 1](#bank-1-accessed-via-banking-layer-only--never-directly-mapped-to-cpu)
+  - [VDC (8563) Internal RAM](#vdc-8563-internal-ram)
+- [3. VDC Attribute Byte](#3-vdc-attribute-byte)
+- [4. Overlay System](#4-overlay-system)
+  - [Constants](#constants)
+  - [Overlay Storage Map](#overlay-storage-map)
+  - [Loading an Overlay](#loading-an-overlay)
+  - [Oscar64 Overlay Pragmas](#oscar64-overlay-pragmas)
+- [5. Screen Map Format](#5-screen-map-format-bank-1-starting-at-screenmapbase--0x5800)
+  - [Address Computation](#address-computation)
+  - [Signature](#signature-48-bytes-at-offset-width--height)
+  - [Macros](#macros)
+- [6. File Formats](#6-file-formats)
+  - [`.proj` — Project Metadata](#proj--project-metadata-file)
+  - [`.scrn` — Screen Data](#scrn--screen-data-file)
+  - [`.chrs` / `.chra` — Charset Files](#chrs--chra--charset-files)
+  - [`.prg` — Standalone Viewer](#prg--standalone-viewer-program-generated-by-vdcse2prg)
+  - [SEQ Files](#seq-files--petscii-sequential-files)
+  - [Disk Images](#disk-images)
+- [7. Banking Layer](#7-banking-layer)
+  - [Bank Constants](#bank-constants)
+  - [Core Functions](#core-functions)
+- [8. Global Editor State](#8-global-editor-state)
+- [9. Undo / Redo System](#9-undo--redo-system)
+  - [Overview](#overview)
+  - [VDC RAM Undo Region](#vdc-ram-undo-region)
+  - [Per-Entry VDC RAM Layout](#per-entry-vdc-ram-layout)
+  - [Ring Buffer and Address Wrapping](#ring-buffer-and-address-wrapping)
+  - [State Variables](#undo--redo-state-variables)
+  - [`redopresent` Field Values](#redopresent-field-values)
+  - [Special Operations](#special-operations)
+- [10. Key Structures](#10-key-structures)
+- [11. Library Variants](#11-library-variants)
+- [12. Build System Overview](#12-build-system-overview)
+
+---
+
 ## 1. Executables
 
 The project produces four binary outputs:
@@ -405,11 +447,89 @@ All editor state lives in file-scope globals in `src/main.c`, declared `extern` 
 
 ### Undo System
 
-The undo ring uses `Undo[41]` but only slots 1–40 (index 0 is unused). Each `UndoStruct` holds the address in Bank 1 where the undo data is stored, plus the dimensions of the saved region. Undo data is stored inline in the Bank 1 screen map area (at the end of the undo buffer region computed by `UNDO_BUFFER_BYTES`).
+See §9 for a full description. Summary: `Undo[41]` is a ring buffer (slots 1–40 active, index 0 unused sentinel). Undo data is stored in **VDC RAM** starting at `vdc_state.extended` — the first VDC address not used by the current screen mode.
 
 ---
 
-## 9. Key Structures
+## 9. Undo / Redo System
+
+### Overview
+
+The undo/redo system records rectangular regions of the canvas before each editing operation and can replay them forwards and backwards. It uses a ring buffer of up to 40 entries (`Undo[41]`, indices 1–40; index 0 is an unused sentinel). Undo data lives in **VDC RAM** — specifically in the portion of VDC RAM above the screen, attribute, swap, and charset areas for the current mode (`vdc_state.extended` onwards).
+
+`undoenabled` (0 = disabled, 1 = enabled) can be toggled by the user from the menu. When a new project is loaded or created, `undoenabled` is set to 1 and `undoaddress` is reset to `vdc_state.extended`.
+
+### VDC RAM Undo Region
+
+`vdc_state.extended` holds the VDC RAM address where the undo buffer starts. Its value comes from `vdc_modes[mode].extended` and varies by screen mode:
+
+| Mode | `vdc_state.extended` | VDC RAM available for undo (64 KB VDC) |
+|---|---|---|
+| 80×25 PAL/NTSC | 0x4000 | 48 KB |
+| 80×50 PAL/NTSC | 0x6000 | 40 KB |
+| 80×70 PAL / 80×60 NTSC | 0x9000 | 28 KB |
+
+80×25 mode requires only 16 KB for display+charsets; it can operate with a 16 KB VDC chip but undo requires 64 KB VDC RAM. For modes needing 64 KB, undo is only available if `vdc_state.memextended == 1`.
+
+`undoaddress` (a 16-bit `unsigned`) tracks the current write head within the VDC RAM undo region. It starts at `vdc_state.extended` and advances after each `undo_new()` call.
+
+### Per-Entry VDC RAM Layout
+
+Each undo entry is stored at `Undo[n].address` in VDC RAM. The entry layout depends on whether redo data is present (`redopresent`):
+
+```
+Offset                          Content
+0                               Screen codes (undo snapshot): width × height bytes
+width*height                    Attribute bytes (undo snapshot): width × height bytes
+--- present only if redopresent > 0 ---
+width*height*2                  Screen codes (redo snapshot): width × height bytes
+width*height*3                  Attribute bytes (redo snapshot): width × height bytes
+```
+
+The `UNDO_BUFFER_BYTES` macro computes the total:
+```c
+#define UNDO_BUFFER_BYTES(w, h, redo)  (SCREENMAP_DATA_BYTES((w),(h)) * (2UL + 2UL*(unsigned long)(redo)))
+// With redo:    4 × width × height bytes
+// Without redo: 2 × width × height bytes
+```
+
+Redo space is skipped (`redopresent = 0`) if allocating the full entry would overflow `undoaddress` beyond 0xFFFF.
+
+### Ring Buffer and Address Wrapping
+
+`undonumber` (1–40) is the index of the most recent undo slot. It increments on each `undo_new()` call, wrapping from 40 back to 1. When a wrap occurs, `undoaddress` is also reset to `vdc_state.extended`, overwriting the oldest undo data in VDC RAM.
+
+Termination sentinel: `Undo[undonumber].address` is set to 0 after each write to mark the next slot as empty. This is used by undo/redo navigation to detect the end of the valid range.
+
+### Undo / Redo State Variables
+
+| Variable | Type | Meaning |
+|---|---|---|
+| `undoenabled` | `char` | 0 = undo disabled, 1 = enabled |
+| `undoaddress` | `unsigned` | Current VDC RAM write head for undo data |
+| `undonumber` | `char` | Current ring slot (1–40) |
+| `undo_undopossible` | `char` | Counter: how many undo steps are available |
+| `undo_redopossible` | `char` | Counter: how many redo steps are available |
+| `Undo[41]` | `struct UndoStruct[]` | Metadata ring; index 0 unused sentinel |
+
+### `redopresent` Field Values
+
+| Value | Meaning |
+|---|---|
+| 0 | No redo data stored (not enough VDC RAM) |
+| 1 | Redo space reserved but not yet filled (redo data captured during a future undo) |
+| 2 | Redo data valid — filled in by `undo_performundo()` |
+
+During `undo_performundo()`, the current canvas state is copied into the redo slots (`width*height*2` and `width*height*3` offsets) before restoring the undo snapshot, so that `undo_performredo()` can replay it.
+
+### Special Operations
+
+- **`undo_escapeundo()`** — Called when ESC is pressed during select/move mode to cancel an in-progress undo slot without committing it. Clears `Undo[undonumber].address` and decrements `undonumber`.
+- **New operation resets redo** — Calling `undo_new()` while `undo_redopossible > 0` discards the redo chain: `undo_undopossible` is reset to 1 and `undo_redopossible` to 0.
+
+---
+
+## 10. Key Structures
 
 ### `struct VDCViewport` (from `vdc_win.h`)
 
@@ -442,18 +562,18 @@ struct VDCWin {
 One undo entry:
 ```c
 struct UndoStruct {
-    unsigned address;    // Address in Bank 1 where undo data is stored
+    unsigned address;    // VDC RAM address where undo (and optional redo) data is stored
     unsigned ystart;     // Canvas row where the region starts
     unsigned xstart;     // Canvas column where the region starts
     unsigned height;     // Height of saved region
     unsigned width;      // Width of saved region
-    char redopresent;    // 1 if redo data follows the undo data
+    char redopresent;    // 0=no redo, 1=redo reserved, 2=redo valid (see §9)
 };
 ```
 
 ---
 
-## 10. Library Variants
+## 11. Library Variants
 
 The codebase has two variants of the core VDC and window libraries:
 
@@ -468,7 +588,7 @@ The `*_nobnk` variants implement charsets inline instead of delegating to `bnk_r
 
 ---
 
-## 11. Build System Overview
+## 12. Build System Overview
 
 See the `Makefile` for full details. Key targets:
 
