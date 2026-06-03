@@ -72,8 +72,13 @@ def launch_vice(image: str, port: int) -> subprocess.Popen:
     print(f"Launching: {' '.join(args)}")
     # Redirect VICE's own stdout/stderr to a log file so they don't pollute
     # the test output.  Python's print() still goes to the terminal.
+    # stdin=DEVNULL: VICE's local monitor must not consume terminal input
+    # that Python's input() is waiting for.
     with open("build/vice_launch.log", "w") as vice_log:
-        return subprocess.Popen(args, stdout=vice_log, stderr=vice_log)
+        return subprocess.Popen(args,
+                                stdin=subprocess.DEVNULL,
+                                stdout=vice_log,
+                                stderr=vice_log)
 
 
 def run_all(image: str, symbols: str, port: int) -> bool:
