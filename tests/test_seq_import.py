@@ -44,15 +44,16 @@ SCREENMAPBASE = 0x5800
 SCREEN_WIDTH  = 80
 
 
-def _wait_user_import(mon: ViceMonitor, steps: str, timeout: float = 120) -> int:
+def _wait_user_import(mon: ViceMonitor, steps: str, timeout: float = 120) -> None:
     """
-    Show instructions and wait for break 5577 (socket stays connected so
-    VICE delivers the break notification directly).
+    Read the completion flag, show instructions, then disconnect and poll
+    until the flag byte changes (overlay6 increments it on completion).
+    Returns with the monitor connected and CPU halted for memory reads.
     """
+    initial = mon.read_completion_flag()
     show_info(steps, title="Do in VICE — then wait for test to continue")
-    print(f"  Waiting up to {timeout:.0f}s for break 5577 …")
-    addr = mon.wait_for_break(timeout=timeout)
-    return addr
+    print(f"  Waiting up to {timeout:.0f}s for completion flag …")
+    mon.wait_completion_flag(initial, timeout=timeout)
 
 
 def test_seq_import_vdc(mon: ViceMonitor):
@@ -72,8 +73,7 @@ Navigate to 'VDC-COLORS' and press RETURN to select
   — import dialog —
 RETURN ×5             accept width / height / X / Y / cls defaults"""
 
-    addr = _wait_user_import(mon, steps)
-    assert addr > 0, f"break 5577 (import_seq_vdc_complete) never fired (addr={addr:#06x})"
+    _wait_user_import(mon, steps)   # returns with CPU halted, monitor connected
 
     row0 = mon.read_bank1(SCREENMAPBASE, SCREEN_WIDTH)
     assert len(row0) == SCREEN_WIDTH, \
@@ -102,8 +102,7 @@ Navigate to 'VICUC-COLORS' and press RETURN to select
   — import dialog —
 RETURN ×7             accept width / height / X / Y / cls / convert / uppercase defaults"""
 
-    addr = _wait_user_import(mon, steps)
-    assert addr > 0, f"break 5577 (import_seq_c64_complete) never fired (addr={addr:#06x})"
+    _wait_user_import(mon, steps)   # returns with CPU halted, monitor connected
 
     row0 = mon.read_bank1(SCREENMAPBASE, SCREEN_WIDTH)
     assert len(row0) == SCREEN_WIDTH, \

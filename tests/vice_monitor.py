@@ -314,6 +314,89 @@ class ViceMonitor:
         # Don't wait for prompt — execution resumes and monitor goes quiet
         time.sleep(0.05)
 
+    # ------------------------------------------------------------------
+    # Completion-flag polling (WSL2 keyboard fix)
+    # ------------------------------------------------------------------
+    # overlay6.c TESTMODE increments a counter byte at $03FA (C128 Bank 0,
+    # page-3 free area) whenever an overlay6 operation finishes.  Python
+    # can detect completion by polling that byte while disconnected — so
+    # the VICE window receives X11 keyboard events normally.
+
+    TESTFLAG_ADDR = 0x03FA
+
+    def read_completion_flag(self, addr: int = TESTFLAG_ADDR) -> int:
+        """Read the test-completion counter byte (while monitor is connected)."""
+        data = _parse_memory_dump(self.cmd(f"m ${addr:04x} ${addr:04x}"))
+        return data[0] if data else 0
+
+    def wait_completion_flag(self, initial: int,
+                              addr: int = TESTFLAG_ADDR,
+                              timeout: float = 120.0,
+                              poll_interval: float = 1.0,
+                              port: int = DEFAULT_PORT) -> None:
+        """
+        Disconnect from VICE (so WSL2 X11 keyboard delivery works), then
+        poll `addr` every poll_interval seconds until the byte there changes
+        from `initial`.
+
+        Each poll briefly connects, halts the CPU to read one byte, then
+        resumes and disconnects.  During the ~200 ms of each poll the user
+        may feel a slight stutter; between polls keyboard input is unaffected.
+
+        Returns with the monitor CONNECTED and CPU HALTED so the caller can
+        read memory before calling cont().  Raises ViceMonitorError on timeout.
+        """
+        self.disconnect()
+
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            time.sleep(poll_interval)
+            try:
+                self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self._sock.settimeout(3.0)
+                try:
+                    self._sock.connect((DEFAULT_HOST, port))
+                except (ConnectionRefusedError, OSError):
+                    self._sock.close()
+                    self._sock = None
+                    continue
+
+                # Halt CPU and read the flag byte.
+                self._recv_until_prompt(timeout=3.0, prime_with="r\n")
+                response = self._recv_until_prompt(
+                    timeout=3.0,
+                    prime_with=f"m ${addr:04x} ${addr:04x}\n",
+                )
+                data = _parse_memory_dump(response)
+                current = data[0] if data else initial
+
+                if current != initial:
+                    # Flag changed: operation complete.
+                    # Stay connected with CPU halted for caller to read memory.
+                    return
+
+                # Not done yet — resume and disconnect.
+                self.cont()
+                self.disconnect()
+
+            except ViceMonitorError:
+                try:
+                    self._sock.close()
+                except Exception:
+                    pass
+                self._sock = None
+            except Exception:
+                try:
+                    if self._sock:
+                        self._sock.close()
+                        self._sock = None
+                except Exception:
+                    pass
+
+        raise ViceMonitorError(
+            f"Completion flag at ${addr:04x} unchanged after {timeout:.0f}s"
+        )
+
     def drain_keybuf(self):
         """Clear the C128 keyboard buffer ($00C6 = 0) to discard queued keystrokes."""
         self.cmd("fill $c6 $c6 00")

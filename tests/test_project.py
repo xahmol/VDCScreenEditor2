@@ -36,23 +36,23 @@ SCREEN_BYTES  = 80 * 25 * 2    # screencodes + attribute bytes
 DISK_OP_WAIT = 3.0   # extra sleep after user confirms disk operation
 
 
-def _wait_user_import(mon: ViceMonitor, steps: str, timeout: float = 120) -> int:
-    """Show instructions and wait for break 5577 (socket stays connected)."""
+def _wait_user_import(mon: ViceMonitor, steps: str, timeout: float = 120) -> None:
+    """Read flag, show instructions, disconnect and poll until flag changes."""
+    initial = mon.read_completion_flag()
     show_info(steps, title="Do in VICE — then wait for test to continue")
-    print(f"  Waiting up to {timeout:.0f}s for break 5577 …")
-    return mon.wait_for_break(timeout=timeout)
+    print(f"  Waiting up to {timeout:.0f}s for completion flag …")
+    mon.wait_completion_flag(initial, timeout=timeout)
 
 
 def test_project_save_reload(mon: ViceMonitor):
     """Save project then reload it — screen map must be byte-identical."""
 
     # ── Step 1: Import a reference VDC SEQ to populate the canvas ──
-    addr = _wait_user_import(mon,
+    _wait_user_import(mon,
         """\
 F1 → RIGHT ×3 → RETURN → DOWN ×2 → RETURN   (Import VDC SEQ)
   — file browser — navigate to VDC-COLORS → RETURN
 RETURN ×5   (accept defaults)""")
-    assert addr > 0, "Reference import: break 5577 never fired"
 
     before = mon.read_bank1(SCREENMAPBASE, SCREEN_BYTES)
     assert any(b != 0x20 for b in before[:80]), \
@@ -72,12 +72,11 @@ F1 → RIGHT ×1 → RETURN → DOWN ×2 → RETURN   (Save project)
     time.sleep(DISK_OP_WAIT)
 
     # ── Step 4: Overwrite canvas with a different SEQ ──
-    addr = _wait_user_import(mon,
+    _wait_user_import(mon,
         """\
 F1 → RIGHT ×3 → RETURN → DOWN ×2 → RETURN   (Import VDC SEQ)
   — file browser — navigate to IDI8B-VDC → RETURN
 RETURN ×5   (accept defaults)""")
-    assert addr > 0, "Canvas overwrite import: break 5577 never fired"
     mon.cont()
     time.sleep(0.5)
 

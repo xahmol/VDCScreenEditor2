@@ -28,23 +28,23 @@ SCREEN_BYTES  = 80 * 25 * 2    # screencodes + attribute bytes for 80×25
 
 
 def _wait_user(mon: ViceMonitor, step_label: str, steps: str,
-               timeout: float = 120) -> int:
-    """Show instructions and wait for break 5577 (socket stays connected)."""
+               timeout: float = 120) -> None:
+    """Read flag, show instructions, disconnect and poll until flag changes."""
+    initial = mon.read_completion_flag()
     show_info(steps, title=f"Step {step_label} — Do in VICE then wait")
-    print(f"  Waiting up to {timeout:.0f}s for break 5577 …")
-    return mon.wait_for_break(timeout=timeout)
+    print(f"  Waiting up to {timeout:.0f}s for completion flag …")
+    mon.wait_completion_flag(initial, timeout=timeout)
 
 
 def test_seq_export_reimport_roundtrip(mon: ViceMonitor):
     """Export + reimport VDC SEQ produces byte-identical screen map data."""
 
     # ── Step 1: Import reference ──
-    addr = _wait_user(mon, "1 of 3 — Import vdc-colors",
+    _wait_user(mon, "1 of 3 — Import vdc-colors",
         """\
 F1 → RIGHT ×3 → RETURN → DOWN ×2 → RETURN   (Import VDC SEQ)
   — file browser — navigate to VDC-COLORS → RETURN
 RETURN ×5   (accept width / height / X / Y / cls defaults)""")
-    assert addr > 0, "Step 1 (import): break 5577 never fired"
 
     before = mon.read_bank1(SCREENMAPBASE, SCREEN_BYTES)
     assert any(b != 0x20 for b in before[:80]), \
@@ -53,23 +53,21 @@ RETURN ×5   (accept width / height / X / Y / cls defaults)""")
     time.sleep(0.5)
 
     # ── Step 3: Export ──
-    addr = _wait_user(mon, "2 of 3 — Export as testrt",
+    _wait_user(mon, "2 of 3 — Export as testrt",
         """\
 F1 → RIGHT ×3 → RETURN → DOWN ×4 → RETURN   (Export VDC SEQ)
   — save dialog — accept device with RETURN
   Type filename:  testrt   then RETURN
   If 'file exists?' appears: RETURN to confirm overwrite""")
-    assert addr > 0, "Step 3 (export): break 5577 never fired"
     mon.cont()
     time.sleep(0.5)
 
     # ── Step 4: Reimport ──
-    addr = _wait_user(mon, "3 of 3 — Reimport testrt",
+    _wait_user(mon, "3 of 3 — Reimport testrt",
         """\
 F1 → RIGHT ×3 → RETURN → DOWN ×2 → RETURN   (Import VDC SEQ)
   — file browser — navigate to TESTRT → RETURN
 RETURN ×5   (accept width / height / X / Y / cls defaults)""")
-    assert addr > 0, "Step 4 (reimport): break 5577 never fired"
 
     after = mon.read_bank1(SCREENMAPBASE, SCREEN_BYTES)
     mon.cont()
