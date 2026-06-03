@@ -19,6 +19,7 @@ with a popup; the standalone prg_gen utility calls filepicker directly.
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <petscii.h>
 #include <c64/kernalio.h>
 #include "defines.h"
 #include "filebrowse.h"
