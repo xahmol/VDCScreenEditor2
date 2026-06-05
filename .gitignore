@@ -5,8 +5,7 @@
 build/
 
 # Release ZIPs generated in project root
-vdcse_v20-*.zip
-.zip
+*.zip
 
 # Prerequisites
 *.d
